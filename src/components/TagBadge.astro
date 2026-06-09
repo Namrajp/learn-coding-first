@@ -1,10 +1,15 @@
 ---
+import { withBase } from "../utils/paths";
+
 interface Props {
   tag: string;
 }
 const { tag } = Astro.props;
 ---
 
-<a href={`/tag/${tag}`} class="border border-black py-1 px-2 rounded-lg text-sm">
+<a
+  href={withBase(`/tag/${tag}`)}
+  class="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-800 no-underline transition hover:border-emerald-400 hover:bg-emerald-100"
+>
   {tag}
 </a>

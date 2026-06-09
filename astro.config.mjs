@@ -10,7 +10,8 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  site: "https://mygreatsite.com",
+  site: "https://namrajp.github.io",
+  base: "/my-new-astro-blog",
   integrations: [sitemap()],
   markdown: {
     shikiConfig: {

@@ -1,32 +1,58 @@
 ---
 import "../styles/global.css";
-import "../main.ts";
 import { ClientRouter } from "astro:transitions";
 import { SITE } from "../config";
+import { stripBase, withBase } from "../utils/paths";
 
-const url = new URL(Astro.request.url).pathname;
-const { frontmatter, title } = Astro.props;
+const path = new URL(Astro.request.url).pathname;
+const pagePath = stripBase(path);
+const { frontmatter, title, description, contentClass } = Astro.props;
+const metaDescription = description ?? frontmatter?.description ?? SITE.description;
+const pageTitle =
+  !title || title === SITE.title ? SITE.title : `${title} | ${SITE.title}`;
+const canonicalUrl = new URL(path, SITE.origin).toString();
+const ogImage = new URL(withBase(SITE.ogImage), SITE.origin).toString();
+const navLinks = [
+  { href: withBase("/"), label: "Home", active: pagePath === "/" },
+  {
+    href: withBase("/blog/page/1"),
+    label: "Blog",
+    active: pagePath.startsWith("/blog"),
+  },
+  { href: withBase("/about"), label: "About", active: pagePath === "/about" },
+  {
+    href: withBase("/contact"),
+    label: "Contact",
+    active: pagePath === "/contact",
+  },
+];
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+    <link rel="sitemap" href={withBase("/sitemap-index.xml")} />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <meta
-      name="description"
-      content={frontmatter?.description ?? SITE.description}
-    />
-    <meta property="og:image" content={`https://mywebsite.com/my-image.png`} />
+    <meta name="description" content={metaDescription} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:type" content={frontmatter ? "article" : "website"} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={ogImage} />
     <link
       rel="alternate"
       type="application/rss+xml"
-      title="My cool blog"
-      href="/rss.xml"
+      title={SITE.title}
+      href={withBase("/rss.xml")}
     />
-    <title>{title}</title>
+    <title>{pageTitle}</title>
 
     <style is:global>
       h1 {
@@ -44,13 +70,23 @@ const { frontmatter, title } = Astro.props;
 
     <ClientRouter />
   </head>
-  <body class="p-5">
+  <body class="bg-stone-50 p-5 text-zinc-900">
     <div class="py-8">
       <header id="home">
-        <nav class="nav" id="navigation">
+        <nav class="nav border-b border-zinc-200" id="navigation">
           <div class="nav-center" id="nav">
             <div class="nav-header">
-              <img src="/fix-anything-logo.svg" alt="logo" class="logo" />
+              <a class="flex items-center gap-3 no-underline" href={withBase("/")}>
+                <img src={withBase("/blog-logo.svg")} alt="Fix Anything Blog logo" class="logo" />
+                <div class="text-left">
+                  <p class="m-0 text-base font-semibold uppercase tracking-[0.2em] text-emerald-700">
+                    {SITE.title}
+                  </p>
+                  <p class="m-0 text-sm text-zinc-500">
+                    Practical guides for developers building their fundamentals
+                  </p>
+                </div>
+              </a>
 
               <button class="nav-toggle" aria-label="Toggle navigation">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -63,51 +99,19 @@ const { frontmatter, title } = Astro.props;
 
             <div class="links-container">
               <ul class="nav-links">
-                <li class="text-left">
-                  <a
-                    href="/"
-                    class={url === "/"
-                      ? "font-bold text-gray-800 hover:text-gray-600"
-                      : "font-medium text-gray-500 hover:text-gray-900 scroll-link"}
-                    >Home</a
-                  >
-                </li>
-                <!-- <li>
-                  <a
-                    href="/pricing"
-                    class={url === "/pricing"
-                      ? "font-bold text-gray-800 hover:text-gray-600"
-                      : "font-medium text-gray-500 hover:text-gray-900 scroll-link"}
-                    >Pricing</a
-                  >
-                </li> -->
-                <li>
-                  <a
-                    href="/blog/page/1"
-                    class={url === "/blog/page/1"
-                      ? "font-bold text-gray-800 hover:text-gray-600"
-                      : "font-medium text-gray-500 hover:text-gray-900 scroll-link"}
-                    >Blog</a
-                  >
-                </li>
-                <!-- <li>
-                  <a
-                    href="/login"
-                    class={url === "/login"
-                      ? "font-bold text-gray-800 hover:text-gray-600"
-                      : "font-medium text-gray-500 hover:text-gray-900 scroll-link"}
-                    >Login</a
-                  >
-                </li>
-                <li>
-                  <a
-                    href="/signup"
-                    class={url === "/signup"
-                      ? "font-bold text-gray-800 hover:text-gray-600"
-                      : "font-medium text-gray-500 hover:text-gray-900 scroll-link"}
-                    >Signup</a
-                  >
-                </li> -->
+                {navLinks.map((link) => (
+                  <li class="text-left">
+                    <a
+                      href={link.href}
+                      aria-current={link.active ? "page" : undefined}
+                      class={link.active
+                        ? "font-semibold text-zinc-900"
+                        : "font-medium text-zinc-500 hover:text-zinc-900"}
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -121,28 +125,23 @@ const { frontmatter, title } = Astro.props;
         )
       }
 
-      <div class="mt-20 mx-auto text-center max-w-3xl px-10">
+      <main class={contentClass ?? "mt-16 mx-auto max-w-5xl px-4 text-center md:px-8"}>
         <slot />
-      </div>
+      </main>
 
-      <footer class="mt-20 pt-12 border-t-2 border-gray-300">
-        <nav class="flex justify-center pb-10 space-x-10">
-          <a href="/" class="font-medium text-gray-500 hover:text-gray-900"
-            >Home</a
-          >
-          <!-- <a
-            href="/pricing"
-            class="font-medium text-gray-500 hover:text-gray-900">Pricing</a
-          > -->
-          <a href="/blog/page/1" class="font-medium text-gray-500 hover:text-gray-900"
-            >Blog</a
-          >
+      <footer class="mt-20 border-t border-zinc-200 pt-12">
+        <nav class="flex flex-wrap justify-center gap-6 pb-8">
+          {navLinks.map((link) => (
+            <a href={link.href} class="font-medium text-zinc-500 hover:text-zinc-900">
+              {link.label}
+            </a>
+          ))}
         </nav>
-        <p class="text-center text-gray-400">
-          &copy; 2026 Great Tool. All rights reserved.
+        <p class="text-center text-sm text-zinc-500">
+          &copy; 2026 {SITE.title}. Beginner-friendly notes on Python, AI tools, and practical workflows.
         </p>
       </footer>
     </div>
-    <script src="/src/main.ts"></script>
+    <script src="../main.ts"></script>
   </body>
 </html>

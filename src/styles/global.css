@@ -30,8 +30,8 @@
   transition: var(--transition);
 }
 .logo {
-  height: 100px;
-  font-size: 2rem;
+  height: 64px;
+  width: auto;
 }
 
 .nav-links a {
@@ -88,8 +88,6 @@
 /*****************************
  *  Add custom styles for markdown tags
  *******************************/
-@import "tailwindcss";
-
 @layer base {
   code,
   pre,

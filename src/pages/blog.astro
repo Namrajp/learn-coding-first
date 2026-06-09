@@ -1,3 +1,5 @@
 ---
-return Astro.redirect("/blog/page/1");
+import { withBase } from "../utils/paths";
+
+return Astro.redirect(withBase("/blog/page/1"));
 ---

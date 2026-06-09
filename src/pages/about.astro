@@ -1,0 +1,48 @@
+---
+import Layout from "@layouts/Layout.astro";
+---
+
+<Layout
+  title="About"
+  description="About Fix Anything Blog, a beginner-friendly programming blog focused on practical guides for developers and students."
+  contentClass="mt-12 mx-auto max-w-4xl px-4 text-left md:px-8"
+>
+  <section class="rounded-[2rem] border border-zinc-200 bg-white p-8 shadow-sm md:p-10">
+    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-700">
+      About the blog
+    </p>
+    <h1 class="mt-4 text-left text-4xl font-black tracking-tight text-zinc-900 md:text-5xl">
+      Practical notes for developers learning by building.
+    </h1>
+    <p class="mt-5 text-lg text-zinc-700">
+      Fix Anything Blog is for beginner to mid-level developers and students who
+      want clear explanations without excessive theory. The goal is simple:
+      publish useful guides that help you understand a tool, try it quickly, and
+      move on to the next problem with better instincts.
+    </p>
+  </section>
+
+  <section class="mt-10 grid gap-6 md:grid-cols-2">
+    <article class="rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-sm">
+      <h2 class="text-left text-2xl font-bold tracking-tight text-zinc-900">
+        What you will find here
+      </h2>
+      <ul class="mt-4 space-y-3">
+        <li class="text-left text-base text-zinc-700">Python guides for everyday development tasks.</li>
+        <li class="text-left text-base text-zinc-700">AI workflow notes that focus on useful output, not hype.</li>
+        <li class="text-left text-base text-zinc-700">Practical references you can revisit when building projects.</li>
+      </ul>
+    </article>
+
+    <article class="rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-sm">
+      <h2 class="text-left text-2xl font-bold tracking-tight text-zinc-900">
+        Who this launch is for
+      </h2>
+      <ul class="mt-4 space-y-3">
+        <li class="text-left text-base text-zinc-700">Students learning core programming concepts.</li>
+        <li class="text-left text-base text-zinc-700">Developers early in their careers who need practical refreshers.</li>
+        <li class="text-left text-base text-zinc-700">Readers who prefer concise guides over long documentation dives.</li>
+      </ul>
+    </article>
+  </section>
+</Layout>

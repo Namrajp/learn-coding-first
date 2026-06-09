@@ -1,0 +1,73 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { SITE } from "../config";
+import { withBase } from "../utils/paths";
+---
+
+<Layout
+  title="Contact"
+  description="Contact Fix Anything Blog, suggest a topic, or share feedback through GitHub while email signup is still being prepared."
+  contentClass="mt-12 mx-auto max-w-4xl px-4 text-left md:px-8"
+>
+  <section class="rounded-[2rem] border border-zinc-200 bg-white p-8 shadow-sm md:p-10">
+    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-700">
+      Contact and feedback
+    </p>
+    <h1 class="mt-4 text-left text-4xl font-black tracking-tight text-zinc-900 md:text-5xl">
+      Suggest a topic, report a problem, or ask for a guide.
+    </h1>
+    <p class="mt-5 text-lg text-zinc-700">
+      Email signup will come later. For this MVP launch, GitHub is the fastest
+      way to share feedback or request new topics.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-4">
+      <a
+        class="rounded-full bg-zinc-900 px-6 py-3 text-base font-semibold text-white no-underline transition hover:bg-zinc-700"
+        href={`${SITE.githubRepo}/issues`}
+        rel="noreferrer"
+        target="_blank"
+      >
+        Open an issue
+      </a>
+      <a
+        class="rounded-full border border-zinc-300 px-6 py-3 text-base font-semibold text-zinc-900 no-underline transition hover:border-zinc-900"
+        href={SITE.githubProfile}
+        rel="noreferrer"
+        target="_blank"
+      >
+        GitHub profile
+      </a>
+    </div>
+  </section>
+
+  <section class="mt-10 grid gap-6 md:grid-cols-2">
+    <article class="rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-sm">
+      <h2 class="text-left text-2xl font-bold tracking-tight text-zinc-900">
+        Useful feedback
+      </h2>
+      <ul class="mt-4 space-y-3">
+        <li class="text-left text-base text-zinc-700">A concept you want explained more simply.</li>
+        <li class="text-left text-base text-zinc-700">A broken example, typo, or missing step in a guide.</li>
+        <li class="text-left text-base text-zinc-700">A beginner topic you want covered next.</li>
+      </ul>
+    </article>
+
+    <article class="rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-sm">
+      <h2 class="text-left text-2xl font-bold tracking-tight text-zinc-900">
+        Best next step
+      </h2>
+      <p class="mt-4 text-base text-zinc-700">
+        If you are here to learn rather than send feedback, start with the launch
+        collection and work through the featured guides first.
+      </p>
+      <p class="mt-6">
+        <a
+          class="text-base font-semibold text-zinc-900 hover:underline"
+          href={withBase("/blog/page/1")}
+        >
+          Go to the blog archive
+        </a>
+      </p>
+    </article>
+  </section>
+</Layout>
