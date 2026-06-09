@@ -142,6 +142,18 @@ const navLinks = [
         </p>
       </footer>
     </div>
-    <script src="../main.ts"></script>
+    <script type="module">
+      import { initNavbar } from "../main";
+
+      const bootNavbar = () => initNavbar();
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", bootNavbar, { once: true });
+      } else {
+        bootNavbar();
+      }
+
+      document.addEventListener("astro:page-load", bootNavbar);
+    </script>
   </body>
 </html>
