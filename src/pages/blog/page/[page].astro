@@ -13,7 +13,9 @@ export async function getStaticPaths({
   paginate,
 }: {
   paginate: PaginateFunction;
-}) {
+}) 
+
+{
   let posts = await getCollection("posts");
   posts = posts.sort(
     (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
@@ -22,8 +24,9 @@ export async function getStaticPaths({
 }
 
 const { page }: { page: Page } = Astro.props;
+const allPosts = await getCollection("posts");
 const tags: string[] = [];
-page.data.forEach((post) => {
+allPosts.forEach((post) => {
   post.data.tags.forEach((tagItem: string) => {
     if (!tags.includes(tagItem)) tags.push(tagItem);
   });

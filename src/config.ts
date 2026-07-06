@@ -2,9 +2,9 @@ export const SITE = {
   title: "Fix Anything Blog",
   description:
     "Beginner-friendly programming guides on Python, AI tools, and practical developer workflows.",
-  origin: "https://namrajp.github.io",
+  origin: "https://7f03b17c.my-new-astro-blog.pages.dev",
   basePath: "/my-new-astro-blog",
-  url: "https://namrajp.github.io/my-new-astro-blog",
+  url: "https://7f03b17c.my-new-astro-blog.pages.dev/my-new-astro-blog",
   ogImage: "/blog-logo.svg",
   author: "Namraj",
   githubProfile: "https://github.com/Namrajp",

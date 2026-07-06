@@ -10,7 +10,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  site: "https://namrajp.github.io",
+  site: "https://7f03b17c.my-new-astro-blog.pages.dev",
   base: "/my-new-astro-blog",
   integrations: [sitemap()],
   markdown: {
