@@ -3,7 +3,7 @@ export const SITE = {
   description:
     "Beginner-friendly programming guides on Python, AI tools, and practical developer workflows.",
   origin: "https://7f03b17c.my-new-astro-blog.pages.dev",
-  basePath: "/",
+  basePath: "https://learncodingfirst.com/",
   url: "https://7f03b17c.my-new-astro-blog.pages.dev/my-new-astro-blog",
   ogImage: "/blog-logo.svg",
   author: "Namraj",
