@@ -11,7 +11,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   site: "https://7f03b17c.my-new-astro-blog.pages.dev",
-  base: "/my-new-astro-blog",
+  //base: "/my-new-astro-blog",
   integrations: [sitemap()],
   markdown: {
     shikiConfig: {
