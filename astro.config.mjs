@@ -10,6 +10,6 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  site: "https://mygreatsite.com",
+  site: "https://learncodingfirst.com",
   integrations: [sitemap()],
 });
