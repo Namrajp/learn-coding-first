@@ -52,8 +52,8 @@ const { frontmatter, title } = Astro.props;
 
     <ClientRouter />
   </head>
-  <body class="p-5">
-    <div class="py-8">
+  <body class="px-5 pt-3 pb-5 overflow-x-hidden">
+    <div class="py-2">
       <header id="home">
         <!-- <nav class="nav" id="navigation">
          
@@ -118,7 +118,7 @@ const { frontmatter, title } = Astro.props;
         )
       }
 
-      <div class="mt-20 mx-auto text-center max-w-[58rem] px-10">
+      <div class="mx-auto max-w-[1200px] px-6">
         <Breadcrumb />
         <slot />
       </div>
