@@ -39,17 +39,37 @@ const currentPageLabel = (() => {
 ---
 
 <Layout title="Blog archive">
-  <div class="w-full text-left">
-    <h1>Blog archive</h1>
+  <div class="w-full max-w-[90vw] mx-auto text-left">
+    <div class="grid gap-8 md:grid-cols-[30%_70%]">
+      <aside class="md:pr-6 max-h-[calc(100vh-140px)] overflow-y-auto">
+        <h2 class="text-4xl font-black tracking-tight text-slate-900 mb-3">
+          <span class="text-[hsl(21,62%,45%)]">Learn</span> CODING <span class="text-[hsl(21,62%,45%)]">First</span>
+        </h2>
 
-    <div class="mt-8 grid gap-8 md:grid-cols-[2fr_1fr]">
+        <ol class="my-4 space-y-3 list-decimal list-inside text-slate-700">
+          {
+            tags.map((tag) => (
+              <li>
+                <a href={`/tag/${tag}`} class="capitalize no-underline hover:text-[hsl(21,62%,45%)]">
+                  {tag}
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </aside>
+
       <section>
-        <p class="my-4 font-semibold">List of all the blog posts:</p>
+        <h1 class="text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
+          Blog archive
+        </h1>
+        <p class="my-4 text-xl font-semibold">List of all the blog posts</p>
+
         <ul class="space-y-2">
           {
             page.data.map((post) => (
               <li>
-                <a class="underline" href={`/blog/${post.id}`}>
+                <a href={`/blog/${post.id}`} class="no-underline hover:text-[hsl(21,62%,45%)] hover:underline-offset-4">
                   {post.data.title}
                 </a>
                 <span>({post.data.date.toLocaleDateString()})</span>
@@ -62,7 +82,7 @@ const currentPageLabel = (() => {
         {
           page.url.next && (
             <p>
-              <a class="underline" href={page.url.next}>
+              <a href={page.url.next}>
                 Next
               </a>
             </p>
@@ -71,29 +91,13 @@ const currentPageLabel = (() => {
         {
           page.url.prev && (
             <p>
-              <a class="underline" href={page.url.prev}>
+              <a href={page.url.prev}>
                 Previous
               </a>
             </p>
           )
         }
       </section>
-
-      <aside class="md:pl-6">
-        <p class="my-4 font-semibold">Explore by tag:</p>
-        <div class="my-4 flex flex-wrap gap-2">
-          {
-            tags.map((tag) => (
-              <a
-                href={`/tag/${tag}`}
-                class="py-1 px-2 rounded-lg"
-              >
-                {tag}
-              </a>
-            ))
-          }
-        </div>
-      </aside>
     </div>
   </div>
 </Layout>
