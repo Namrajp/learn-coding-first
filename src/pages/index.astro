@@ -19,11 +19,33 @@ posts = posts
 
 <Layout title="Homepage">
   <div class="w-full text-left">
-    <h1>Homepage</h1>
+    <div class="mt-8 grid gap-8 md:grid-cols-[1fr_3fr]">
+      <aside class="md:pr-6 max-h-[calc(100vh-160px)] overflow-y-auto">
+        <h2 class="text-4xl font-black tracking-tight text-slate-900 mb-6">
+          <span class="text-[hsl(21,62%,45%)]">Learn</span> CODING <span class="text-[hsl(21,62%,45%)]">First</span>
+        </h2>
 
-    <div class="mt-8 grid gap-8 md:grid-cols-[3fr_1fr]">
+        <ol class="my-4 space-y-3 list-decimal list-inside text-slate-700">
+          {
+            tags.map((tag) => (
+              <li>
+                <a
+                  href={`/tag/${tag}`}
+                  class="capitalize hover:text-[hsl(21,62%,45%)]"
+                >
+                  {tag}
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </aside>
+
       <section>
-        <p class="my-4 font-semibold">Blog posts:</p>
+        <h1 class="text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
+          Fundamentals of programming and AI
+        </h1>
+        <p class="my-4 text-xl font-semibold">Latest posts</p>
         <ul class="space-y-2">
           {
             posts.map((post) => (
@@ -41,24 +63,6 @@ posts = posts
           <a class="underline" href={"/blog/page/1"}> See all posts ▶︎ </a>
         </p>
       </section>
-
-      <aside class="md:pl-6">
-        <p class="my-4 font-semibold">Explore by tag:</p>
-        <ol class="my-4 space-y-2 list-decimal list-inside">
-          {
-            tags.map((tag) => (
-              <li>
-                <a
-                  href={`/tag/${tag}`}
-                  class="py-1 px-2 rounded-lg capitalize"
-                >
-                  {tag}
-                </a>
-              </li>
-            ))
-          }
-        </ol>
-      </aside>
     </div>
   </div>
 </Layout>

@@ -122,8 +122,16 @@
   a:not(nav a) {
     @apply text-blue-600 underline;
   }
+  pre {
+    @apply overflow-x-auto rounded-lg p-6;
+    background: hsl(21, 62%, 45%);
+    text-align: left;
+  }
   pre code {
-    @apply bg-purple-900 text-zinc-100 p-8 rounded-lg block overflow-x-auto;
+    @apply text-white block;
+    background: transparent;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
   code {
     @apply bg-zinc-200 text-zinc-800 px-1 rounded;
