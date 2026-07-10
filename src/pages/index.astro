@@ -18,36 +18,45 @@ posts = posts
 ---
 
 <Layout title="Homepage">
-  <h1>Homepage</h1>
-  <p class="my-4">Blog posts:</p>
-  <ul>
-    {
-      posts.map((post) => (
-        <li>
-          <a class="underline" href={`/blog/${post.id}`}>
-            {post.data.title}
-          </a>
-          <span>({post.data.date.toLocaleDateString()})</span>
-        </li>
-      ))
-    }
-  </ul>
+  <div class="w-full text-left">
+    <h1>Homepage</h1>
 
-  <p class="py-4">
-    <a class="underline" href={"/blog/page/1"}> See all posts ▶︎ </a>
-  </p>
+    <div class="mt-8 grid gap-8 md:grid-cols-[2fr_1fr]">
+      <section>
+        <p class="my-4 font-semibold">Blog posts:</p>
+        <ul class="space-y-2">
+          {
+            posts.map((post) => (
+              <li>
+                <a class="underline" href={`/blog/${post.id}`}>
+                  {post.data.title}
+                </a>
+                <span>({post.data.date.toLocaleDateString()})</span>
+              </li>
+            ))
+          }
+        </ul>
 
-  <p class="my-4">Explore by tag:</p>
-  <div class="my-4 space-x-2">
-    {
-      tags.map((tag) => (
-        <a
-          href={`/tag/${tag}`}
-          class="border border-black py-1 px-2 rounded-lg"
-        >
-          {tag}
-        </a>
-      ))
-    }
+        <p class="py-4">
+          <a class="underline" href={"/blog/page/1"}> See all posts ▶︎ </a>
+        </p>
+      </section>
+
+      <aside class="md:pl-6">
+        <p class="my-4 font-semibold">Explore by tag:</p>
+        <div class="my-4 flex flex-wrap gap-2">
+          {
+            tags.map((tag) => (
+              <a
+                href={`/tag/${tag}`}
+                class="py-1 px-2 rounded-lg"
+              >
+                {tag}
+              </a>
+            ))
+          }
+        </div>
+      </aside>
+    </div>
   </div>
 </Layout>

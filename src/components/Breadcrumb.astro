@@ -1,0 +1,69 @@
+---
+const pathname = Astro.url.pathname;
+const segments = pathname.split("/").filter(Boolean);
+
+const formatLabel = (segment: string) => {
+  const decoded = decodeURIComponent(segment).replace(/-/g, " ");
+
+  if (decoded.toLowerCase() === "blog") return "Blog";
+  if (decoded.toLowerCase() === "tag") return "Tag";
+
+  return decoded.replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
+const items = [{ label: "Home", href: "/" }];
+let currentPath = "";
+
+segments.forEach((segment, index) => {
+  currentPath += `/${segment}`;
+  const next = segments[index + 1];
+
+  if (segment === "page" && next && /^\d+$/.test(next)) {
+    return;
+  }
+
+  if (segment.toLowerCase() === "blog") {
+    items.push({
+      label: "Blog",
+      href: "/blog/page/1",
+    });
+    return;
+  }
+
+  if (segment === "tag" && next) {
+    items.push({
+      label: formatLabel(next),
+      href: index === segments.length - 1 ? undefined : `/tag/${next}`,
+    });
+    return;
+  }
+
+  const label = segment === "page" && next ? `Page ${next}` : formatLabel(segment);
+
+  if (!label) {
+    return;
+  }
+
+  items.push({
+    label,
+    href: index === segments.length - 1 ? undefined : currentPath,
+  });
+});
+
+const visibleItems = items.filter((item) => item.label);
+---
+
+{visibleItems.length > 1 && (
+  <nav aria-label="Breadcrumb" class="mb-6 flex flex-wrap items-center justify-center gap-2 text-sm text-gray-600">
+    {visibleItems.map((item, index) => (
+      <>
+        {index > 0 && <span aria-hidden="true">&raquo;</span>}
+        {index === visibleItems.length - 1 || !item.href ? (
+          <span class="font-semibold text-gray-900">{item.label}</span>
+        ) : (
+          <a href={item.href} class="underline">{item.label}</a>
+        )}
+      </>
+    ))}
+  </nav>
+)}

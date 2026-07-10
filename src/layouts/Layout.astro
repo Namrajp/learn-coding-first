@@ -4,7 +4,10 @@ const url = new URL(Astro.request.url).pathname;
 import "../main.ts";
 
 import { ClientRouter } from "astro:transitions";
+import Breadcrumb from "../components/Breadcrumb.astro";
 const { frontmatter, title } = Astro.props;
+
+
 ---
 
 <html lang="en">
@@ -52,7 +55,8 @@ const { frontmatter, title } = Astro.props;
   <body class="p-5">
     <div class="py-8">
       <header id="home">
-        <nav class="nav" id="navigation">
+        <!-- <nav class="nav" id="navigation">
+         
           <div class="nav-center" id="nav">
             <div class="nav-header">
               <img src="/my_logo.svg" alt="logo" class="logo" />
@@ -103,7 +107,8 @@ const { frontmatter, title } = Astro.props;
               </ul>
             </div>
           </div>
-        </nav>
+        </nav> -->
+
       </header>
       {
         frontmatter?.title && (
@@ -114,9 +119,10 @@ const { frontmatter, title } = Astro.props;
       }
 
       <div class="mt-20 mx-auto text-center max-w-3xl px-10">
+        <Breadcrumb />
         <slot />
       </div>
-
+<!-- 
       <footer class="mt-20 pt-12 border-t-2 border-gray-300">
         <nav class="flex justify-center pb-10 space-x-10">
           <a href="/" class="font-medium text-gray-500 hover:text-gray-900"
@@ -133,7 +139,7 @@ const { frontmatter, title } = Astro.props;
         <p class="text-center text-gray-400">
           &copy; 2025 Great Tool. All rights reserved.
         </p>
-      </footer>
+      </footer> -->
     </div>
     <script src="/src/main.ts"></script>
   </body>

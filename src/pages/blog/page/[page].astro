@@ -17,63 +17,83 @@ export async function getStaticPaths({
   return paginate(posts, { pageSize: 8 });
 }
 
-const { page }: { page: Page } = Astro.props;
+const { page } = Astro.props as { page: Page };
 const tags: string[] = [];
-page.data.map((post) => {
-  post.data.tags.map((tagItem:string) => {
+
+page.data.forEach((post) => {
+  post.data.tags.forEach((tagItem: string) => {
     if (!tags.includes(tagItem)) tags.push(tagItem);
   });
 });
 
+const currentPageLabel = (() => {
+  const segments = Astro.url.pathname.split("/").filter(Boolean);
+  const tagIndex = segments.indexOf("tag");
 
+  if (tagIndex >= 0) {
+    return segments[tagIndex + 1] ?? "Blog";
+  }
+
+  return "Blog archive";
+})();
 ---
 
 <Layout title="Blog archive">
-  <h1>Blog archive</h1>
-    <p class="my-4">Explore by tag:</p>
-  <div class="my-4 space-x-2">
-    {
-      tags.map((tag) => (
-        <a
-          href={`/tag/${tag}`}
-          class="border border-black py-1 px-2 rounded-lg"
-        >
-          {tag}
-        </a>
-      ))
-    }
-  </div>
-  <p class="my-4">List of all the blog posts:</p>
-  <ul class="list-inside list-disc">
-    {
-      page.data.map((post) => (
-        <li>
-          <a class="underline" href={`/blog/${post.id}`}>
-            {post.data.title}
-          </a>
-          <span>({post.data.date.toLocaleDateString()})</span>
-        </li>
-      ))
-    }
-  </ul>
+  <div class="w-full text-left">
+    <h1>Blog archive</h1>
 
-  <p class="my-4">Page {page.currentPage} of {page.lastPage}</p>
-  {
-    page.url.next && (
-      <p>
-        <a class="underline" href={page.url.next}>
-          next
-        </a>
-      </p>
-    )
-  }
-  {
-    page.url.prev && (
-      <p>
-        <a class="underline" href={page.url.prev}>
-          previous
-        </a>
-      </p>
-    )
-  }
+    <div class="mt-8 grid gap-8 md:grid-cols-[2fr_1fr]">
+      <section>
+        <p class="my-4 font-semibold">List of all the blog posts:</p>
+        <ul class="space-y-2">
+          {
+            page.data.map((post) => (
+              <li>
+                <a class="underline" href={`/blog/${post.id}`}>
+                  {post.data.title}
+                </a>
+                <span>({post.data.date.toLocaleDateString()})</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="my-4">Page {page.currentPage} of {page.lastPage}</p>
+        {
+          page.url.next && (
+            <p>
+              <a class="underline" href={page.url.next}>
+                next
+              </a>
+            </p>
+          )
+        }
+        {
+          page.url.prev && (
+            <p>
+              <a class="underline" href={page.url.prev}>
+                previous
+              </a>
+            </p>
+          )
+        }
+      </section>
+
+      <aside class="md:pl-6">
+        <p class="my-4 font-semibold">Explore by tag:</p>
+        <div class="my-4 flex flex-wrap gap-2">
+          {
+            tags.map((tag) => (
+              <a
+                href={`/tag/${tag}`}
+                class="py-1 px-2 rounded-lg"
+              >
+                {tag}
+              </a>
+            ))
+          }
+        </div>
+      </aside>
+    </div>
+  </div>
 </Layout>
