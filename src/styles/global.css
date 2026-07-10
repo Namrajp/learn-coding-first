@@ -88,8 +88,6 @@
 /*****************************
  *  Add custom styles for markdown tags
  *******************************/
-@import "tailwindcss";
-
 @layer base {
   h1 {
     @apply text-4xl font-extrabold tracking-tight mt-10 mb-10;
