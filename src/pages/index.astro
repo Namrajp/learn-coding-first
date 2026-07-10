@@ -14,14 +14,14 @@ posts = posts
   .sort(
     (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
   )
-  .slice(0, 4);
+  .slice(0, 12);
 ---
 
 <Layout title="Homepage">
   <div class="w-full text-left">
     <h1>Homepage</h1>
 
-    <div class="mt-8 grid gap-8 md:grid-cols-[2fr_1fr]">
+    <div class="mt-8 grid gap-8 md:grid-cols-[3fr_1fr]">
       <section>
         <p class="my-4 font-semibold">Blog posts:</p>
         <ul class="space-y-2">
@@ -44,18 +44,20 @@ posts = posts
 
       <aside class="md:pl-6">
         <p class="my-4 font-semibold">Explore by tag:</p>
-        <div class="my-4 flex flex-wrap gap-2">
+        <ol class="my-4 space-y-2 list-decimal list-inside">
           {
             tags.map((tag) => (
-              <a
-                href={`/tag/${tag}`}
-                class="py-1 px-2 rounded-lg"
-              >
-                {tag}
-              </a>
+              <li>
+                <a
+                  href={`/tag/${tag}`}
+                  class="py-1 px-2 rounded-lg capitalize"
+                >
+                  {tag}
+                </a>
+              </li>
             ))
           }
-        </div>
+        </ol>
       </aside>
     </div>
   </div>
