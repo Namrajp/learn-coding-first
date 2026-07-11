@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
+import TagSidebar from "../../components/TagSidebar.astro";
 
 export async function getStaticPaths() {
   let posts = await getCollection("posts");
@@ -18,39 +19,18 @@ export async function getStaticPaths() {
 
   return tags.map((tag) => ({
     params: { tag },
-    props: { posts: posts.filter((post) => post.data.tags.includes(tag)) },
+    props: { posts: posts.filter((post) => post.data.tags.includes(tag)), allTags: tags },
   }));
 }
 
 const { tag } = Astro.params;
-const { posts } = Astro.props;
+const { posts, allTags } = Astro.props;
 ---
 
 <Layout title={`Posts by tag: ${tag}`}>
   <div class="w-full max-w-[90vw] mx-auto text-left">
     <div class="mt-8 grid gap-8 md:grid-cols-[30%_70%]">
-      <aside class="md:pr-6 max-h-[calc(100vh-140px)] overflow-y-auto">
-        <h2 class="text-4xl font-black tracking-tight text-slate-900 mb-3">
-          <span class="text-[hsl(21,62%,45%)]">Learn</span> CODING <span class="text-[hsl(21,62%,45%)]">First</span>
-        </h2>
-        <ol class="my-4 space-y-3 list-decimal list-inside text-slate-700">
-          {
-            posts
-              .flatMap((post) => post.data.tags)
-              .filter((value, index, self) => self.indexOf(value) === index)
-              .map((tagItem) => (
-                <li>
-                  <a
-                    href={`/tag/${tagItem}`}
-                    class="capitalize no-underline hover:text-[hsl(21,62%,45%)]"
-                  >
-                    {tagItem}
-                  </a>
-                </li>
-              ))
-          }
-        </ol>
-      </aside>
+      <TagSidebar tags={allTags} />
 
       <section>
         <h1 class="text-5xl font-extrabold tracking-tight text-slate-900 mb-4">

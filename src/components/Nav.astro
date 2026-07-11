@@ -1,0 +1,56 @@
+---
+const url = new URL(Astro.request.url).pathname;
+---
+
+<nav class="nav" id="navigation">
+  <div class="nav-center" id="nav">
+    <div class="nav-header">
+      <img src="/my_logo.svg" alt="logo" class="logo" />
+
+      <button class="nav-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+
+    <div class="links-container">
+      <ul class="nav-links">
+        <li>
+          <a
+            href="/"
+            class={url === "/"
+              ? "font-bold text-gray-800 hover:text-gray-600"
+              : "font-medium text-gray-500 hover:text-gray-900 scroll-link"}
+            >Home</a
+          >
+        </li>
+        <li>
+          <a
+            href="/pricing"
+            class={url === "/pricing"
+              ? "font-medium text-gray-800 hover:text-gray-600"
+              : "font-bold text-gray-500 hover:text-gray-900 scroll-link"}
+            >Pricing</a
+          >
+        </li>
+        <li>
+          <a
+            href="/blog/page/1"
+            class={url === "/blog/page/1"
+              ? "font-medium text-gray-800 hover:text-gray-600"
+              : "font-bold text-gray-500 hover:text-gray-900 scroll-link"}
+            >Blog</a
+          >
+        </li>
+        <li>
+          <a
+            href="/login"
+            class={url === "/login"
+              ? "font-bold text-gray-800 hover:text-gray-600"
+              : "font-medium text-gray-500 hover:text-gray-900 scroll-link"}
+            >Login</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

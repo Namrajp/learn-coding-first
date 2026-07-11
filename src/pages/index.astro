@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
+import TagSidebar from "../components/TagSidebar.astro";
 let posts = await getCollection("posts");
 
 const tags: string[] = [];
@@ -26,27 +27,7 @@ posts = posts
     </div>
 
     <div class="mt-0 grid gap-6 md:grid-cols-[30%_70%] md:pl-[10rem]">
-      <aside class="md:pr-10 px-4 md:px-6 max-h-[calc(100vh-140px)] overflow-y-auto">
-        <h2 class="text-5xl font-black tracking-tight text-black mb-3 leading-tight border-b-[15px] border-[hsl(21,62%,45%)] pb-3 inline-block">
-          <span class="block">Learn CODING</span>
-          <span class="block pl-6">First</span>
-        </h2>
-
-        <ol class="my-4 space-y-3 list-decimal list-inside text-slate-700">
-          {
-            tags.map((tag) => (
-              <li>
-                <a
-                  href={`/tag/${tag}`}
-                  class="capitalize no-underline hover:text-[hsl(21,62%,45%)]"
-                >
-                  {tag}
-                </a>
-              </li>
-            ))
-          }
-        </ol>
-      </aside>
+      <TagSidebar tags={tags} />
 
       <section>
         <h1 class="text-5xl font-extrabold tracking-tight text-slate-900 mb-4">

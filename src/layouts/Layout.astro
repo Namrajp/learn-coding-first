@@ -1,10 +1,10 @@
 ---
 import "../styles/global.css";
-const url = new URL(Astro.request.url).pathname;
-import "../main.ts";
 
 import { ClientRouter } from "astro:transitions";
 import Breadcrumb from "../components/Breadcrumb.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
 const { frontmatter, title } = Astro.props;
 
 
@@ -23,7 +23,7 @@ const { frontmatter, title } = Astro.props;
         ? frontmatter.description
         : "My awesome blog"}
     />
-    <meta property="og:image" content={`https://mywebsite.com/my-image.png`} />
+    <meta property="og:image" content={`https://learncodingfirst.com/my-logo.svg`} />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
@@ -55,60 +55,7 @@ const { frontmatter, title } = Astro.props;
   <body class="px-5 pt-3 pb-5 overflow-x-hidden">
     <div class="py-2">
       <header id="home">
-        <!-- <nav class="nav" id="navigation">
-         
-          <div class="nav-center" id="nav">
-            <div class="nav-header">
-              <img src="/my_logo.svg" alt="logo" class="logo" />
-
-              <button class="nav-toggle">
-                <i class="fas fa-bars"></i>
-              </button>
-            </div>
-
-            <div class="links-container">
-              <ul class="nav-links">
-                <li>
-                  <a
-                    href="/"
-                    class={url === "/"
-                      ? "font-bold text-gray-800 hover:text-gray-600"
-                      : "font-medium text-gray-500 hover:text-gray-900 scroll-link"}
-                    >Home</a
-                  >
-                </li>
-                <li>
-                  <a
-                    href="/pricing"
-                    class={url === "/pricing"
-                      ? "font-medium text-gray-800 hover:text-gray-600"
-                      : "font-bold text-gray-500 hover:text-gray-900 scroll-link"}
-                    >Pricing</a
-                  >
-                </li>
-                <li>
-                  <a
-                    href="/blog/page/1"
-                    class={url === "/blog/page/1"
-                      ? "font-medium text-gray-800 hover:text-gray-600"
-                      : "font-blod text-gray-500 hover:text-gray-900 scroll-link"}
-                    >Blog</a
-                  >
-                </li>
-                <li>
-                  <a
-                    href="/login"
-                    class={url === "/login"
-                      ? "font-bold text-gray-800 hover:text-gray-600"
-                      : "font-medium text-gray-500 hover:text-gray-900 scroll-link"}
-                    >Login</a
-                  >
-                </li>
-              </ul>
-            </div>
-          </div>
-        </nav> -->
-
+        <!-- <Nav /> -->
       </header>
       {
         frontmatter?.title && (
@@ -122,24 +69,7 @@ const { frontmatter, title } = Astro.props;
         <Breadcrumb />
         <slot />
       </div>
-<!-- 
-      <footer class="mt-20 pt-12 border-t-2 border-gray-300">
-        <nav class="flex justify-center pb-10 space-x-10">
-          <a href="/" class="font-medium text-gray-500 hover:text-gray-900"
-            >Home</a
-          >
-          <a
-            href="/pricing"
-            class="font-medium text-gray-500 hover:text-gray-900">Pricing</a
-          >
-          <a href="/blog" class="font-medium text-gray-500 hover:text-gray-900"
-            >Blog</a
-          >
-        </nav>
-        <p class="text-center text-gray-400">
-          &copy; 2025 Great Tool. All rights reserved.
-        </p>
-      </footer> -->
+      <!-- <Footer /> -->
     </div>
     <script src="/src/main.ts"></script>
   </body>

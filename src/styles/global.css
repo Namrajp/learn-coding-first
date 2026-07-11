@@ -7,7 +7,7 @@
  * Add your global styles in this file. nav styles
  *******************************/
 .nav {
-  background: var(---clr-white);
+  background: var(--clr-white);
   padding: 1rem 1.5rem;
 }
 .nav ul {
