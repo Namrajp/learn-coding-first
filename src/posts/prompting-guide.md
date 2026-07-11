@@ -55,7 +55,7 @@ Use bullet points for each section."
 
 A single prompt rarely gets you all the way there — and that's fine. Treat prompting as a conversation. Follow up with corrections like "make it shorter," "use a more formal tone," or "focus only on the second point."
 
-You can also ask the AI to critique its own output: *"What are the weaknesses of this response?"* This self-reflection step often surfaces gaps you might have missed and leads to a noticeably better final result.
+You can also ask the AI to critique its own output: _"What are the weaknesses of this response?"_ This self-reflection step often surfaces gaps you might have missed and leads to a noticeably better final result.
 
 ## 6. Show, Don't Just Tell
 

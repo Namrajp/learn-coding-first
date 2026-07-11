@@ -38,7 +38,8 @@ segments.forEach((segment, index) => {
     return;
   }
 
-  const label = segment === "page" && next ? `Page ${next}` : formatLabel(segment);
+  const label =
+    segment === "page" && next ? `Page ${next}` : formatLabel(segment);
 
   if (!label) {
     return;
@@ -53,17 +54,31 @@ segments.forEach((segment, index) => {
 const visibleItems = items.filter((item) => item.label);
 ---
 
-{visibleItems.length > 1 && (
-  <nav aria-label="Breadcrumb" class="mb-6 flex flex-wrap items-center justify-center gap-2 text-sm text-gray-600">
-    {visibleItems.map((item, index) => (
-      <>
-        {index > 0 && <span aria-hidden="true" class="text-[hsl(21,62%,45%)]">&raquo;</span>}
-        {index === visibleItems.length - 1 || !item.href ? (
-          <span class="font-semibold text-gray-900">{item.label}</span>
-        ) : (
-          <a href={item.href} class="underline text-[hsl(21,62%,45%)] hover:text-[hsl(21,62%,35%)]">{item.label}</a>
-        )}
-      </>
-    ))}
-  </nav>
-)}
+{
+  visibleItems.length > 1 && (
+    <nav
+      aria-label="Breadcrumb"
+      class="mb-6 flex flex-wrap items-center justify-center gap-2 text-sm text-gray-600"
+    >
+      {visibleItems.map((item, index) => (
+        <>
+          {index > 0 && (
+            <span aria-hidden="true" class="text-[hsl(21,62%,45%)]">
+              &raquo;
+            </span>
+          )}
+          {index === visibleItems.length - 1 || !item.href ? (
+            <span class="font-semibold text-gray-900">{item.label}</span>
+          ) : (
+            <a
+              href={item.href}
+              class="text-[hsl(21,62%,45%)] underline hover:text-[hsl(21,62%,35%)]"
+            >
+              {item.label}
+            </a>
+          )}
+        </>
+      ))}
+    </nav>
+  )
+}

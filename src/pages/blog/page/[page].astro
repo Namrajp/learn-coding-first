@@ -12,7 +12,7 @@ export async function getStaticPaths({
 }) {
   let posts = await getCollection("posts");
   posts = posts.sort(
-    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
   );
 
   return paginate(posts, { pageSize: 8 });
@@ -29,12 +29,12 @@ page.data.forEach((post) => {
 ---
 
 <Layout title="Blog archive">
-  <div class="w-full max-w-[90vw] mx-auto text-left">
+  <div class="mx-auto w-full max-w-[90vw] text-left">
     <div class="grid gap-8 md:grid-cols-[30%_70%]">
-      <TagSidebar tags={tags} />
+      <TagSidebar {tags} />
 
       <section>
-        <h1 class="text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
+        <h1 class="mb-4 text-5xl font-extrabold tracking-tight text-slate-900">
           Blog archive
         </h1>
         <p class="my-4 text-xl font-semibold">List of all the blog posts</p>
@@ -43,7 +43,10 @@ page.data.forEach((post) => {
           {
             page.data.map((post) => (
               <li>
-                <a href={`/blog/${post.id}`} class="no-underline hover:text-[hsl(21,62%,45%)] hover:underline-offset-4">
+                <a
+                  href={`/blog/${post.id}`}
+                  class="no-underline hover:text-[hsl(21,62%,45%)] hover:underline-offset-4"
+                >
                   {post.data.title}
                 </a>
                 <span>({post.data.date.toLocaleDateString()})</span>
@@ -56,18 +59,14 @@ page.data.forEach((post) => {
         {
           page.url.next && (
             <p>
-              <a href={page.url.next}>
-                Next
-              </a>
+              <a href={page.url.next}>Next</a>
             </p>
           )
         }
         {
           page.url.prev && (
             <p>
-              <a href={page.url.prev}>
-                Previous
-              </a>
+              <a href={page.url.prev}>Previous</a>
             </p>
           )
         }

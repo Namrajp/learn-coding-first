@@ -3,13 +3,13 @@ import Layout from "@layouts/Layout.astro";
 ---
 
 <Layout title="Pricing">
-  <div class="space-y-12 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-x-8">
+  <div class="space-y-12 sm:grid sm:grid-cols-2 sm:space-y-0 sm:gap-x-8">
     <div
-      class="p-8 bg-white border border-gray-200 rounded-2xl shadow-sm flex flex-col"
+      class="flex flex-col rounded-2xl border border-gray-200 bg-white p-8 shadow-sm"
     >
       <h3 class="text-3xl font-semibold text-gray-900">Basic</h3>
 
-      <p class="mt-4 mx-auto">
+      <p class="mx-auto mt-4">
         <span class="text-5xl font-extrabold tracking-tight">$29</span>
         <span class="ml-1 text-xl font-semibold">/month</span>
       </p>
@@ -17,24 +17,24 @@ import Layout from "@layouts/Layout.astro";
 
       <ul role="list" class="mt-6 space-y-6">
         <li class="flex">
-          <span class="-mt-2 text-blue-500 text-3xl">&check;</span>
-          <span class="ml-3 text-gray-500 text-left">Access to our service</span
+          <span class="-mt-2 text-3xl text-blue-500">&check;</span>
+          <span class="ml-3 text-left text-gray-500">Access to our service</span
           >
         </li>
 
         <li class="flex">
-          <span class="-mt-2 text-blue-500 text-3xl">&check;</span>
-          <span class="ml-3 text-gray-500 text-left">Support</span>
+          <span class="-mt-2 text-3xl text-blue-500">&check;</span>
+          <span class="ml-3 text-left text-gray-500">Support</span>
         </li>
       </ul>
     </div>
 
     <div
-      class="p-8 bg-white border border-gray-200 rounded-2xl shadow-sm flex flex-col"
+      class="flex flex-col rounded-2xl border border-gray-200 bg-white p-8 shadow-sm"
     >
       <h3 class="text-3xl font-semibold text-gray-900">Pro</h3>
 
-      <p class="mt-4 mx-auto">
+      <p class="mx-auto mt-4">
         <span class="text-5xl font-extrabold tracking-tight">$99</span>
         <span class="ml-1 text-xl font-semibold">/month</span>
       </p>
@@ -42,25 +42,25 @@ import Layout from "@layouts/Layout.astro";
 
       <ul role="list" class="mt-6 space-y-6">
         <li class="flex">
-          <span class="-mt-2 text-blue-500 text-3xl">&check;</span>
+          <span class="-mt-2 text-3xl text-blue-500">&check;</span>
           <span class="ml-3 text-gray-500">Access to our service</span>
         </li>
 
         <li class="flex">
-          <span class="-mt-2 text-blue-500 text-3xl">&check;</span>
-          <span class="ml-3 text-gray-500 text-left">Support</span>
+          <span class="-mt-2 text-3xl text-blue-500">&check;</span>
+          <span class="ml-3 text-left text-gray-500">Support</span>
         </li>
 
         <li class="flex">
-          <span class="-mt-2 text-blue-500 text-3xl">&check;</span>
-          <span class="ml-3 text-gray-500 text-left">More features</span>
+          <span class="-mt-2 text-3xl text-blue-500">&check;</span>
+          <span class="ml-3 text-left text-gray-500">More features</span>
         </li>
       </ul>
     </div>
   </div>
   <a
     href="#"
-    class="bg-blue-500 text-white hover:bg-blue-600 mt-8 block w-full py-3 px-6 border border-transparent rounded-md text-center font-medium text-xl"
+    class="mt-8 block w-full rounded-md border border-transparent bg-blue-500 px-6 py-3 text-center text-xl font-medium text-white hover:bg-blue-600"
     >Sign up</a
   >
 </Layout>

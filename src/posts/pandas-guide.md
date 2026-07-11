@@ -9,6 +9,7 @@ tags:
 ---
 
 # Getting Started with Pandas
+
 ### A Minimal, Practical Guide for Python Developers
 
 ---
@@ -29,10 +30,10 @@ pip install pandas
 
 Pandas has two primary building blocks:
 
-| Structure | Dimensions | Analogy |
-|-----------|-----------|---------|
-| `Series` | 1D | A single column |
-| `DataFrame` | 2D | A full table |
+| Structure   | Dimensions | Analogy         |
+| ----------- | ---------- | --------------- |
+| `Series`    | 1D         | A single column |
+| `DataFrame` | 2D         | A full table    |
 
 ### Series
 
@@ -146,12 +147,12 @@ combined = pd.concat([df1, df2], ignore_index=True)
 
 ## Mental Model (coming from C / plain Python)
 
-| C / Python | Pandas Equivalent |
-|---|---|
-| `array[i]` | `df.iloc[i]` |
-| `struct.field` | `df['column']` |
-| `for` loop filter | `df[condition]` |
-| manual stats | `df.describe()` |
+| C / Python        | Pandas Equivalent |
+| ----------------- | ----------------- |
+| `array[i]`        | `df.iloc[i]`      |
+| `struct.field`    | `df['column']`    |
+| `for` loop filter | `df[condition]`   |
+| manual stats      | `df.describe()`   |
 
 ---
 
@@ -161,4 +162,4 @@ combined = pd.concat([df1, df2], ignore_index=True)
 
 ---
 
-*Next step: pair pandas with **NumPy** for numerical computing, or feed your cleaned DataFrames into **PyTorch** / **scikit-learn** for machine learning.*
+_Next step: pair pandas with **NumPy** for numerical computing, or feed your cleaned DataFrames into **PyTorch** / **scikit-learn** for machine learning._

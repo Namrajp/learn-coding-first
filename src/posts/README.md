@@ -36,7 +36,7 @@ Find dependencies of a Project:
 -pip freeze
 
 How to find a current shell is bash or zsh
--$ echo $0 -$ echo $SHELL
+\-$ echo $0 -$ echo $SHELL
 echo $0 is more accurate and if you type bash in zsh shell
 
 To change prompt to include a new line PS1="$PS1\n"

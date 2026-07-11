@@ -90,23 +90,23 @@
  *******************************/
 @layer base {
   h1 {
-    @apply text-4xl font-extrabold tracking-tight mt-10 mb-10;
+    @apply mt-10 mb-10 text-4xl font-extrabold tracking-tight;
   }
   h2 {
-    @apply text-3xl font-extrabold tracking-tight mt-10 mb-10;
+    @apply mt-10 mb-10 text-3xl font-extrabold tracking-tight;
   }
   h3 {
-    @apply text-2xl font-extrabold tracking-tight mt-10 mb-4;
+    @apply mt-10 mb-4 text-2xl font-extrabold tracking-tight;
   }
   h4 {
-    @apply mt-4 text-zinc-500 mb-4;
+    @apply mt-4 mb-4 text-zinc-500;
   }
   p {
     @apply mt-4;
   }
   ul,
   ol {
-    @apply mt-2  list-inside;
+    @apply mt-2 list-inside;
   }
   ul {
     @apply list-disc;
@@ -126,12 +126,12 @@
     text-align: left;
   }
   pre code {
-    @apply text-white block;
+    @apply block text-white;
     background: transparent;
     white-space: pre-wrap;
     word-break: break-word;
   }
   code {
-    @apply bg-zinc-200 text-zinc-800 px-1 rounded;
+    @apply rounded bg-zinc-200 px-1 text-zinc-800;
   }
 }

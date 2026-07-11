@@ -14,30 +14,30 @@ npm install -g @anthropic-ai/claude-code
 claude
 ```
 
-Requires a Pro subscription. Clone a project, `cd` into it, then start with: *"summarise this project"*.
+Requires a Pro subscription. Clone a project, `cd` into it, then start with: _"summarise this project"_.
 
 ## Slash Commands
 
-| Command | Purpose |
-|---|---|
-| `/init` | Create a `CLAUDE.md` config file |
-| `/clear` | Clear context and history |
-| `/compact` | Clear context, keep screen |
-| `/status` | Show cwd, memory, model, account |
-| `/cost` | Usage and spend summary |
-| `/ide` | Manage IDE integrations (VS Code / Cursor) |
-| `/terminal-setup` | Bind Shift+Enter for newlines |
-| `/review` | Review a pull request |
-| `/pr-comments` | Fetch pull request comments |
+| Command           | Purpose                                    |
+| ----------------- | ------------------------------------------ |
+| `/init`           | Create a `CLAUDE.md` config file           |
+| `/clear`          | Clear context and history                  |
+| `/compact`        | Clear context, keep screen                 |
+| `/status`         | Show cwd, memory, model, account           |
+| `/cost`           | Usage and spend summary                    |
+| `/ide`            | Manage IDE integrations (VS Code / Cursor) |
+| `/terminal-setup` | Bind Shift+Enter for newlines              |
+| `/review`         | Review a pull request                      |
+| `/pr-comments`    | Fetch pull request comments                |
 
 ## Keyboard Shortcuts
 
-| Key | Action |
-|---|---|
-| `Shift + Tab` | Toggle plan mode |
-| `Ctrl + C` | Exit |
+| Key           | Action             |
+| ------------- | ------------------ |
+| `Shift + Tab` | Toggle plan mode   |
+| `Ctrl + C`    | Exit               |
 | `Alt + Enter` | New line in prompt |
-| `Esc Esc` | Rewind last action |
+| `Esc Esc`     | Rewind last action |
 
 ## Resuming Sessions
 

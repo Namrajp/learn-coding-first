@@ -9,6 +9,7 @@ tags:
 ---
 
 # Getting Started with NumPy
+
 ### A Minimal, Practical Guide for Python & C Developers
 
 ---
@@ -28,6 +29,7 @@ pip install numpy
 ## The Core Idea: `ndarray`
 
 Unlike Python lists, NumPy arrays are:
+
 - **Fixed type** — all elements share one `dtype`
 - **Fixed size** — reshaping creates a new array
 - **Vectorized** — math operations apply element-wise with no Python loops
@@ -222,13 +224,13 @@ s = a[1:]       # slice is a VIEW — modifying s modifies a
 
 ## Mental Model (coming from C)
 
-| C | NumPy |
-|---|---|
-| `int arr[N]` | `np.array([...], dtype=np.int32)` |
-| `for` loop over array | vectorized op: `a * 2` |
-| `malloc` + fixed size | fixed after creation, but reshape is cheap |
-| pointer arithmetic | slicing — but it's a **view**, not a pointer |
-| `memcpy` | `a.copy()` |
+| C                     | NumPy                                        |
+| --------------------- | -------------------------------------------- |
+| `int arr[N]`          | `np.array([...], dtype=np.int32)`            |
+| `for` loop over array | vectorized op: `a * 2`                       |
+| `malloc` + fixed size | fixed after creation, but reshape is cheap   |
+| pointer arithmetic    | slicing — but it's a **view**, not a pointer |
+| `memcpy`              | `a.copy()`                                   |
 
 ---
 
@@ -238,4 +240,4 @@ s = a[1:]       # slice is a VIEW — modifying s modifies a
 
 ---
 
-*Next steps: **pandas** builds DataFrames on top of NumPy arrays. **PyTorch** tensors are conceptually identical to NumPy arrays but run on GPU. Learning NumPy well makes both significantly easier.*
+_Next steps: **pandas** builds DataFrames on top of NumPy arrays. **PyTorch** tensors are conceptually identical to NumPy arrays but run on GPU. Learning NumPy well makes both significantly easier._

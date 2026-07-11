@@ -9,9 +9,15 @@ interface Props {
 const { date, title, excerpt, link } = Astro.props;
 ---
 
-<div class="mb-10 p-8 bg-white border border-gray-200 rounded-2xl shadow-sm flex flex-col">
-  <p class="mb-6 text-gray-400 uppercase text-sm">{date}</p>
+<div
+  class="mb-10 flex flex-col rounded-2xl border border-gray-200 bg-white p-8 shadow-sm"
+>
+  <p class="mb-6 text-sm text-gray-400 uppercase">{date}</p>
   <h3 class="mt-6 text-3xl font-semibold text-gray-900">{title}</h3>
   <p class="mt-6 text-gray-500">{excerpt}</p>
-  <a href={link} class="mt-6 inline-block bg-[hsl(21,62%,45%)] text-white px-6 py-2 rounded-lg font-medium hover:bg-[hsl(21,62%,35%)] no-underline w-fit">Read more</a>
+  <a
+    href={link}
+    class="mt-6 inline-block w-fit rounded-lg bg-[hsl(21,62%,45%)] px-6 py-2 font-medium text-white no-underline hover:bg-[hsl(21,62%,35%)]"
+    >Read more</a
+  >
 </div>

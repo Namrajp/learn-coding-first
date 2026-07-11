@@ -6,11 +6,13 @@ interface Props {
 const { tags } = Astro.props;
 ---
 
-<aside class="md:pr-6 px-4 md:px-6 max-h-[calc(100vh-140px)] overflow-y-auto">
-  <h2 class="text-4xl font-black tracking-tight text-slate-900 mb-3">
-    <span class="text-[hsl(21,62%,45%)]">Learn</span> CODING <span class="text-[hsl(21,62%,45%)]">First</span>
+<aside class="max-h-[calc(100vh-140px)] overflow-y-auto px-4 md:px-6 md:pr-6">
+  <h2 class="mb-3 text-4xl font-black tracking-tight text-slate-900">
+    <span class="text-[hsl(21,62%,45%)]">Learn</span> CODING <span
+      class="text-[hsl(21,62%,45%)]">First</span
+    >
   </h2>
-  <ol class="my-4 space-y-3 list-decimal list-inside text-slate-700">
+  <ol class="my-4 list-inside list-decimal space-y-3 text-slate-700">
     {
       tags.map((tag) => (
         <li>

@@ -7,7 +7,7 @@ export async function getStaticPaths() {
   let posts = await getCollection("posts");
 
   posts = posts.sort(
-    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
   );
 
   const tags: string[] = [];
@@ -19,7 +19,10 @@ export async function getStaticPaths() {
 
   return tags.map((tag) => ({
     params: { tag },
-    props: { posts: posts.filter((post) => post.data.tags.includes(tag)), allTags: tags },
+    props: {
+      posts: posts.filter((post) => post.data.tags.includes(tag)),
+      allTags: tags,
+    },
   }));
 }
 
@@ -28,12 +31,12 @@ const { posts, allTags } = Astro.props;
 ---
 
 <Layout title={`Posts by tag: ${tag}`}>
-  <div class="w-full max-w-[90vw] mx-auto text-left">
+  <div class="mx-auto w-full max-w-[90vw] text-left">
     <div class="mt-8 grid gap-8 md:grid-cols-[30%_70%]">
       <TagSidebar tags={allTags} />
 
       <section>
-        <h1 class="text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
+        <h1 class="mb-4 text-5xl font-extrabold tracking-tight text-slate-900">
           Posts tagged {tag}
         </h1>
         <p class="my-4 text-xl font-semibold">Latest posts for this topic</p>
@@ -42,7 +45,10 @@ const { posts, allTags } = Astro.props;
           {
             posts.map((post) => (
               <li>
-                <a href={`/blog/${post.id}`} class="no-underline hover:text-[hsl(21,62%,45%)] hover:underline-offset-4">
+                <a
+                  href={`/blog/${post.id}`}
+                  class="no-underline hover:text-[hsl(21,62%,45%)] hover:underline-offset-4"
+                >
                   {post.data.title}
                 </a>
                 <span>({post.data.date.toLocaleDateString()})</span>

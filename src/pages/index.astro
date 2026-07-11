@@ -14,29 +14,31 @@ posts.map((post) => {
 
 posts = posts
   .sort(
-    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
   )
   .slice(0, 12);
 
 const allPosts = await getCollection("posts");
 const randomPost = allPosts[Math.floor(Math.random() * allPosts.length)];
-const promptingPost = allPosts.find(p => p.id === "prompting-guide");
-const claudePost = allPosts.find(p => p.id === "claude-guide");
+const promptingPost = allPosts.find((p) => p.id === "prompting-guide");
+const claudePost = allPosts.find((p) => p.id === "claude-guide");
 ---
 
 <Layout title="Homepage">
-  <div class="w-full text-left pt-[2.5rem]">
-    <div class="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-[hsl(21,62%,45%)] px-8 pt-3 pb-[1.25rem] text-center text-white shadow-sm">
-      <p class="text-base font-semibold leading-tight">
+  <div class="w-full pt-[2.5rem] text-left">
+    <div
+      class="fixed top-0 right-0 left-0 z-50 flex items-center justify-center bg-[hsl(21,62%,45%)] px-8 pt-3 pb-[1.25rem] text-center text-white shadow-sm"
+    >
+      <p class="text-base leading-tight font-semibold">
         Coming Soon: AI Workshop and new content releasing every week.
       </p>
     </div>
 
     <div class="mt-0 grid gap-6 md:grid-cols-[30%_70%] md:pl-[10rem]">
-      <TagSidebar tags={tags} />
+      <TagSidebar {tags} />
 
       <section>
-        <h1 class="text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
+        <h1 class="mb-4 text-5xl font-extrabold tracking-tight text-slate-900">
           Fundamentals of programming and AI
         </h1>
         <p class="my-4 text-xl font-semibold">Latest posts</p>
@@ -44,10 +46,15 @@ const claudePost = allPosts.find(p => p.id === "claude-guide");
           {
             posts.map((post) => (
               <li>
-                <a href={`/blog/${post.id}`} class="no-underline hover:underline-offset-4 hover:text-[hsl(21,62%,45%)]">
+                <a
+                  href={`/blog/${post.id}`}
+                  class="no-underline hover:text-[hsl(21,62%,45%)] hover:underline-offset-4"
+                >
                   {post.data.title}
                 </a>
-                <span class="ml-3 text-sm text-slate-500">({post.data.date.toLocaleDateString()})</span>
+                <span class="ml-3 text-sm text-slate-500">
+                  ({post.data.date.toLocaleDateString()})
+                </span>
               </li>
             ))
           }
@@ -58,23 +65,31 @@ const claudePost = allPosts.find(p => p.id === "claude-guide");
         </p>
 
         <section class="mt-16">
-          <h2 class="text-4xl font-extrabold tracking-tight text-slate-900 mb-8">What's New</h2>
-          {promptingPost && (
-            <PostCard
-              date={promptingPost.data.date.toLocaleDateString()}
-              title={promptingPost.data.title}
-              excerpt="Prompting is the art of giving AI clear, well-structured instructions to get the output you actually want. Learn how to be specific, give the AI a role, provide context, use step-by-step instructions, iterate and refine, and show examples to dramatically improve your results."
-              link={`/blog/${promptingPost.id}`}
-            />
-          )}
-          {claudePost && (
-            <PostCard
-              date={claudePost.data.date.toLocaleDateString()}
-              title={claudePost.data.title}
-              excerpt="Claude is Anthropic's AI assistant, built with a strong emphasis on being helpful, harmless, and honest. It excels at long-form reasoning, nuanced writing, and following complex multi-step instructions — but like any tool, it rewards users who understand how it thinks."
-              link={`/blog/${claudePost.id}`}
-            />
-          )}
+          <h2
+            class="mb-8 text-4xl font-extrabold tracking-tight text-slate-900"
+          >
+            What's New
+          </h2>
+          {
+            promptingPost && (
+              <PostCard
+                date={promptingPost.data.date.toLocaleDateString()}
+                title={promptingPost.data.title}
+                excerpt="Prompting is the art of giving AI clear, well-structured instructions to get the output you actually want. Learn how to be specific, give the AI a role, provide context, use step-by-step instructions, iterate and refine, and show examples to dramatically improve your results."
+                link={`/blog/${promptingPost.id}`}
+              />
+            )
+          }
+          {
+            claudePost && (
+              <PostCard
+                date={claudePost.data.date.toLocaleDateString()}
+                title={claudePost.data.title}
+                excerpt="Claude is Anthropic's AI assistant, built with a strong emphasis on being helpful, harmless, and honest. It excels at long-form reasoning, nuanced writing, and following complex multi-step instructions — but like any tool, it rewards users who understand how it thinks."
+                link={`/blog/${claudePost.id}`}
+              />
+            )
+          }
           <PostCard
             date={randomPost.data.date.toLocaleDateString()}
             title={randomPost.data.title}
