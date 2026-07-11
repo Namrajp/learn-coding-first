@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import TagSidebar from "../components/TagSidebar.astro";
+import PostCard from "../components/PostCard.astro";
 let posts = await getCollection("posts");
 
 const tags: string[] = [];
@@ -16,6 +17,11 @@ posts = posts
     (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
   )
   .slice(0, 12);
+
+const allPosts = await getCollection("posts");
+const randomPost = allPosts[Math.floor(Math.random() * allPosts.length)];
+const promptingPost = allPosts.find(p => p.id === "prompting-guide");
+const claudePost = allPosts.find(p => p.id === "claude-guide");
 ---
 
 <Layout title="Homepage">
@@ -50,6 +56,32 @@ posts = posts
         <p class="py-4">
           <a href={"/blog/page/1"}> See all posts ▶︎ </a>
         </p>
+
+        <section class="mt-16">
+          <h2 class="text-4xl font-extrabold tracking-tight text-slate-900 mb-8">What's New</h2>
+          {promptingPost && (
+            <PostCard
+              date={promptingPost.data.date.toLocaleDateString()}
+              title={promptingPost.data.title}
+              excerpt="Prompting is the art of giving AI clear, well-structured instructions to get the output you actually want. Learn how to be specific, give the AI a role, provide context, use step-by-step instructions, iterate and refine, and show examples to dramatically improve your results."
+              link={`/blog/${promptingPost.id}`}
+            />
+          )}
+          {claudePost && (
+            <PostCard
+              date={claudePost.data.date.toLocaleDateString()}
+              title={claudePost.data.title}
+              excerpt="Claude is Anthropic's AI assistant, built with a strong emphasis on being helpful, harmless, and honest. It excels at long-form reasoning, nuanced writing, and following complex multi-step instructions — but like any tool, it rewards users who understand how it thinks."
+              link={`/blog/${claudePost.id}`}
+            />
+          )}
+          <PostCard
+            date={randomPost.data.date.toLocaleDateString()}
+            title={randomPost.data.title}
+            excerpt={randomPost.data.description || "Check out this post!"}
+            link={`/blog/${randomPost.id}`}
+          />
+        </section>
       </section>
     </div>
   </div>

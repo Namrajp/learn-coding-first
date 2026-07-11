@@ -57,11 +57,11 @@ const visibleItems = items.filter((item) => item.label);
   <nav aria-label="Breadcrumb" class="mb-6 flex flex-wrap items-center justify-center gap-2 text-sm text-gray-600">
     {visibleItems.map((item, index) => (
       <>
-        {index > 0 && <span aria-hidden="true">&raquo;</span>}
+        {index > 0 && <span aria-hidden="true" class="text-[hsl(21,62%,45%)]">&raquo;</span>}
         {index === visibleItems.length - 1 || !item.href ? (
           <span class="font-semibold text-gray-900">{item.label}</span>
         ) : (
-          <a href={item.href} class="underline">{item.label}</a>
+          <a href={item.href} class="underline text-[hsl(21,62%,45%)] hover:text-[hsl(21,62%,35%)]">{item.label}</a>
         )}
       </>
     ))}

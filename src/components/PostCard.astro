@@ -1,0 +1,17 @@
+---
+interface Props {
+  date: string;
+  title: string;
+  excerpt: string;
+  link: string;
+}
+
+const { date, title, excerpt, link } = Astro.props;
+---
+
+<div class="mb-10 p-8 bg-white border border-gray-200 rounded-2xl shadow-sm flex flex-col">
+  <p class="mb-6 text-gray-400 uppercase text-sm">{date}</p>
+  <h3 class="mt-6 text-3xl font-semibold text-gray-900">{title}</h3>
+  <p class="mt-6 text-gray-500">{excerpt}</p>
+  <a href={link} class="mt-6 inline-block bg-[hsl(21,62%,45%)] text-white px-6 py-2 rounded-lg font-medium hover:bg-[hsl(21,62%,35%)] no-underline w-fit">Read more</a>
+</div>
