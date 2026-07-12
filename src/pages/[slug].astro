@@ -18,20 +18,22 @@ const { Content } = await render(post);
 
 <Layout frontmatter={post.data} title={post.data.title} tags={post.data.tags}>
   <div class="mx-auto max-w-[65ch]">
-    <h1 class="mt-8 mb-2 text-3xl font-extrabold tracking-tight text-gray-900">
+    <h1 class="mt-8 mb-2 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
       {post.data.title}
     </h1>
-    <p class="mb-1 text-sm font-medium text-gray-700">Namraj Pudasaini</p>
-    <p class="mb-6 text-sm text-gray-500">
+    <p class="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Namraj Pudasaini</p>
+    <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">
       {post.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
     </p>
-    <Content />
+    <div class="prose dark:prose-invert">
+      <Content />
+    </div>
     <div class="my-4 space-x-2">
       {
         post.data.tags.map((tag) => (
           <a
             href={`/tag/${tag}`}
-            class="rounded-lg px-2 py-1 no-underline hover:text-[hsl(21,62%,45%)]"
+            class="rounded-lg px-2 py-1 no-underline text-gray-700 dark:text-gray-300 hover:text-[hsl(21,62%,45%)]"
           >
             {tag}
           </a>

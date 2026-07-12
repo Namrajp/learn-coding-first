@@ -32,3 +32,6 @@ pnpm-debug.log*
 
 # Drizzle migrations (generated)
 drizzle/
+
+# Agent prompts
+prompts.md

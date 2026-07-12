@@ -4,10 +4,10 @@ import Layout from "../layouts/Layout.astro";
 
 <Layout title="Login">
   <div class="mx-auto mt-20 max-w-md">
-    <h1 class="mb-8 text-center text-3xl font-bold">Sign In</h1>
+    <h1 class="mb-8 text-center text-3xl font-bold dark:text-white">Sign In</h1>
     <form id="login-form" class="space-y-4">
       <div>
-        <label for="email" class="mb-2 block text-sm font-medium text-gray-700">
+        <label for="email" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Email address
         </label>
         <input
@@ -16,7 +16,7 @@ import Layout from "../layouts/Layout.astro";
           name="email"
           placeholder="you@example.com"
           required
-          class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)]"
+          class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
         />
       </div>
       <button
