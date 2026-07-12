@@ -24,12 +24,23 @@ export async function getStaticPaths() {
     props: {
       posts: posts.filter((post) => post.data.tags.includes(tag)),
       allTags: tags,
+      allPosts: posts,
     },
   }));
 }
 
 const { tag } = Astro.params;
-const { posts, allTags } = Astro.props;
+const { posts, allTags, allPosts } = Astro.props;
+
+const otherTags = allTags
+  .filter((t) => t !== tag)
+  .sort(() => 0.5 - Math.random())
+  .slice(0, 6);
+
+const otherPostsByTag = otherTags.map((t) => ({
+  tag: t,
+  posts: allPosts.filter((p) => p.data.tags.includes(t)).slice(0, 3),
+}));
 ---
 
 <Layout title={`Posts by tag: ${tag}`}>
@@ -48,7 +59,7 @@ const { posts, allTags } = Astro.props;
             posts.map((post) => (
               <li>
                 <a
-                  href={`/blog/${post.id}`}
+                  href={`/${post.id}`}
                   class="no-underline hover:text-[hsl(21,62%,45%)] hover:underline-offset-4"
                 >
                   {post.data.title}
@@ -58,6 +69,31 @@ const { posts, allTags } = Astro.props;
             ))
           }
         </ul>
+
+        {otherPostsByTag.length > 0 && (
+          <div class="mt-12">
+            <h2 class="mb-6 text-2xl font-bold text-gray-900">Other posts you may be interested in</h2>
+            {otherPostsByTag.map((group) => (
+              <div class="mb-6">
+                <h3 class="mb-2 text-lg font-semibold text-gray-700">
+                  Posts tagged "{group.tag}"
+                </h3>
+                <ul class="space-y-1">
+                  {group.posts.map((post) => (
+                    <li>
+                      <a
+                        href={`/${post.id}`}
+                        class="text-[hsl(21,62%,45%)] underline hover:text-[hsl(21,62%,35%)]"
+                      >
+                        {post.data.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   </div>

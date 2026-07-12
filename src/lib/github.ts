@@ -19,6 +19,7 @@ async function getFileSha(
       Authorization: `Bearer ${config.token}`,
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "learncodingfirst-blog",
     },
   });
 
@@ -54,6 +55,7 @@ export async function createOrUpdateFile(
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
       "Content-Type": "application/json",
+      "User-Agent": "learncodingfirst-blog",
     },
     body: JSON.stringify(body),
   });
@@ -74,6 +76,60 @@ export async function createOrUpdateFile(
     sha: result.content.sha,
     url: result.content.html_url,
   };
+}
+
+export async function deleteFile(
+  config: GitHubConfig,
+  path: string,
+  message: string,
+  branch = "main",
+): Promise<void> {
+  const sha = await getFileSha(config, path, branch);
+  if (!sha) throw new Error("File not found");
+
+  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${path}`;
+
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${config.token}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "Content-Type": "application/json",
+      "User-Agent": "learncodingfirst-blog",
+    },
+    body: JSON.stringify({ message, sha, branch }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to delete file: ${response.status} ${error}`);
+  }
+}
+
+export async function listFiles(
+  config: GitHubConfig,
+  dir: string,
+  branch = "main",
+): Promise<{ name: string; path: string; sha: string }[]> {
+  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${dir}?ref=${branch}`;
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${config.token}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "learncodingfirst-blog",
+    },
+  });
+
+  if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+  const data = (await response.json()) as {
+    name: string;
+    path: string;
+    sha: string;
+    type: string;
+  }[];
+  return data.filter((f) => f.type === "file" && f.name.endsWith(".md") && f.name !== "README.md");
 }
 
 export function generateSlug(title: string): string {
