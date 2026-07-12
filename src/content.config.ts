@@ -8,6 +8,7 @@ const posts = defineCollection({
     date: z.date(),
     description: z.string().optional(),
     tags: z.array(z.string()),
+    status: z.enum(["draft", "published"]).default("published"),
   }),
 });
 

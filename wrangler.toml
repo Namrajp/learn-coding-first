@@ -1,0 +1,16 @@
+name = "my-new-astro-blog"
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "blog-auth-db"
+database_id = "2805ff1f-f04f-4446-8473-ba54ad3832b4"
+migrations_dir = "drizzle"
+
+[[kv_namespaces]]
+binding = "SESSION"
+id = "b3bf4da7a0784275b628780e8354875c"
+
+[vars]
+BETTER_AUTH_URL = "https://learncodingfirst.com"

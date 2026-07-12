@@ -1,0 +1,221 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="New Post">
+  <div class="mx-auto mt-10 max-w-6xl">
+    <div class="mb-8 flex items-center justify-between">
+      <h1 class="text-3xl font-bold">Create New Post</h1>
+      <a href="/admin" class="text-gray-600 hover:text-[hsl(21,62%,45%)]">
+        Back to Dashboard
+      </a>
+    </div>
+
+    <form id="post-form" class="space-y-6">
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div>
+          <label
+            for="title"
+            class="mb-2 block text-sm font-medium text-gray-700"
+          >
+            Title *
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            required
+            class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)]"
+            placeholder="My Awesome Post"
+          />
+        </div>
+        <div>
+          <label
+            for="tags"
+            class="mb-2 block text-sm font-medium text-gray-700"
+          >
+            Tags (comma-separated)
+          </label>
+          <input
+            type="text"
+            id="tags"
+            name="tags"
+            placeholder="tutorial, python, ai"
+            class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)]"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label
+          for="description"
+          class="mb-2 block text-sm font-medium text-gray-700"
+        >
+          Description (optional)
+        </label>
+        <input
+          type="text"
+          id="description"
+          name="description"
+          class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)]"
+          placeholder="A brief description of your post"
+        />
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div>
+          <label
+            for="content"
+            class="mb-2 block text-sm font-medium text-gray-700"
+          >
+            Markdown Content *
+          </label>
+          <textarea
+            id="content"
+            name="content"
+            rows="25"
+            required
+            class="w-full rounded-lg border border-gray-300 px-4 py-3 font-mono text-sm leading-relaxed focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)]"
+            placeholder="# Hello World
+
+Write your post content here using Markdown...
+
+## Section 1
+
+Your content here.
+
+```python
+print('Hello, World!')
+```"
+          ></textarea>
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            Preview
+          </label>
+          <div
+            id="preview"
+            class="prose h-[600px] w-full max-w-none overflow-auto rounded-lg border border-gray-200 bg-gray-50 px-4 py-3"
+          >
+            <p class="text-gray-400 italic">
+              Start typing to see the preview...
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-4 border-t border-gray-200 pt-4">
+        <button
+          type="submit"
+          data-status="draft"
+          class="rounded-lg border border-[hsl(21,62%,45%)] px-6 py-2 font-medium text-[hsl(21,62%,45%)] hover:bg-gray-50"
+        >
+          Save as Draft
+        </button>
+        <button
+          type="submit"
+          data-status="published"
+          class="rounded-lg bg-[hsl(21,62%,45%)] px-6 py-2 font-medium text-white hover:bg-[hsl(21,62%,35%)]"
+        >
+          Publish
+        </button>
+      </div>
+
+      <div id="status-message" class="hidden"></div>
+    </form>
+  </div>
+
+  <script>
+    import { marked } from "marked";
+
+    const content = document.getElementById("content") as HTMLTextAreaElement;
+    const preview = document.getElementById("preview") as HTMLDivElement;
+    const form = document.getElementById("post-form") as HTMLFormElement;
+    const statusMessage = document.getElementById(
+      "status-message",
+    ) as HTMLDivElement;
+
+    // Configure marked for better rendering
+    marked.setOptions({
+      gfm: true,
+      breaks: true,
+    });
+
+    // Live preview
+    content?.addEventListener("input", () => {
+      if (content.value.trim()) {
+        preview.innerHTML = marked.parse(content.value) as string;
+      } else {
+        preview.innerHTML =
+          '<p class="text-gray-400 italic">Start typing to see the preview...</p>';
+      }
+    });
+
+    // Form submission
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const submitter = (e as SubmitEvent).submitter as HTMLButtonElement;
+      const status = submitter.dataset.status;
+
+      const title = (
+        document.getElementById("title") as HTMLInputElement
+      ).value.trim();
+      const tags = (
+        document.getElementById("tags") as HTMLInputElement
+      ).value.trim();
+      const description = (
+        document.getElementById("description") as HTMLInputElement
+      ).value.trim();
+      const markdownContent = content.value.trim();
+
+      if (!title || !markdownContent) {
+        statusMessage.textContent = "Title and content are required";
+        statusMessage.className = "mt-4 text-center text-red-600";
+        return;
+      }
+
+      // Disable buttons during submission
+      const buttons = form.querySelectorAll("button[type='submit']");
+      buttons.forEach((btn) => ((btn as HTMLButtonElement).disabled = true));
+
+      statusMessage.textContent = "Saving...";
+      statusMessage.className = "mt-4 text-center text-gray-600";
+
+      try {
+        const response = await fetch("/api/posts/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title,
+            content: markdownContent,
+            description,
+            tags,
+            status,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          statusMessage.textContent = `Post ${status === "published" ? "published" : "saved as draft"} successfully!`;
+          statusMessage.className = "mt-4 text-center text-green-600";
+
+          // Redirect to admin after a short delay
+          setTimeout(() => {
+            window.location.href = "/admin";
+          }, 1500);
+        } else {
+          statusMessage.textContent = result.error || "Failed to save post";
+          statusMessage.className = "mt-4 text-center text-red-600";
+          buttons.forEach(
+            (btn) => ((btn as HTMLButtonElement).disabled = false),
+          );
+        }
+      } catch {
+        statusMessage.textContent = "Network error. Please try again.";
+        statusMessage.className = "mt-4 text-center text-red-600";
+        buttons.forEach((btn) => ((btn as HTMLButtonElement).disabled = false));
+      }
+    });
+  </script>
+</Layout>

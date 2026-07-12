@@ -1,0 +1,71 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Login">
+  <div class="mx-auto mt-20 max-w-md">
+    <h1 class="mb-8 text-center text-3xl font-bold">Sign In</h1>
+    <form id="login-form" class="space-y-4">
+      <div>
+        <label for="email" class="mb-2 block text-sm font-medium text-gray-700">
+          Email address
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="you@example.com"
+          required
+          class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)]"
+        />
+      </div>
+      <button
+        type="submit"
+        id="submit-btn"
+        class="w-full rounded-lg bg-[hsl(21,62%,45%)] px-4 py-3 font-medium text-white hover:bg-[hsl(21,62%,35%)] disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        Send Magic Link
+      </button>
+    </form>
+    <div id="message" class="mt-4 hidden text-center"></div>
+  </div>
+
+  <script>
+    import { authClient } from "../lib/auth-client";
+
+    const form = document.getElementById("login-form") as HTMLFormElement;
+    const emailInput = document.getElementById("email") as HTMLInputElement;
+    const submitBtn = document.getElementById(
+      "submit-btn",
+    ) as HTMLButtonElement;
+    const messageDiv = document.getElementById("message") as HTMLDivElement;
+
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = emailInput.value;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending...";
+      messageDiv.className = "mt-4 text-center hidden";
+
+      const { error } = await authClient.signIn.magicLink({
+        email,
+        callbackURL: "/admin",
+      });
+
+      if (error) {
+        messageDiv.textContent = error.message || "Failed to send magic link";
+        messageDiv.className = "mt-4 text-center text-red-600";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Send Magic Link";
+      } else {
+        messageDiv.textContent =
+          "Check your email for the magic link! It expires in 5 minutes.";
+        messageDiv.className = "mt-4 text-center text-green-600";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Send Magic Link";
+        emailInput.value = "";
+      }
+    });
+  </script>
+</Layout>

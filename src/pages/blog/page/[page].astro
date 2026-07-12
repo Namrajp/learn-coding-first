@@ -5,6 +5,8 @@ import TagSidebar from "../../../components/TagSidebar.astro";
 
 import type { Page, PaginateFunction } from "astro";
 
+export const prerender = true;
+
 export async function getStaticPaths({
   paginate,
 }: {
