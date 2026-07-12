@@ -2,12 +2,12 @@
 
 ## Project
 
-Astro 7 blog on Cloudflare Workers. Posts stored as markdown in GitHub repo (`Namrajp/my-new-astro-blog`). Admin UI for create/edit/delete via GitHub API. Magic Link auth via better-auth + Resend email.
+Astro 7 blog on Cloudflare Workers. Posts stored as markdown in GitHub repo (`Namrajp/my-new-astro-blog`). Admin UI for create/edit/delete via GitHub API. Magic Link auth via better-auth + Resend email. Dark mode toggle with system preference support.
 
 ## Stack
 
 - Astro 7 + `@astrojs/cloudflare` (SSR on Workers)
-- Tailwind CSS 4
+- Tailwind CSS 4 (class-based dark mode)
 - better-auth + better-auth-cloudflare (D1 + KV)
 - Drizzle ORM (SQLite/D1 for auth tables)
 - Resend (magic link emails)
@@ -35,6 +35,7 @@ src/lib/email.ts        # Resend magic link sender
 src/lib/frontmatter.ts  # YAML frontmatter parser
 src/content.config.ts   # Post schema (title, date, tags, status)
 src/db/auth.schema.ts   # Drizzle: user, session, verification tables
+src/components/ThemeToggle.astro  # Dark/light theme switch
 ```
 
 ## Routes
@@ -95,3 +96,5 @@ Tags support both inline (`tags: [a, b]`) and YAML list format (`tags:\n  - a\n 
 - GitHub API requires `User-Agent` header. Cloudflare Workers `fetch` doesn't send one by default.
 - Prerendered pages don't update until redeploy. Admin dashboard fetches fresh data from GitHub API.
 - Session table needs Cloudflare geolocation columns (timezone, city, country, etc.) or better-auth throws 500.
+- Theme toggle button needs `z-[100]` to stay above the homepage banner (`z-50`).
+- Theme toggle script must clone/replace button on `astro:after-swap` to avoid duplicate event listeners.

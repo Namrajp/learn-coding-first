@@ -14,6 +14,7 @@ Learn Coding First is a technical blog covering Python, AI tools, web developmen
 - **Admin dashboard** for creating, editing, and deleting posts
 - **Magic Link login** — no passwords, just email
 - **Markdown editor** with live preview
+- **Dark/light theme toggle** — persists preference, respects system settings
 - **SEO-friendly** — prerendered pages, sitemap, RSS feed
 - **Responsive design** with Tailwind CSS
 
@@ -112,7 +113,13 @@ npx wrangler d1 migrations apply blog-auth-db --remote
 
 ```
 src/
-├── components/         # Astro components (Breadcrumb, PostCard, TagSidebar, etc.)
+├── components/         # Astro components
+│   ├── Breadcrumb.astro
+│   ├── PostCard.astro
+│   ├── TagSidebar.astro
+│   ├── ThemeToggle.astro  # Dark/light theme switch
+│   ├── Nav.astro
+│   └── Footer.astro
 ├── db/                 # Drizzle schema (auth tables)
 ├── layouts/            # Main Layout.astro
 ├── lib/                # Core modules
@@ -123,14 +130,14 @@ src/
 │   └── github.ts       # GitHub Contents API wrapper
 ├── pages/              # Routes
 │   ├── [slug].astro    # Blog post (prerendered)
-│   ├── index.astro     # Homepage (SSR)
+│   ├── index.astro     # Homepage (SSR) — 5 featured cards
 │   ├── login.astro     # Magic link login
 │   ├── admin/          # Admin dashboard + create/edit
 │   ├── api/            # Auth + post CRUD endpoints
 │   ├── blog/page/      # Paginated archive (prerendered)
 │   └── tag/            # Tag filter pages (prerendered)
 ├── posts/              # Markdown blog posts
-├── styles/             # Global CSS
+├── styles/             # Global CSS (Tailwind + dark mode)
 └── middleware.ts        # Auth guard + env injection
 ```
 
