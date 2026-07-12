@@ -22,6 +22,12 @@ const allPosts = await getCollection("posts");
 const randomPost = allPosts[Math.floor(Math.random() * allPosts.length)];
 const promptingPost = allPosts.find((p) => p.id === "prompting-guide");
 const claudePost = allPosts.find((p) => p.id === "claude-guide");
+
+const featuredIds = new Set([promptingPost?.id, claudePost?.id, randomPost?.id].filter(Boolean));
+const otherPosts = allPosts
+  .filter((p) => !featuredIds.has(p.id))
+  .sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf())
+  .slice(0, 2);
 ---
 
 <Layout title="Homepage">
@@ -96,6 +102,14 @@ const claudePost = allPosts.find((p) => p.id === "claude-guide");
             excerpt={randomPost.data.description || "Check out this post!"}
             link={`/${randomPost.id}`}
           />
+          {otherPosts.map((post) => (
+            <PostCard
+              date={post.data.date.toLocaleDateString()}
+              title={post.data.title}
+              excerpt={post.data.description || "Check out this post!"}
+              link={`/${post.id}`}
+            />
+          ))}
         </section>
       </section>
     </div>
