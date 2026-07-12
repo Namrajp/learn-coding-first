@@ -1,12 +1,8 @@
 ---
-layout: "@layouts/Layout.astro"
-title: "Lifecycle and Template Refs"
-date: 2025-05-10
-tags:
-  - essay
-  - miscellaneous
-  - news
-  - vue
+title: "Lifecycle and Template Refs in Vue"
+description: "Vue refs introduction"
+tags: ["vue"]
+status: published
 ---
 
 So far, Vue has been handling all the DOM updates for us, thanks to reactivity and declarative rendering. However, inevitably there will be cases where we need to manually work with the DOM.
