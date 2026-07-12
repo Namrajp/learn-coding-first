@@ -12,6 +12,13 @@ export const POST: APIRoute = async (ctx) => {
     const { title, content, description, tags, status } =
       await ctx.request.json();
 
+    if (!env.GITHUB_TOKEN) {
+      return new Response(JSON.stringify({ error: "GitHub token not configured" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const slug = generateSlug(title);
     const date = new Date().toISOString().split("T")[0];
     const tagsArray = tags

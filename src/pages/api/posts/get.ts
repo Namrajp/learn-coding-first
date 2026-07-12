@@ -1,4 +1,3 @@
-import { env } from "cloudflare:workers";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async (ctx) => {
@@ -8,6 +7,7 @@ export const GET: APIRoute = async (ctx) => {
   }
 
   try {
+    const env = ctx.locals.env;
     const url = new URL(ctx.request.url);
     const slug = url.searchParams.get("slug");
 
@@ -18,12 +18,19 @@ export const GET: APIRoute = async (ctx) => {
       });
     }
 
+    if (!env.GITHUB_TOKEN) {
+      return new Response(JSON.stringify({ error: "GitHub token not configured" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const filePath = `src/posts/${slug}.md`;
     const apiUrl = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${filePath}`;
 
     const response = await fetch(apiUrl, {
       headers: {
-        Authorization: `Bearer ${(env as CloudflareBindings).GITHUB_TOKEN}`,
+        Authorization: `Bearer ${env.GITHUB_TOKEN}`,
         Accept: "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
       },
