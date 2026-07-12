@@ -2,8 +2,7 @@
 title: "Test"
 date: 2026-07-12
 tags: []
-status: draft
+status: published
 ---
 
-# Test Heading
-The test paragrash
+Test
