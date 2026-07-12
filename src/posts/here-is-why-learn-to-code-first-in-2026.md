@@ -1,13 +1,10 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "Here is why Learning to Code in 2026 is powerful"
-date: 2026-07-10
-tags:
-  - coding
-  - news
+tags: []
+status: draft
 ---
 
-# Learning to Code in 2026
+# Learning to Code in 2026 is not difficult
 
 The language of the universal machinery on the planet is Programming. The term programming is takes task of coding through calculation of the result we like to achive. The process of the execution in the coding takes the input to render the output desired.
 
