@@ -39,7 +39,7 @@ export function parseFrontmatter(content: string): ParsedFrontmatter | null {
     title: titleMatch ? titleMatch[1].trim() : "",
     date: dateMatch ? dateMatch[1].trim() : "2024-01-01",
     tags,
-    status: statusMatch ? statusMatch[1] : "draft",
+    status: statusMatch ? statusMatch[1] : "published",
     description: descMatch ? descMatch[1].trim() : "",
   };
 }

@@ -1,15 +1,17 @@
 ---
 import { marked } from "marked";
 import Layout from "@layouts/Layout.astro";
-import { parseFrontmatter } from "../lib/frontmatter";
+import { parsePostFile } from "../lib/frontmatter";
 
 const slug = Astro.params.slug;
 if (!slug) {
+  console.error("[slug] No slug param");
   return Astro.redirect("/");
 }
 
 const env = Astro.locals.env;
 if (!env?.GITHUB_TOKEN) {
+  console.error("[slug] No GITHUB_TOKEN");
   return Astro.redirect("/");
 }
 
@@ -28,6 +30,7 @@ try {
   });
 
   if (!res.ok) {
+    console.error(`[slug.${slug}] GitHub API failed:`, res.status, res.statusText);
     return Astro.redirect("/");
   }
 
@@ -39,17 +42,16 @@ try {
       .join(""),
   );
 
-  const fmMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!fmMatch) {
+  const parsed = parsePostFile(raw);
+  if (!parsed) {
+    console.error(`[slug.${slug}] No frontmatter found or invalid format`);
     return Astro.redirect("/");
   }
 
-  const fm = parseFrontmatter(raw);
-  if (!fm) {
-    return Astro.redirect("/");
-  }
+  const { data: fm, body } = parsed;
 
   if (fm.status === "draft") {
+    console.error(`[slug.${slug}] Post is draft`);
     return Astro.redirect("/");
   }
 
@@ -59,9 +61,10 @@ try {
     tags: fm.tags,
     description: fm.description,
     status: fm.status,
-    content: fmMatch[2],
+    content: body,
   };
-} catch {
+} catch (e) {
+  console.error(`[slug.${slug}] Error:`, e);
   return Astro.redirect("/");
 }
 
