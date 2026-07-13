@@ -2,6 +2,7 @@
 title: "Lifecycle and Template Refs in Vue"
 description: "Vue refs introduction"
 tags: ["vue"]
+date: 2026-07-13
 status: published
 ---
 
