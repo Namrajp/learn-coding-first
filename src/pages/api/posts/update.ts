@@ -42,6 +42,8 @@ export const POST: APIRoute = async (ctx) => {
       `Update post: ${title}`,
     );
 
+    await env.SESSION.delete("posts:list");
+
     return new Response(JSON.stringify({ success: true, url: result.url }), {
       status: 200,
       headers: { "Content-Type": "application/json" },

@@ -52,6 +52,8 @@ export const POST: APIRoute = async (ctx) => {
       `Add post: ${title}`,
     );
 
+    await env.SESSION.delete("posts:list");
+
     return new Response(
       JSON.stringify({ success: true, slug, url: result.url }),
       {

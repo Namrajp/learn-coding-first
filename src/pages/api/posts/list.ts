@@ -2,6 +2,9 @@ import type { APIRoute } from "astro";
 import { listFiles } from "../../../lib/github";
 import { parseFrontmatter } from "../../../lib/frontmatter";
 
+const CACHE_KEY = "posts:list";
+const CACHE_TTL = 60; // 60 seconds
+
 export const GET: APIRoute = async (ctx) => {
   const user = ctx.locals.user;
   if (!user) {
@@ -13,6 +16,14 @@ export const GET: APIRoute = async (ctx) => {
     if (!env.GITHUB_TOKEN) {
       return new Response(JSON.stringify({ error: "GitHub token not configured" }), {
         status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const cached = await env.SESSION.get(CACHE_KEY, { type: "json" });
+    if (cached) {
+      return new Response(JSON.stringify(cached), {
+        status: 200,
         headers: { "Content-Type": "application/json" },
       });
     }
@@ -50,6 +61,8 @@ export const GET: APIRoute = async (ctx) => {
     posts.sort(
       (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
     );
+
+    await env.SESSION.put(CACHE_KEY, JSON.stringify(posts), { expirationTtl: CACHE_TTL });
 
     return new Response(JSON.stringify(posts), {
       status: 200,
