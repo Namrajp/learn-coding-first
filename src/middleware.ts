@@ -13,6 +13,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next();
   }
 
+  const isProtected = protectedRoutes.some((route) =>
+    pathname.startsWith(route),
+  );
+
   try {
     const auth = createAuth(env as CloudflareBindings, context.request.cf);
     const session = await auth.api.getSession({
@@ -24,17 +28,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
       context.locals.session = session.session;
     }
 
-    const isProtected = protectedRoutes.some((route) =>
-      pathname.startsWith(route),
-    );
-
     if (isProtected && !session) {
       return context.redirect("/login");
     }
   } catch {
-    const isProtected = protectedRoutes.some((route) =>
-      pathname.startsWith(route),
-    );
     if (isProtected) {
       return context.redirect("/login");
     }
