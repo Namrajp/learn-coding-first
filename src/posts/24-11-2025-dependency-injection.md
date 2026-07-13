@@ -1,11 +1,7 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "Dependency Injection in ASP.Net"
-date: 2025-02-10
-tags:
-  - news
-  - tutorial
-  - ASP.NET
+tags: ["news", "tutorial", "ASP.NET"]
+status: published
 ---
 
 # What is DI or Dependecy Injection?
