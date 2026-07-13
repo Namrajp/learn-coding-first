@@ -120,8 +120,8 @@
   li {
     @apply pt-2;
   }
-  a:not(nav a):not(.no-underline) {
-    @apply text-blue-600 dark:text-blue-400;
+  a {
+    @apply text-blue-600 no-underline dark:text-blue-400;
   }
   pre {
     @apply overflow-x-auto rounded-lg p-6;
