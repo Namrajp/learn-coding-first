@@ -1,5 +1,5 @@
 ---
-title: "Another"
+title: "Another Post test"
 tags: []
 status: draft
 ---
