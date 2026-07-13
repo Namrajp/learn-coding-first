@@ -32,7 +32,7 @@ src/middleware.ts        # Auth guard + env injection
 src/lib/auth.ts         # better-auth instance
 src/lib/github.ts       # GitHub API (createOrUpdateFile, deleteFile, listFiles)
 src/lib/email.ts        # Resend magic link sender
-src/lib/frontmatter.ts  # YAML frontmatter parser
+src/lib/frontmatter.ts  # YAML frontmatter parser (parseFrontmatter, parseFrontmatterBody)
 src/content.config.ts   # Post schema (title, date, tags, status)
 src/db/auth.schema.ts   # Drizzle: user, session, verification tables
 src/components/ThemeToggle.astro  # Dark/light theme switch
@@ -42,7 +42,7 @@ src/components/ThemeToggle.astro  # Dark/light theme switch
 
 ```
 /                       Homepage (SSR)
-/<slug>                 Blog post (prerendered)
+/<slug>                 Blog post (SSR, draft posts hidden)
 /blog/page/[page]       Paginated archive (prerendered)
 /tag/[tag]              Posts by tag (prerendered)
 /login                  Magic link login
@@ -51,6 +51,7 @@ src/components/ThemeToggle.astro  # Dark/light theme switch
 /admin/edit/[slug]      Edit post (SSR, protected)
 /api/auth/[...all]      better-auth handler (public)
 /api/posts/*            Post CRUD API (protected)
+/404                    Custom 404 page
 ```
 
 ## Auth Flow
@@ -63,7 +64,7 @@ src/components/ThemeToggle.astro  # Dark/light theme switch
 
 ## Post Storage
 
-Posts are markdown files in `src/posts/` of the GitHub repo. Admin CRUD goes through GitHub Contents API — every create/edit/delete is a git commit. Prerendered pages (`[slug].astro`, `[tag].astro`) are built at deploy time, so changes require redeploy to appear publicly.
+Posts are markdown files in `src/posts/` of the GitHub repo. Admin CRUD goes through GitHub Contents API — every create/edit/delete is a git commit. The `[slug].astro` page fetches directly via `api.github.com` (not `raw.githubusercontent.com` which caches). Draft posts are hidden from public pages.
 
 ## Frontmatter Format
 
@@ -84,7 +85,7 @@ Tags support both inline (`tags: [a, b]`) and YAML list format (`tags:\n  - a\n 
 ## Cloudflare Bindings
 
 - `DB` — D1 database (auth tables)
-- `SESSION` — KV namespace (session store)
+- `SESSION` — KV namespace (session store, also caches post list with `posts:list` key)
 - `GITHUB_TOKEN` — Secret (GitHub PAT with Contents: Read/Write)
 - `RESEND_API_KEY` — Secret (Resend API)
 - `BETTER_AUTH_SECRET` — Secret (session signing)
@@ -98,8 +99,11 @@ Tags support both inline (`tags: [a, b]`) and YAML list format (`tags:\n  - a\n 
 - Session table needs Cloudflare geolocation columns (timezone, city, country, etc.) or better-auth throws 500.
 - Theme toggle button needs `z-[100]` to stay above the homepage banner (`z-50`).
 - Theme toggle script must clone/replace button on `astro:after-swap` to avoid duplicate event listeners.
-- `raw.githubusercontent.com` caches content after GitHub API writes. Use `api.github.com/repos/.../contents/...` instead for always-fresh data.
+- Use `api.github.com/repos/.../contents/...` for always-fresh data. `raw.githubusercontent.com` caches after writes.
 - `marked` needs `optimizeDeps.exclude` in astro.config.mjs — Vite's dep optimizer breaks the import.
 - `BETTER_AUTH_URL` in `[vars]` applies to local dev. Override in `.dev.vars` with `http://localhost:4321`.
 - Cancel/navigation links should be outside `<form>` tags to avoid browser quirks.
 - Edit page SSR should fetch file directly (`src/posts/${slug}.md`) instead of calling `listFiles()` first.
+- All GitHub API responses must be decoded with UTF-8 safe `decodeURIComponent(atob(...))` — plain `atob()` crashes on non-ASCII content.
+- Post list is cached in KV (`posts:list` key, 60s TTL). Invalidate on create/update/delete.
+- YAML injection: escape `"` in title/description before writing frontmatter.

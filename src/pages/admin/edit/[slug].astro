@@ -1,5 +1,6 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
+import { parseFrontmatter, parseFrontmatterBody } from "../../../lib/frontmatter";
 
 const { slug } = Astro.params;
 if (!slug) {
@@ -16,36 +17,30 @@ if (env?.GITHUB_TOKEN) {
     const res = await fetch(url, {
       headers: {
         Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
         "User-Agent": "learncodingfirst-blog",
       },
     });
 
     if (res.ok) {
-      const json = await res.json();
-      const raw = atob(json.content);
-      const fmMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-      if (fmMatch) {
-        const fm = fmMatch[1];
-        const body = fmMatch[2];
+      const json = await res.json() as { content: string; encoding: string };
+      const raw = decodeURIComponent(
+        atob(json.content)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join(""),
+      );
 
-        const titleMatch = fm.match(/^title:\s*"?([^"\n]+)"?$/m);
-        const descMatch = fm.match(/^description:\s*"?([^"\n]*)"?$/m);
-        const statusMatch = fm.match(/^status:\s*(\S+)$/m);
-        const inlineTagsMatch = fm.match(/tags:\s*\[(.+)\]/);
-        const listTagsMatch = fm.match(/tags:\s*\n((?:\s*-\s*.+\n?)*)/);
+      const fm = parseFrontmatter(raw);
+      const body = parseFrontmatterBody(raw);
 
-        let tags: string[] = [];
-        if (inlineTagsMatch) {
-          tags = inlineTagsMatch[1].split(",").map((t) => t.trim());
-        } else if (listTagsMatch) {
-          tags = listTagsMatch[1].split("\n").map((t) => t.replace(/^\s*-\s*/, "").trim()).filter(Boolean);
-        }
-
+      if (fm && body) {
         post = {
-          title: titleMatch?.[1]?.trim() || "",
-          tags: tags.join(", "),
-          description: descMatch?.[1]?.trim() || "",
-          status: statusMatch?.[1]?.trim() || "draft",
+          title: fm.title,
+          tags: fm.tags.join(", "),
+          description: fm.description,
+          status: fm.status,
           content: body.trim(),
         };
       }

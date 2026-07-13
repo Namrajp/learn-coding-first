@@ -1,7 +1,7 @@
 ---
 import { marked } from "marked";
 import Layout from "@layouts/Layout.astro";
-import { listFiles } from "../lib/github";
+import { parseFrontmatter } from "../lib/frontmatter";
 
 const slug = Astro.params.slug;
 if (!slug) {
@@ -13,61 +13,53 @@ if (!env?.GITHUB_TOKEN) {
   return Astro.redirect("/");
 }
 
-let post: { title: string; date: string; tags: string[]; description: string; content: string } | null = null;
+let post: { title: string; date: string; tags: string[]; description: string; status: string; content: string } | null = null;
 
 try {
-  const files = await listFiles(
-    { token: env.GITHUB_TOKEN, owner: "Namrajp", repo: "my-new-astro-blog" },
-    "src/posts",
-  );
-
-  const file = files.find((f) => f.name.replace(/\.md$/, "") === slug);
-  if (!file) {
-    return Astro.redirect("/");
-  }
-
-  const url = `https://raw.githubusercontent.com/Namrajp/my-new-astro-blog/main/${file.path}`;
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, "User-Agent": "learncodingfirst-blog" },
+  const filePath = `src/posts/${slug}.md`;
+  const apiUrl = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${filePath}`;
+  const res = await fetch(apiUrl, {
+    headers: {
+      Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "learncodingfirst-blog",
+    },
   });
 
   if (!res.ok) {
     return Astro.redirect("/");
   }
 
-  const raw = await res.text();
+  const data = (await res.json()) as { content: string; encoding: string };
+  const raw = decodeURIComponent(
+    atob(data.content)
+      .split("")
+      .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+      .join(""),
+  );
 
   const fmMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!fmMatch) {
     return Astro.redirect("/");
   }
 
-  const fmBlock = fmMatch[1];
-  const body = fmMatch[2];
-
-  const titleMatch = fmBlock.match(/^title:\s*"?([^"\n]+)"?$/m);
-  const dateMatch = fmBlock.match(/^date:\s*(\S+)$/m);
-  const descMatch = fmBlock.match(/^description:\s*"?([^"\n]*)"?$/m);
-  const tagsMatch = fmBlock.match(/^tags:\s*\n((?:\s*-\s*.+\n?)*)/m) || fmBlock.match(/^tags:\s*\[(.+)\]$/m);
-
-  let tags: string[] = [];
-  if (tagsMatch) {
-    const tagStr = tagsMatch[1].trim();
-    if (tagStr.startsWith("[")) {
-      tags = tagStr.replace(/[\[\]]/g, "").split(",").map((t) => t.trim());
-    } else {
-      tags = tagStr.split("\n").map((t) => t.replace(/^\s*-\s*/, "").trim()).filter(Boolean);
-    }
+  const fm = parseFrontmatter(raw);
+  if (!fm) {
+    return Astro.redirect("/");
   }
 
-  const statusMatch = fmBlock.match(/^status:\s*(\S+)$/m);
+  if (fm.status === "draft") {
+    return Astro.redirect("/");
+  }
 
   post = {
-    title: titleMatch?.[1]?.trim() || slug,
-    date: dateMatch?.[1]?.trim() || new Date().toISOString(),
-    tags,
-    description: descMatch?.[1]?.trim() || "",
-    content: body,
+    title: fm.title || slug,
+    date: fm.date,
+    tags: fm.tags,
+    description: fm.description,
+    status: fm.status,
+    content: fmMatch[2],
   };
 } catch {
   return Astro.redirect("/");

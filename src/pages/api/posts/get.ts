@@ -1,4 +1,14 @@
 import type { APIRoute } from "astro";
+import { parseFrontmatter, parseFrontmatterBody } from "../../../lib/frontmatter";
+
+function decodeGitHubContent(encoded: string): string {
+  return decodeURIComponent(
+    atob(encoded)
+      .split("")
+      .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+      .join(""),
+  );
+}
 
 export const GET: APIRoute = async (ctx) => {
   const user = ctx.locals.user;
@@ -52,57 +62,32 @@ export const GET: APIRoute = async (ctx) => {
       encoding: string;
     };
 
-    const content = decodeURIComponent(
-      atob(data.content)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join(""),
-    );
+    const content = decodeGitHubContent(data.content);
+    const fm = parseFrontmatter(content);
+    const body = parseFrontmatterBody(content);
 
-    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-    if (!frontmatterMatch) {
+    if (!fm || !body) {
       return new Response(
         JSON.stringify({ error: "Invalid post format" }),
         { status: 400, headers: { "Content-Type": "application/json" } },
       );
     }
 
-    const frontmatter = frontmatterMatch[1];
-    const markdownContent = frontmatterMatch[2];
-
-    const titleMatch = frontmatter.match(/title:\s*"?(.+?)"?\s*$/m);
-    const descriptionMatch = frontmatter.match(/description:\s*"?(.+?)"?\s*$/m);
-    const statusMatch = frontmatter.match(/status:\s*(\w+)/);
-
-    let tags: string[] = [];
-    const inlineTagsMatch = frontmatter.match(/tags:\s*\[(.+)\]/);
-    const listTagsMatch = frontmatter.match(/tags:\s*\n((?:\s*-\s*.+\n?)*)/);
-
-    if (inlineTagsMatch) {
-      tags = inlineTagsMatch[1].split(",").map((t) => t.trim().replace(/"/g, ""));
-    } else if (listTagsMatch) {
-      tags = listTagsMatch[1]
-        .split("\n")
-        .map((t) => t.replace(/^\s*-\s*/, "").trim())
-        .filter(Boolean);
-    }
-
     return new Response(
       JSON.stringify({
-        title: titleMatch ? titleMatch[1].trim() : "",
-        description: descriptionMatch ? descriptionMatch[1].trim() : "",
-        tags: tags.join(", "),
-        status: statusMatch ? statusMatch[1] : "draft",
-        content: markdownContent.trim(),
+        title: fm.title,
+        description: fm.description,
+        tags: fm.tags.join(", "),
+        status: fm.status,
+        content: body.trim(),
       }),
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
       },
     );
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ error: message }), {
+  } catch {
+    return new Response(JSON.stringify({ error: "Failed to fetch post" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

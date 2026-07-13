@@ -23,14 +23,17 @@ export const POST: APIRoute = async (ctx) => {
     const date = new Date().toISOString().split("T")[0];
     const tagsArray = tags
       .split(",")
-      .map((t: string) => t.trim())
+      .map((t: string) => t.trim().replace(/"/g, ""))
       .filter(Boolean);
+
+    const safeTitle = title.replace(/"/g, '\\"');
+    const safeDescription = description ? description.replace(/"/g, '\\"') : null;
 
     const frontmatter = [
       "---",
-      `title: "${title}"`,
+      `title: "${safeTitle}"`,
       `date: ${date}`,
-      description ? `description: "${description}"` : null,
+      safeDescription ? `description: "${safeDescription}"` : null,
       `tags: [${tagsArray.map((t: string) => `"${t}"`).join(", ")}]`,
       `status: ${status || "draft"}`,
       "---",
@@ -61,9 +64,8 @@ export const POST: APIRoute = async (ctx) => {
         headers: { "Content-Type": "application/json" },
       },
     );
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ error: message }), {
+  } catch {
+    return new Response(JSON.stringify({ error: "Failed to create post" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

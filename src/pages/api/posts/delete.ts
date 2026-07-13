@@ -43,9 +43,8 @@ export const POST: APIRoute = async (ctx) => {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ error: message }), {
+  } catch {
+    return new Response(JSON.stringify({ error: "Failed to delete post" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

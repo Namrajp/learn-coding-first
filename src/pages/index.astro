@@ -13,7 +13,7 @@ posts.map((post) => {
 });
 
 posts = posts.sort(
-  (a, b) => new Date(a.data.date).valueOf() - new Date(b.data.date).valueOf(),
+  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
 );
 
 const allPosts = await getCollection("posts");

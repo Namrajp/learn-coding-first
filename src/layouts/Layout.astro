@@ -4,9 +4,6 @@ import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
 import Breadcrumb from "../components/Breadcrumb.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Nav from "../components/Nav.astro";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Footer from "../components/Footer.astro";
 const { frontmatter, title, tags, showSignOut } = Astro.props;
 ---
@@ -26,16 +23,12 @@ const { frontmatter, title, tags, showSignOut } = Astro.props;
     />
     <meta
       property="og:image"
-      content={`https://learncodingfirst.com/my-logo.svg`}
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
+      content={`https://learncodingfirst.com/my_logo.svg`}
     />
     <link
       rel="alternate"
       type="application/rss+xml"
-      title="My cool blog"
+      title="Learn Coding First"
       href="/rss.xml"
     />
     <title>{title}</title>
@@ -66,7 +59,6 @@ const { frontmatter, title, tags, showSignOut } = Astro.props;
     <ThemeToggle showSignOut={showSignOut} />
     <div class="py-2">
       <header id="home">
-        <!-- <Nav /> -->
       </header>
 
       <div class="mx-auto max-w-[1200px] px-6">
@@ -75,6 +67,5 @@ const { frontmatter, title, tags, showSignOut } = Astro.props;
       </div>
       <Footer />
     </div>
-    <script src="/src/main.ts"></script>
   </body>
 </html>
