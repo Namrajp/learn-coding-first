@@ -61,8 +61,8 @@ src/components/Footer.astro       # Footer (shows Login/Admin based on auth)
 2. Client sends POST to `/api/auth/sign-in/magic-link`
 3. Server sends magic link email via Resend (rate-limited: 3/15 min per IP+email)
 4. User clicks link → session cookie set → redirected to `/admin`
-5. Middleware always checks session, redirects to `/login` if not authenticated on protected routes
-6. Footer shows "Login" when not logged in, "Admin" when logged in
+5. Middleware protects `/admin/*` and `/api/posts/*`
+6. Footer shows "Login" on public pages, "Admin" on protected pages
 
 ## Post Storage
 
@@ -122,4 +122,4 @@ All post API routes (`create`, `update`, `get`, `delete`) validate slugs with `/
 - Always use `buildFrontmatter()` for writing frontmatter — never interpolate user input directly into YAML strings.
 - Magic link endpoint is rate-limited via KV counters. Keys use `ratelimit:magic-link:{ip}:{email}` with 15-min TTL.
 - CSRF and origin checks are enabled. `trustedOrigins` includes `https://learncodingfirst.com` and `http://localhost:4321`.
-- Footer auth state is SSR — middleware sets `locals.user` on all routes, not just protected ones.
+- Do NOT check session on all routes in middleware — `createAuth()` creates a new better-auth + D1 connection per request, which makes `ClientRouter` navigation time out silently. Only check on protected routes.
