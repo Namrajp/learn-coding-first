@@ -52,7 +52,6 @@ export const GET: APIRoute = async (ctx) => {
       encoding: string;
     };
 
-    // Decode base64 content
     const content = decodeURIComponent(
       atob(data.content)
         .split("")
@@ -60,7 +59,6 @@ export const GET: APIRoute = async (ctx) => {
         .join(""),
     );
 
-    // Parse frontmatter
     const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
     if (!frontmatterMatch) {
       return new Response(
@@ -72,20 +70,27 @@ export const GET: APIRoute = async (ctx) => {
     const frontmatter = frontmatterMatch[1];
     const markdownContent = frontmatterMatch[2];
 
-    // Parse frontmatter fields
-    const titleMatch = frontmatter.match(/title:\s*"(.+)"/);
-    const descriptionMatch = frontmatter.match(/description:\s*"(.+)"/);
-    const tagsMatch = frontmatter.match(/tags:\s*\[(.+)\]/);
+    const titleMatch = frontmatter.match(/title:\s*"?(.+?)"?\s*$/m);
+    const descriptionMatch = frontmatter.match(/description:\s*"?(.+?)"?\s*$/m);
     const statusMatch = frontmatter.match(/status:\s*(\w+)/);
 
-    const tags = tagsMatch
-      ? tagsMatch[1].split(",").map((t) => t.trim().replace(/"/g, ""))
-      : [];
+    let tags: string[] = [];
+    const inlineTagsMatch = frontmatter.match(/tags:\s*\[(.+)\]/);
+    const listTagsMatch = frontmatter.match(/tags:\s*\n((?:\s*-\s*.+\n?)*)/);
+
+    if (inlineTagsMatch) {
+      tags = inlineTagsMatch[1].split(",").map((t) => t.trim().replace(/"/g, ""));
+    } else if (listTagsMatch) {
+      tags = listTagsMatch[1]
+        .split("\n")
+        .map((t) => t.replace(/^\s*-\s*/, "").trim())
+        .filter(Boolean);
+    }
 
     return new Response(
       JSON.stringify({
-        title: titleMatch ? titleMatch[1] : "",
-        description: descriptionMatch ? descriptionMatch[1] : "",
+        title: titleMatch ? titleMatch[1].trim() : "",
+        description: descriptionMatch ? descriptionMatch[1].trim() : "",
         tags: tags.join(", "),
         status: statusMatch ? statusMatch[1] : "draft",
         content: markdownContent.trim(),

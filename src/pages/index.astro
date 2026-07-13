@@ -12,11 +12,12 @@ posts.map((post) => {
   });
 });
 
-posts = posts
-  .sort(
-    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
-  )
-  .slice(0, 12);
+posts = posts.sort(
+  (a, b) => new Date(a.data.date).valueOf() - new Date(b.data.date).valueOf(),
+);
+
+const latestPost = posts[posts.length - 1];
+const olderPosts = posts.slice(0, -1);
 
 const allPosts = await getCollection("posts");
 const randomPost = allPosts[Math.floor(Math.random() * allPosts.length)];
@@ -47,10 +48,23 @@ const otherPosts = allPosts
         <h1 class="mb-4 text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
           Fundamentals of programming and AI
         </h1>
-        <p class="my-4 text-xl font-semibold dark:text-gray-200">Latest posts</p>
+
+        {latestPost && (
+          <div class="mb-8 rounded-xl border border-[hsl(21,62%,45%)] bg-[hsl(21,62%,45%)]/5 p-6">
+            <p class="mb-2 text-sm font-semibold uppercase text-[hsl(21,62%,45%)]">Latest Post</p>
+            <a href={`/${latestPost.id}`} class="text-2xl font-bold no-underline text-gray-900 dark:text-gray-100 hover:text-[hsl(21,62%,45%)]">
+              {latestPost.data.title}
+            </a>
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              {latestPost.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            </p>
+          </div>
+        )}
+
+        <p class="my-4 text-xl font-semibold dark:text-gray-200">All posts</p>
         <ul class="space-y-2">
           {
-            posts.map((post) => (
+            olderPosts.map((post) => (
               <li>
                 <a
                   href={`/${post.id}`}
