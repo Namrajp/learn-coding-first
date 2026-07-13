@@ -1,8 +1,7 @@
 ---
-title: "Test"
-date: 2026-07-13
+title: "Testing"
 tags: []
-status: published
+status: draft
 ---
 
 # The awesome 
