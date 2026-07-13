@@ -1,5 +1,6 @@
 ---
 title: "Dependency Injection in ASP.Net"
+date: 2025-11-24
 tags: ["news", "tutorial", "ASP.NET"]
 status: published
 ---
