@@ -1,9 +1,9 @@
 ---
 title: "Test"
-tags: ["""essay"""]
+tags: [""""essay""""]
 status: published
 ---
 
 # Awesome Post
 
-Testing the post
+Test
