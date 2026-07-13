@@ -1,6 +1,8 @@
 import type { APIRoute } from "astro";
 import { parseFrontmatter, parseFrontmatterBody } from "../../../lib/frontmatter";
 
+const SLUG_RE = /^[a-z0-9-]+$/;
+
 function decodeGitHubContent(encoded: string): string {
   return decodeURIComponent(
     atob(encoded)
@@ -21,8 +23,8 @@ export const GET: APIRoute = async (ctx) => {
     const url = new URL(ctx.request.url);
     const slug = url.searchParams.get("slug");
 
-    if (!slug) {
-      return new Response(JSON.stringify({ error: "Slug is required" }), {
+    if (!slug || !SLUG_RE.test(slug)) {
+      return new Response(JSON.stringify({ error: "Invalid slug" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });

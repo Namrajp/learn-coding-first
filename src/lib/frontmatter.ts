@@ -6,6 +6,11 @@ export interface ParsedFrontmatter {
   description: string;
 }
 
+export interface ParsedPostFile {
+  data: ParsedFrontmatter;
+  body: string;
+}
+
 export function parseFrontmatter(content: string): ParsedFrontmatter | null {
   const match = content.match(/^---\n([\s\S]*?)\n---\n/);
   if (!match) return null;
@@ -42,4 +47,46 @@ export function parseFrontmatter(content: string): ParsedFrontmatter | null {
 export function parseFrontmatterBody(content: string): string | null {
   const match = content.match(/^---\n[\s\S]*?\n---\n([\s\S]*)$/);
   return match ? match[1] : null;
+}
+
+export function parsePostFile(content: string): ParsedPostFile | null {
+  const data = parseFrontmatter(content);
+  const body = parseFrontmatterBody(content);
+  if (!data || !body) return null;
+  return { data, body };
+}
+
+export function yamlString(s: string): string {
+  return s
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r")
+    .replace(/\t/g, "\\t");
+}
+
+export function buildFrontmatter(opts: {
+  title: string;
+  date: string;
+  tags: string[];
+  status: string;
+  description?: string;
+}): string {
+  const lines = [
+    "---",
+    `title: "${yamlString(opts.title)}"`,
+    `date: ${opts.date}`,
+  ];
+
+  if (opts.description) {
+    lines.push(`description: "${yamlString(opts.description)}"`);
+  }
+
+  lines.push(
+    `tags: [${opts.tags.map((t) => `"${yamlString(t)}"`).join(", ")}]`,
+    `status: ${opts.status}`,
+    "---",
+  );
+
+  return lines.join("\n");
 }

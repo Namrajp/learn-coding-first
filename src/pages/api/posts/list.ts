@@ -5,6 +5,15 @@ import { parseFrontmatter } from "../../../lib/frontmatter";
 const CACHE_KEY = "posts:list";
 const CACHE_TTL = 60; // 60 seconds
 
+function decodeGitHubContent(encoded: string): string {
+  return decodeURIComponent(
+    atob(encoded)
+      .split("")
+      .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+      .join(""),
+  );
+}
+
 export const GET: APIRoute = async (ctx) => {
   const user = ctx.locals.user;
   if (!user) {
@@ -33,30 +42,41 @@ export const GET: APIRoute = async (ctx) => {
       "src/posts",
     );
 
-    const posts = [];
-    for (const file of files) {
-      const url = `https://raw.githubusercontent.com/Namrajp/my-new-astro-blog/main/${file.path}`;
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-          "User-Agent": "learncodingfirst-blog",
-        },
-      });
-      if (!response.ok) continue;
+    const results = await Promise.allSettled(
+      files.map(async (file) => {
+        const url = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${file.path}`;
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+            Accept: "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "User-Agent": "learncodingfirst-blog",
+          },
+        });
+        if (!response.ok) return null;
 
-      const content = await response.text();
-      const fm = parseFrontmatter(content);
-      if (!fm) continue;
+        const json = (await response.json()) as { content: string; encoding: string };
+        const content = decodeGitHubContent(json.content);
+        const fm = parseFrontmatter(content);
+        if (!fm) return null;
 
-      const slug = file.name.replace(/\.md$/, "");
-      posts.push({
-        slug,
-        title: fm.title || slug,
-        date: fm.date,
-        tags: fm.tags,
-        status: fm.status,
-      });
-    }
+        const slug = file.name.replace(/\.md$/, "");
+        return {
+          slug,
+          title: fm.title || slug,
+          date: fm.date,
+          tags: fm.tags,
+          status: fm.status,
+        };
+      }),
+    );
+
+    const posts = results
+      .filter(
+        (r): r is PromiseFulfilledResult<{ slug: string; title: string; date: string; tags: string[]; status: string } | null> =>
+          r.status === "fulfilled" && r.value !== null,
+      )
+      .map((r) => r.value!);
 
     posts.sort(
       (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
@@ -68,9 +88,8 @@ export const GET: APIRoute = async (ctx) => {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ error: message }), {
+  } catch {
+    return new Response(JSON.stringify({ error: "Failed to list posts" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

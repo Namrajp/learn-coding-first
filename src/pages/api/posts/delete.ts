@@ -1,6 +1,8 @@
 import type { APIRoute } from "astro";
 import { deleteFile } from "../../../lib/github";
 
+const SLUG_RE = /^[a-z0-9-]+$/;
+
 export const POST: APIRoute = async (ctx) => {
   const user = ctx.locals.user;
   if (!user) {
@@ -11,8 +13,8 @@ export const POST: APIRoute = async (ctx) => {
     const env = ctx.locals.env;
     const { slug } = await ctx.request.json();
 
-    if (!slug) {
-      return new Response(JSON.stringify({ error: "Slug is required" }), {
+    if (!slug || !SLUG_RE.test(slug)) {
+      return new Response(JSON.stringify({ error: "Invalid slug" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });

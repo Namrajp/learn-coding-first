@@ -21,11 +21,7 @@ export function createAuth(
       },
       {
         baseURL: env.BETTER_AUTH_URL,
-        trustedOrigins: ["https://learncodingfirst.com"],
-        advanced: {
-          disableCSRFCheck: true,
-        },
-        skipOriginCheck: true,
+        trustedOrigins: ["https://learncodingfirst.com", "http://localhost:4321"],
         emailAndPassword: { enabled: false },
         session: {
           expiresIn: 60 * 60 * 24 * 7,

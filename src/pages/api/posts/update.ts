@@ -1,6 +1,8 @@
 import type { APIRoute } from "astro";
 import { createOrUpdateFile } from "../../../lib/github";
-import { parseFrontmatter } from "../../../lib/frontmatter";
+import { parseFrontmatter, buildFrontmatter } from "../../../lib/frontmatter";
+
+const SLUG_RE = /^[a-z0-9-]+$/;
 
 function decodeGitHubContent(encoded: string): string {
   return decodeURIComponent(
@@ -21,6 +23,13 @@ export const POST: APIRoute = async (ctx) => {
     const env = ctx.locals.env;
     const { slug, title, content, description, tags, status } =
       await ctx.request.json();
+
+    if (!slug || !SLUG_RE.test(slug)) {
+      return new Response(JSON.stringify({ error: "Invalid slug" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     const filePath = `src/posts/${slug}.md`;
     const apiUrl = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${filePath}`;
@@ -46,20 +55,13 @@ export const POST: APIRoute = async (ctx) => {
       .map((t: string) => t.trim().replace(/"/g, ""))
       .filter(Boolean);
 
-    const safeTitle = title.replace(/"/g, '\\"');
-    const safeDescription = description ? description.replace(/"/g, '\\"') : null;
-
-    const frontmatter = [
-      "---",
-      `title: "${safeTitle}"`,
-      `date: ${date}`,
-      safeDescription ? `description: "${safeDescription}"` : null,
-      `tags: [${tagsArray.map((t: string) => `"${t}"`).join(", ")}]`,
-      `status: ${status || "draft"}`,
-      "---",
-    ]
-      .filter(Boolean)
-      .join("\n");
+    const frontmatter = buildFrontmatter({
+      title,
+      date,
+      description: description || undefined,
+      tags: tagsArray,
+      status: status || "draft",
+    });
 
     const fileContent = `${frontmatter}\n\n${content}`;
 

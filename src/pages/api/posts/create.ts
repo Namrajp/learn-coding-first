@@ -1,5 +1,8 @@
 import type { APIRoute } from "astro";
 import { createOrUpdateFile, generateSlug } from "../../../lib/github";
+import { buildFrontmatter } from "../../../lib/frontmatter";
+
+const SLUG_RE = /^[a-z0-9-]+$/;
 
 export const POST: APIRoute = async (ctx) => {
   const user = ctx.locals.user;
@@ -20,26 +23,27 @@ export const POST: APIRoute = async (ctx) => {
     }
 
     const slug = generateSlug(title);
+
+    if (!SLUG_RE.test(slug)) {
+      return new Response(JSON.stringify({ error: "Invalid slug" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const date = new Date().toISOString().split("T")[0];
     const tagsArray = tags
       .split(",")
       .map((t: string) => t.trim().replace(/"/g, ""))
       .filter(Boolean);
 
-    const safeTitle = title.replace(/"/g, '\\"');
-    const safeDescription = description ? description.replace(/"/g, '\\"') : null;
-
-    const frontmatter = [
-      "---",
-      `title: "${safeTitle}"`,
-      `date: ${date}`,
-      safeDescription ? `description: "${safeDescription}"` : null,
-      `tags: [${tagsArray.map((t: string) => `"${t}"`).join(", ")}]`,
-      `status: ${status || "draft"}`,
-      "---",
-    ]
-      .filter(Boolean)
-      .join("\n");
+    const frontmatter = buildFrontmatter({
+      title,
+      date,
+      description: description || undefined,
+      tags: tagsArray,
+      status: status || "draft",
+    });
 
     const fileContent = `${frontmatter}\n\n${content}`;
     const filePath = `src/posts/${slug}.md`;
