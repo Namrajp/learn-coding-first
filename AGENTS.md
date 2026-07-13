@@ -98,3 +98,8 @@ Tags support both inline (`tags: [a, b]`) and YAML list format (`tags:\n  - a\n 
 - Session table needs Cloudflare geolocation columns (timezone, city, country, etc.) or better-auth throws 500.
 - Theme toggle button needs `z-[100]` to stay above the homepage banner (`z-50`).
 - Theme toggle script must clone/replace button on `astro:after-swap` to avoid duplicate event listeners.
+- `raw.githubusercontent.com` caches content after GitHub API writes. Use `api.github.com/repos/.../contents/...` instead for always-fresh data.
+- `marked` needs `optimizeDeps.exclude` in astro.config.mjs — Vite's dep optimizer breaks the import.
+- `BETTER_AUTH_URL` in `[vars]` applies to local dev. Override in `.dev.vars` with `http://localhost:4321`.
+- Cancel/navigation links should be outside `<form>` tags to avoid browser quirks.
+- Edit page SSR should fetch file directly (`src/posts/${slug}.md`) instead of calling `listFiles()` first.

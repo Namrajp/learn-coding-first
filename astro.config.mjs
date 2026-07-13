@@ -13,6 +13,9 @@ export default defineConfig({
   output: "server",
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      exclude: ["marked"],
+    },
   },
   site: "https://learncodingfirst.com",
   integrations: [sitemap()],

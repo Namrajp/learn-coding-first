@@ -1,6 +1,5 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import { listFiles } from "../../../lib/github";
 
 const { slug } = Astro.params;
 if (!slug) {
@@ -12,45 +11,43 @@ let post = { title: "", tags: "", description: "", status: "draft", content: "" 
 
 if (env?.GITHUB_TOKEN) {
   try {
-    const files = await listFiles(
-      { token: env.GITHUB_TOKEN, owner: "Namrajp", repo: "my-new-astro-blog" },
-      "src/posts",
-    );
+    const filePath = `src/posts/${slug}.md`;
+    const url = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${filePath}`;
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+        "User-Agent": "learncodingfirst-blog",
+      },
+    });
 
-    const file = files.find((f) => f.name.replace(/\.md$/, "") === slug);
-    if (file) {
-      const res = await fetch(`https://raw.githubusercontent.com/Namrajp/my-new-astro-blog/main/${file.path}`, {
-        headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, "User-Agent": "learncodingfirst-blog" },
-      });
+    if (res.ok) {
+      const json = await res.json();
+      const raw = atob(json.content);
+      const fmMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+      if (fmMatch) {
+        const fm = fmMatch[1];
+        const body = fmMatch[2];
 
-      if (res.ok) {
-        const raw = await res.text();
-        const fmMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-        if (fmMatch) {
-          const fm = fmMatch[1];
-          const body = fmMatch[2];
+        const titleMatch = fm.match(/^title:\s*"?([^"\n]+)"?$/m);
+        const descMatch = fm.match(/^description:\s*"?([^"\n]*)"?$/m);
+        const statusMatch = fm.match(/^status:\s*(\S+)$/m);
+        const inlineTagsMatch = fm.match(/tags:\s*\[(.+)\]/);
+        const listTagsMatch = fm.match(/tags:\s*\n((?:\s*-\s*.+\n?)*)/);
 
-          const titleMatch = fm.match(/^title:\s*"?([^"\n]+)"?$/m);
-          const descMatch = fm.match(/^description:\s*"?([^"\n]*)"?$/m);
-          const statusMatch = fm.match(/^status:\s*(\S+)$/m);
-          const inlineTagsMatch = fm.match(/tags:\s*\[(.+)\]/);
-          const listTagsMatch = fm.match(/tags:\s*\n((?:\s*-\s*.+\n?)*)/);
-
-          let tags: string[] = [];
-          if (inlineTagsMatch) {
-            tags = inlineTagsMatch[1].split(",").map((t) => t.trim());
-          } else if (listTagsMatch) {
-            tags = listTagsMatch[1].split("\n").map((t) => t.replace(/^\s*-\s*/, "").trim()).filter(Boolean);
-          }
-
-          post = {
-            title: titleMatch?.[1]?.trim() || "",
-            tags: tags.join(", "),
-            description: descMatch?.[1]?.trim() || "",
-            status: statusMatch?.[1]?.trim() || "draft",
-            content: body.trim(),
-          };
+        let tags: string[] = [];
+        if (inlineTagsMatch) {
+          tags = inlineTagsMatch[1].split(",").map((t) => t.trim());
+        } else if (listTagsMatch) {
+          tags = listTagsMatch[1].split("\n").map((t) => t.replace(/^\s*-\s*/, "").trim()).filter(Boolean);
         }
+
+        post = {
+          title: titleMatch?.[1]?.trim() || "",
+          tags: tags.join(", "),
+          description: descMatch?.[1]?.trim() || "",
+          status: statusMatch?.[1]?.trim() || "draft",
+          content: body.trim(),
+        };
       }
     }
   } catch {
@@ -175,16 +172,19 @@ if (env?.GITHUB_TOKEN) {
         >
           Update Post
         </button>
-        <a
-          href="/admin"
-          class="rounded-lg border border-gray-300 px-6 py-2 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
-        >
-          Cancel
-        </a>
       </div>
 
       <div id="status-message" class="hidden"></div>
     </form>
+
+    <div class="mt-4">
+      <a
+        href="/admin"
+        class="inline-block rounded-lg border border-gray-300 px-6 py-2 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+      >
+        Cancel
+      </a>
+    </div>
   </div>
 
   <script>

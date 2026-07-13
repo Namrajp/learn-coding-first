@@ -15,13 +15,14 @@ try {
     );
 
     for (const file of files) {
-      const url = `https://raw.githubusercontent.com/Namrajp/my-new-astro-blog/main/${file.path}`;
+      const url = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${file.path}`;
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, "User-Agent": "learncodingfirst-blog" },
       });
       if (!res.ok) continue;
 
-      const content = await res.text();
+      const json = await res.json();
+      const content = atob(json.content);
       const fm = parseFrontmatter(content);
       if (!fm) continue;
 
@@ -41,7 +42,7 @@ try {
 }
 ---
 
-<Layout title="Admin Dashboard">
+<Layout title="Admin Dashboard" showSignOut={true}>
   <div class="mx-auto mt-10 max-w-4xl">
     <div class="mb-8 flex items-center justify-between">
       <div>
@@ -133,27 +134,9 @@ try {
         </table>
       </div>
     </div>
-
-    <div class="mt-8 text-center">
-      <button
-        id="logout-btn"
-        class="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-      >
-        Sign Out
-      </button>
-    </div>
   </div>
 
   <script>
-    import { authClient } from "../../lib/auth-client";
-
-    document
-      .getElementById("logout-btn")
-      ?.addEventListener("click", async () => {
-        await authClient.signOut();
-        window.location.href = "/login";
-      });
-
     document.querySelectorAll(".delete-btn").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const slug = (btn as HTMLElement).dataset.slug;
