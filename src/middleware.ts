@@ -5,18 +5,21 @@ import { defineMiddleware } from "astro:middleware";
 const protectedRoutes = ["/admin", "/api/posts"];
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  // Make env available to all routes via context.locals.env
   context.locals.env = env as CloudflareBindings;
 
+  const pathname = context.url.pathname;
+
+  if (pathname.startsWith("/api/auth/")) {
+    return next();
+  }
+
   const isProtected = protectedRoutes.some((route) =>
-    context.url.pathname.startsWith(route),
+    pathname.startsWith(route),
   );
 
   if (isProtected) {
     try {
-      const cf = context.request.cf;
-
-      const auth = createAuth(env as CloudflareBindings, cf);
+      const auth = createAuth(env as CloudflareBindings, context.request.cf);
       const session = await auth.api.getSession({
         headers: context.request.headers,
       });

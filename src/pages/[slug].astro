@@ -1,36 +1,101 @@
 ---
-import { getCollection, render } from "astro:content";
+import { marked } from "marked";
 import Layout from "@layouts/Layout.astro";
+import { listFiles } from "../lib/github";
 
-export const prerender = true;
-
-export async function getStaticPaths() {
-  const posts = await getCollection("posts");
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
-  }));
+const slug = Astro.params.slug;
+if (!slug) {
+  return Astro.redirect("/");
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const env = Astro.locals.env;
+if (!env?.GITHUB_TOKEN) {
+  return Astro.redirect("/");
+}
+
+let post: { title: string; date: string; tags: string[]; description: string; content: string } | null = null;
+
+try {
+  const files = await listFiles(
+    { token: env.GITHUB_TOKEN, owner: "Namrajp", repo: "my-new-astro-blog" },
+    "src/posts",
+  );
+
+  const file = files.find((f) => f.name.replace(/\.md$/, "") === slug);
+  if (!file) {
+    return Astro.redirect("/");
+  }
+
+  const url = `https://raw.githubusercontent.com/Namrajp/my-new-astro-blog/main/${file.path}`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, "User-Agent": "learncodingfirst-blog" },
+  });
+
+  if (!res.ok) {
+    return Astro.redirect("/");
+  }
+
+  const raw = await res.text();
+
+  const fmMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  if (!fmMatch) {
+    return Astro.redirect("/");
+  }
+
+  const fmBlock = fmMatch[1];
+  const body = fmMatch[2];
+
+  const titleMatch = fmBlock.match(/^title:\s*"?([^"\n]+)"?$/m);
+  const dateMatch = fmBlock.match(/^date:\s*(\S+)$/m);
+  const descMatch = fmBlock.match(/^description:\s*"?([^"\n]*)"?$/m);
+  const tagsMatch = fmBlock.match(/^tags:\s*\n((?:\s*-\s*.+\n?)*)/m) || fmBlock.match(/^tags:\s*\[(.+)\]$/m);
+
+  let tags: string[] = [];
+  if (tagsMatch) {
+    const tagStr = tagsMatch[1].trim();
+    if (tagStr.startsWith("[")) {
+      tags = tagStr.replace(/[\[\]]/g, "").split(",").map((t) => t.trim());
+    } else {
+      tags = tagStr.split("\n").map((t) => t.replace(/^\s*-\s*/, "").trim()).filter(Boolean);
+    }
+  }
+
+  const statusMatch = fmBlock.match(/^status:\s*(\S+)$/m);
+
+  post = {
+    title: titleMatch?.[1]?.trim() || slug,
+    date: dateMatch?.[1]?.trim() || new Date().toISOString(),
+    tags,
+    description: descMatch?.[1]?.trim() || "",
+    content: body,
+  };
+} catch {
+  return Astro.redirect("/");
+}
+
+if (!post) {
+  return Astro.redirect("/");
+}
+
+const htmlContent = marked.parse(post.content) as string;
+const postDate = new Date(post.date);
 ---
 
-<Layout frontmatter={post.data} title={post.data.title} tags={post.data.tags}>
+<Layout frontmatter={{ title: post.title, description: post.description, date: postDate, tags: post.tags }} title={post.title} tags={post.tags}>
   <div class="mx-auto max-w-[65ch]">
     <h1 class="mt-8 mb-2 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
-      {post.data.title}
+      {post.title}
     </h1>
     <p class="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Namraj Pudasaini</p>
     <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">
-      {post.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+      {postDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
     </p>
     <div class="prose dark:prose-invert">
-      <Content />
+      <Fragment set:html={htmlContent} />
     </div>
     <div class="my-4 space-x-2">
       {
-        post.data.tags.map((tag) => (
+        post.tags.map((tag) => (
           <a
             href={`/tag/${tag}`}
             class="rounded-lg px-2 py-1 no-underline text-gray-700 dark:text-gray-300 hover:text-[hsl(21,62%,45%)]"
