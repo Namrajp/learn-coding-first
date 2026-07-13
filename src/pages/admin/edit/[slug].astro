@@ -1,9 +1,61 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
+import { listFiles } from "../../../lib/github";
 
 const { slug } = Astro.params;
 if (!slug) {
   return Astro.redirect("/admin");
+}
+
+const env = Astro.locals.env;
+let post = { title: "", tags: "", description: "", status: "draft", content: "" };
+
+if (env?.GITHUB_TOKEN) {
+  try {
+    const files = await listFiles(
+      { token: env.GITHUB_TOKEN, owner: "Namrajp", repo: "my-new-astro-blog" },
+      "src/posts",
+    );
+
+    const file = files.find((f) => f.name.replace(/\.md$/, "") === slug);
+    if (file) {
+      const res = await fetch(`https://raw.githubusercontent.com/Namrajp/my-new-astro-blog/main/${file.path}`, {
+        headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, "User-Agent": "learncodingfirst-blog" },
+      });
+
+      if (res.ok) {
+        const raw = await res.text();
+        const fmMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+        if (fmMatch) {
+          const fm = fmMatch[1];
+          const body = fmMatch[2];
+
+          const titleMatch = fm.match(/^title:\s*"?([^"\n]+)"?$/m);
+          const descMatch = fm.match(/^description:\s*"?([^"\n]*)"?$/m);
+          const statusMatch = fm.match(/^status:\s*(\S+)$/m);
+          const inlineTagsMatch = fm.match(/tags:\s*\[(.+)\]/);
+          const listTagsMatch = fm.match(/tags:\s*\n((?:\s*-\s*.+\n?)*)/);
+
+          let tags: string[] = [];
+          if (inlineTagsMatch) {
+            tags = inlineTagsMatch[1].split(",").map((t) => t.trim());
+          } else if (listTagsMatch) {
+            tags = listTagsMatch[1].split("\n").map((t) => t.replace(/^\s*-\s*/, "").trim()).filter(Boolean);
+          }
+
+          post = {
+            title: titleMatch?.[1]?.trim() || "",
+            tags: tags.join(", "),
+            description: descMatch?.[1]?.trim() || "",
+            status: statusMatch?.[1]?.trim() || "draft",
+            content: body.trim(),
+          };
+        }
+      }
+    }
+  } catch {
+    // leave defaults
+  }
 }
 ---
 
@@ -16,11 +68,7 @@ if (!slug) {
       </a>
     </div>
 
-    <div id="loading" class="py-12 text-center text-gray-500">
-      Loading post...
-    </div>
-
-    <form id="post-form" class="hidden space-y-6">
+    <form id="post-form" class="space-y-6">
       <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
           <label
@@ -34,6 +82,7 @@ if (!slug) {
             id="title"
             name="title"
             required
+            value={post.title}
             class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-800 dark:text-white"
             placeholder="My Awesome Post"
           />
@@ -49,6 +98,7 @@ if (!slug) {
             type="text"
             id="tags"
             name="tags"
+            value={post.tags}
             placeholder="tutorial, python, ai"
             class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-800 dark:text-white"
           />
@@ -66,6 +116,7 @@ if (!slug) {
           type="text"
           id="description"
           name="description"
+          value={post.description}
           class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-800 dark:text-white"
           placeholder="A brief description of your post"
         />
@@ -83,8 +134,8 @@ if (!slug) {
           name="status"
           class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-800 dark:text-white"
         >
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
+          <option value="draft" selected={post.status === "draft"}>Draft</option>
+          <option value="published" selected={post.status === "published"}>Published</option>
         </select>
       </div>
 
@@ -102,18 +153,8 @@ if (!slug) {
             rows="25"
             required
             class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 font-mono text-sm leading-relaxed focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-            placeholder="# Hello World
-
-Write your post content here using Markdown...
-
-## Section 1
-
-Your content here.
-
-```python
-print('Hello, World!')
-```"
-          ></textarea>
+            placeholder="# Hello World"
+          >{post.content}</textarea>
         </div>
         <div>
           <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -123,9 +164,6 @@ print('Hello, World!')
             id="preview"
             class="prose h-[600px] w-full max-w-none overflow-auto rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-900"
           >
-            <p class="text-gray-400 italic">
-              Start typing to see the preview...
-            </p>
           </div>
         </div>
       </div>
@@ -154,82 +192,31 @@ print('Hello, World!')
 
     const slug = window.location.pathname.split("/").pop();
     const form = document.getElementById("post-form") as HTMLFormElement;
-    const loading = document.getElementById("loading") as HTMLDivElement;
     const content = document.getElementById("content") as HTMLTextAreaElement;
     const preview = document.getElementById("preview") as HTMLDivElement;
     const statusMessage = document.getElementById(
       "status-message",
     ) as HTMLDivElement;
 
-    // Configure marked for better rendering
-    marked.setOptions({
-      gfm: true,
-      breaks: true,
-    });
+    marked.setOptions({ gfm: true, breaks: true });
 
-    // Live preview
-    content?.addEventListener("input", () => {
+    function renderPreview() {
       if (content.value.trim()) {
         preview.innerHTML = marked.parse(content.value) as string;
-      } else {
-        preview.innerHTML =
-          '<p class="text-gray-400 italic">Start typing to see the preview...</p>';
-      }
-    });
-
-    // Load post data
-    async function loadPost() {
-      try {
-        const response = await fetch(`/api/posts/get?slug=${slug}`);
-        if (!response.ok) {
-          throw new Error("Failed to load post");
-        }
-
-        const post = await response.json();
-
-        // Populate form fields
-        (document.getElementById("title") as HTMLInputElement).value =
-          post.title || "";
-        (document.getElementById("tags") as HTMLInputElement).value =
-          post.tags || "";
-        (document.getElementById("description") as HTMLInputElement).value =
-          post.description || "";
-        (document.getElementById("status") as HTMLSelectElement).value =
-          post.status || "draft";
-        content.value = post.content || "";
-
-        // Show preview
-        if (post.content) {
-          preview.innerHTML = marked.parse(post.content) as string;
-        }
-
-        // Show form, hide loading
-        loading.classList.add("hidden");
-        form.classList.remove("hidden");
-      } catch {
-        loading.textContent = "Failed to load post. Please try again.";
-        loading.classList.add("text-red-600");
       }
     }
 
-    loadPost();
+    renderPreview();
+    content?.addEventListener("input", renderPreview);
 
-    // Form submission
     form?.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const title = (
-        document.getElementById("title") as HTMLInputElement
-      ).value.trim();
-      const tags = (
-        document.getElementById("tags") as HTMLInputElement
-      ).value.trim();
-      const description = (
-        document.getElementById("description") as HTMLInputElement
-      ).value.trim();
+      const title = (document.getElementById("title") as HTMLInputElement).value.trim();
+      const tags = (document.getElementById("tags") as HTMLInputElement).value.trim();
+      const description = (document.getElementById("description") as HTMLInputElement).value.trim();
       const markdownContent = content.value.trim();
-      const status = (document.getElementById("status") as HTMLSelectElement)
-        .value;
+      const status = (document.getElementById("status") as HTMLSelectElement).value;
 
       if (!title || !markdownContent) {
         statusMessage.textContent = "Title and content are required";
@@ -237,12 +224,8 @@ print('Hello, World!')
         return;
       }
 
-      // Disable button during submission
-      const button = form.querySelector(
-        "button[type='submit']",
-      ) as HTMLButtonElement;
+      const button = form.querySelector("button[type='submit']") as HTMLButtonElement;
       button.disabled = true;
-
       statusMessage.textContent = "Saving...";
       statusMessage.className = "mt-4 text-center text-gray-600";
 
@@ -250,14 +233,7 @@ print('Hello, World!')
         const response = await fetch("/api/posts/update", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            slug,
-            title,
-            content: markdownContent,
-            description,
-            tags,
-            status,
-          }),
+          body: JSON.stringify({ slug, title, content: markdownContent, description, tags, status }),
         });
 
         const result = await response.json();
@@ -265,11 +241,7 @@ print('Hello, World!')
         if (response.ok) {
           statusMessage.textContent = "Post updated successfully!";
           statusMessage.className = "mt-4 text-center text-green-600";
-
-          // Redirect to admin after a short delay
-          setTimeout(() => {
-            window.location.href = "/admin";
-          }, 1500);
+          setTimeout(() => { window.location.href = "/admin"; }, 1500);
         } else {
           statusMessage.textContent = result.error || "Failed to update post";
           statusMessage.className = "mt-4 text-center text-red-600";
