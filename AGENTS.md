@@ -28,14 +28,15 @@ npx prettier --write . # Format
 astro.config.mjs        # Cloudflare adapter, output: "server"
 wrangler.toml           # D1 + KV bindings, secrets
 env.d.ts                # CloudflareBindings, App.Locals types
-src/middleware.ts        # Auth guard + env injection
-src/lib/auth.ts         # better-auth instance
+src/middleware.ts        # Auth guard + env injection (always checks session)
+src/lib/auth.ts         # better-auth instance (CSRF/origin enabled)
 src/lib/github.ts       # GitHub API (createOrUpdateFile, deleteFile, listFiles)
 src/lib/email.ts        # Resend magic link sender
-src/lib/frontmatter.ts  # YAML frontmatter parser (parseFrontmatter, parseFrontmatterBody)
+src/lib/frontmatter.ts  # YAML frontmatter (parseFrontmatter, parseFrontmatterBody, parsePostFile, yamlString, buildFrontmatter)
 src/content.config.ts   # Post schema (title, date, tags, status)
 src/db/auth.schema.ts   # Drizzle: user, session, verification tables
 src/components/ThemeToggle.astro  # Dark/light theme switch
+src/components/Footer.astro       # Footer (shows Login/Admin based on auth)
 ```
 
 ## Routes
@@ -49,7 +50,7 @@ src/components/ThemeToggle.astro  # Dark/light theme switch
 /admin                  Dashboard (SSR, protected)
 /admin/new              Create post (SSR, protected)
 /admin/edit/[slug]      Edit post (SSR, protected)
-/api/auth/[...all]      better-auth handler (public)
+/api/auth/[...all]      better-auth handler (public, rate-limited)
 /api/posts/*            Post CRUD API (protected)
 /404                    Custom 404 page
 ```
@@ -58,15 +59,23 @@ src/components/ThemeToggle.astro  # Dark/light theme switch
 
 1. User enters email at `/login`
 2. Client sends POST to `/api/auth/sign-in/magic-link`
-3. Server sends magic link email via Resend
+3. Server sends magic link email via Resend (rate-limited: 3/15 min per IP+email)
 4. User clicks link → session cookie set → redirected to `/admin`
-5. Middleware protects `/admin/*` and `/api/posts/*`
+5. Middleware always checks session, redirects to `/login` if not authenticated on protected routes
+6. Footer shows "Login" when not logged in, "Admin" when logged in
 
 ## Post Storage
 
 Posts are markdown files in `src/posts/` of the GitHub repo. Admin CRUD goes through GitHub Contents API — every create/edit/delete is a git commit. The `[slug].astro` page fetches directly via `api.github.com` (not `raw.githubusercontent.com` which caches). Draft posts are hidden from public pages.
 
-## Frontmatter Format
+## Frontmatter
+
+Use shared helpers from `src/lib/frontmatter.ts`:
+- `parseFrontmatter(content)` — parses frontmatter from raw markdown (handles quoted/unquoted titles)
+- `parseFrontmatterBody(content)` — extracts markdown body after frontmatter
+- `parsePostFile(content)` — combines both into `{ data, body }`
+- `yamlString(s)` — escapes `\`, `"`, newlines, tabs for safe YAML output
+- `buildFrontmatter({title, date, tags, status, description})` — generates frontmatter block
 
 ```yaml
 ---
@@ -80,12 +89,16 @@ status: published
 ---
 ```
 
-Tags support both inline (`tags: [a, b]`) and YAML list format (`tags:\n  - a\n  - b`). Use the shared parser at `src/lib/frontmatter.ts`.
+Tags support both inline (`tags: [a, b]`) and YAML list format.
+
+## Slug Validation
+
+All post API routes (`create`, `update`, `get`, `delete`) validate slugs with `/^[a-z0-9-]+$/`. Invalid slugs return 400. Slugs are generated from titles via `generateSlug()` in `github.ts`.
 
 ## Cloudflare Bindings
 
 - `DB` — D1 database (auth tables)
-- `SESSION` — KV namespace (session store, also caches post list with `posts:list` key)
+- `SESSION` — KV namespace (session store, rate limiting counters, post list cache with `posts:list` key)
 - `GITHUB_TOKEN` — Secret (GitHub PAT with Contents: Read/Write)
 - `RESEND_API_KEY` — Secret (Resend API)
 - `BETTER_AUTH_SECRET` — Secret (session signing)
@@ -106,4 +119,7 @@ Tags support both inline (`tags: [a, b]`) and YAML list format (`tags:\n  - a\n 
 - Edit page SSR should fetch file directly (`src/posts/${slug}.md`) instead of calling `listFiles()` first.
 - All GitHub API responses must be decoded with UTF-8 safe `decodeURIComponent(atob(...))` — plain `atob()` crashes on non-ASCII content.
 - Post list is cached in KV (`posts:list` key, 60s TTL). Invalidate on create/update/delete.
-- YAML injection: escape `"` in title/description before writing frontmatter.
+- Always use `buildFrontmatter()` for writing frontmatter — never interpolate user input directly into YAML strings.
+- Magic link endpoint is rate-limited via KV counters. Keys use `ratelimit:magic-link:{ip}:{email}` with 15-min TTL.
+- CSRF and origin checks are enabled. `trustedOrigins` includes `https://learncodingfirst.com` and `http://localhost:4321`.
+- Footer auth state is SSR — middleware sets `locals.user` on all routes, not just protected ones.
