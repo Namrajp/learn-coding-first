@@ -104,7 +104,7 @@ print('Hello, World!')
         </div>
       </div>
 
-      <div class="flex gap-4 border-t border-gray-200 pt-4 dark:border-gray-700">
+      <div class="flex items-center gap-4 border-t border-gray-200 pt-4 dark:border-gray-700">
         <button
           type="submit"
           data-status="draft"
@@ -119,19 +119,16 @@ print('Hello, World!')
         >
           Publish
         </button>
+        <a
+          href="/admin"
+          class="rounded-lg border border-gray-300 px-6 py-2 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+        >
+          Cancel
+        </a>
       </div>
 
       <div id="status-message" class="hidden"></div>
     </form>
-
-    <div class="mt-4">
-      <a
-        href="/admin"
-        class="inline-block rounded-lg border border-gray-300 px-6 py-2 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
-      >
-        Cancel
-      </a>
-    </div>
   </div>
 
   <script>
