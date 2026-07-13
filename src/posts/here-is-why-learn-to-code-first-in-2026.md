@@ -1,6 +1,6 @@
 ---
 title: "Here is why Learning to Code in 2026 is powerful"
-tags: []
+tags: ["essay"]
 status: draft
 ---
 
