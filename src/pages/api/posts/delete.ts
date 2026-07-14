@@ -1,12 +1,30 @@
 import type { APIRoute } from "astro";
 import { deleteFile } from "../../../lib/github";
+import { checkRateLimit } from "../../../lib/rate-limit";
 
 const SLUG_RE = /^[a-z0-9-]+$/;
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_WINDOW = 60; // 1 minute
 
 export const POST: APIRoute = async (ctx) => {
   const user = ctx.locals.user;
   if (!user) {
     return new Response("Unauthorized", { status: 401 });
+  }
+
+  const ip = ctx.request.headers.get("cf-connecting-ip") || "unknown";
+  const rateKey = `ratelimit:post-write:${ip}`;
+  const { allowed } = await checkRateLimit(ctx.locals.env, {
+    key: rateKey,
+    max: RATE_LIMIT_MAX,
+    window: RATE_LIMIT_WINDOW,
+  });
+
+  if (!allowed) {
+    return new Response(JSON.stringify({ error: "Too many requests. Please try again later." }), {
+      status: 429,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   try {
@@ -39,9 +57,9 @@ export const POST: APIRoute = async (ctx) => {
       `Delete post: ${slug}`,
     );
 
-    await env.SESSION.delete("posts:list");
-    await env.SESSION.delete(`post:${slug}`);
-    await env.SESSION.delete("posts:dir-sha");
+    await env.SESSION.delete("cache:posts:list");
+    await env.SESSION.delete(`cache:post:${slug}`);
+    await env.SESSION.delete("cache:posts:dir-sha");
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

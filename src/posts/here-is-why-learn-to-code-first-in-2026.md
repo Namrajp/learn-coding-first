@@ -1,7 +1,8 @@
 ---
 title: "Here is why Learning to Code in 2026 is powerful"
+description: "why Learning to Code in 2026"
+tags: ['essay']
 date: 2026-07-13
-tags: ["essay"]
 status: published
 ---
 

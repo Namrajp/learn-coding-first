@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { listFiles } from "../../../lib/github";
 import { parseFrontmatter } from "../../../lib/frontmatter";
 
-const CACHE_KEY = "posts:list";
+const CACHE_KEY = "cache:posts:list";
 const CACHE_TTL = 60; // 60 seconds
 
 function decodeGitHubContent(encoded: string): string {

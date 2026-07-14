@@ -3,7 +3,6 @@ export async function sendMagicLinkEmail(
   email: string,
   url: string,
 ): Promise<void> {
-  console.log("MAGIC_LINK_URL:", url);
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {

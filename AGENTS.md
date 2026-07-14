@@ -50,10 +50,36 @@ src/components/Footer.astro       # Footer (shows Login/Admin based on auth)
 /admin                  Dashboard (SSR, protected)
 /admin/new              Create post (SSR, protected)
 /admin/edit/[slug]      Edit post (SSR, protected)
+/admin/config.yml       Decap CMS configuration (static)
+/admin/index.html       Decap CMS UI (static)
 /api/auth/[...all]      better-auth handler (public, rate-limited)
 /api/posts/*            Post CRUD API (protected)
 /404                    Custom 404 page
 ```
+
+## Decap CMS Setup
+
+Decap CMS provides an alternative admin UI at `/admin`. Both the existing custom admin routes and Decap CMS work:
+
+**Existing admin routes** (`/admin/*`): Use better-auth magic link + GitHub API directly.
+
+**Decap CMS** (`/admin`): Uses GitHub OAuth for authentication.
+
+### Configuration
+
+1. Create a GitHub OAuth App:
+   - Go to GitHub Settings → Developer settings → OAuth Apps → New OAuth App
+   - Homepage URL: `https://learncodingfirst.com`
+   - Authorization callback URL: `https://learncodingfirst.com/admin/`
+   - Note: Decap CMS handles OAuth in a popup
+
+2. Add secrets to Cloudflare Workers:
+   ```bash
+   npx wrangler secret put GITHUB_OAUTH_CLIENT_ID
+   npx wrangler secret put GITHUB_OAUTH_CLIENT_SECRET
+   ```
+
+3. The config is at `public/admin/config.yml` — edit there or override in Decap CMS UI.
 
 ## Auth Flow
 
@@ -72,15 +98,15 @@ Posts are markdown files in `src/posts/` of the GitHub repo. Admin CRUD goes thr
 
 The `[slug].astro` page uses two-layer caching to avoid hitting the GitHub API on every request:
 
-- **`posts:dir-sha`** (60s TTL) — stores the directory tree SHA of `src/posts/`. Any file change (create/update/delete) changes this SHA, invalidating all cached posts.
-- **`post:{slug}`** (300s TTL) — stores parsed frontmatter + body for each post. Cached with the directory SHA at time of fetch.
+- **`cache:posts:dir-sha`** (60s TTL) — stores the directory tree SHA of `src/posts/`. Any file change (create/update/delete) changes this SHA, invalidating all cached posts.
+- **`cache:post:{slug}`** (300s TTL) — stores parsed frontmatter + body for each post. Cached with the directory SHA at time of fetch.
 
 **Request flow (production):**
-1. Get `posts:dir-sha` from KV (1 GitHub API call per 60s if miss)
-2. Get `post:{slug}` from KV — if hit and dirSha matches, serve from KV (~1ms)
+1. Get `cache:posts:dir-sha` from KV (1 GitHub API call per 60s if miss)
+2. Get `cache:post:{slug}` from KV — if hit and dirSha matches, serve from KV (~1ms)
 3. If miss or stale — fetch from GitHub API, store in KV
 
-**Admin mutations** (`create.ts`, `update.ts`, `delete.ts`) invalidate `post:{slug}`, `posts:dir-sha`, and `posts:list` immediately after success.
+**Admin mutations** (`create.ts`, `update.ts`, `delete.ts`) invalidate `cache:post:{slug}`, `cache:posts:dir-sha`, and `cache:posts:list` immediately after success.
 
 **Local dev:** Uses `getEntry("posts", slug)` from Astro's content collection (reads local `src/posts/` filesystem). No GitHub API calls, no draft filtering.
 
@@ -113,10 +139,27 @@ Tags support both inline (`tags: [a, b]`) and YAML list format.
 
 All post API routes (`create`, `update`, `get`, `delete`) validate slugs with `/^[a-z0-9-]+$/`. Invalid slugs return 400. Slugs are generated from titles via `generateSlug()` in `github.ts`.
 
+## Input Validation
+
+Post API routes enforce size limits to prevent abuse:
+- **Payload size**: Max 1MB (`Content-Length` header check, returns 413)
+- **Title**: 1-200 characters (required)
+- **Description**: Max 500 characters (optional)
+- **Content**: Required, non-empty string
+
+## Rate Limiting
+
+Admin write endpoints (`create`, `update`, `delete`) are rate-limited via KV counters:
+- **Key**: `ratelimit:post-write:{ip}` (shared across all write operations)
+- **Limit**: 10 requests per minute per IP
+- **Window**: 60 seconds
+
+Magic link endpoint uses `ratelimit:magic-link:{ip}:{email}` with 3 requests per 15 minutes.
+
 ## Cloudflare Bindings
 
 - `DB` — D1 database (auth tables)
-- `SESSION` — KV namespace (session store, rate limiting counters, post list cache with `posts:list` key, post cache with `post:{slug}` key, dir SHA cache with `posts:dir-sha` key)
+- `SESSION` — KV namespace (session store, rate limiting counters, post list cache with `cache:posts:list` key, post cache with `cache:post:{slug}` key, dir SHA cache with `cache:posts:dir-sha` key)
 - `GITHUB_TOKEN` — Secret (GitHub PAT with Contents: Read/Write)
 - `RESEND_API_KEY` — Secret (Resend API)
 - `BETTER_AUTH_SECRET` — Secret (session signing)
@@ -136,7 +179,7 @@ All post API routes (`create`, `update`, `get`, `delete`) validate slugs with `/
 - Cancel/navigation links should be outside `<form>` tags to avoid browser quirks.
 - Edit page SSR should fetch file directly (`src/posts/${slug}.md`) instead of calling `listFiles()` first.
 - All GitHub API responses must be decoded with UTF-8 safe `decodeURIComponent(atob(...))` — plain `atob()` crashes on non-ASCII content.
-- Post list is cached in KV (`posts:list` key, 60s TTL). Invalidate on create/update/delete.
+- Post list is cached in KV (`cache:posts:list` key, 60s TTL). Invalidate on create/update/delete.
 - Always use `buildFrontmatter()` for writing frontmatter — never interpolate user input directly into YAML strings.
 - Magic link endpoint is rate-limited via KV counters. Keys use `ratelimit:magic-link:{ip}:{email}` with 15-min TTL.
 - CSRF and origin checks are enabled. `trustedOrigins` includes `https://learncodingfirst.com` and `http://localhost:4321`.

@@ -63,9 +63,11 @@ export async function createOrUpdateFile(
   if (!response.ok) {
     const error = await response.text();
     if (response.status === 403) {
-      throw new Error(`GitHub API permission denied (403). The GITHUB_TOKEN needs "Contents: Read and write" permission. Details: ${error}`);
+      console.error("GitHub API 403:", error);
+      throw new Error("GitHub API permission denied. Check GITHUB_TOKEN permissions.");
     }
-    throw new Error(`Failed to save file: ${response.status} ${error}`);
+    console.error("GitHub API error:", response.status, error);
+    throw new Error(`Failed to save file: ${response.status}`);
   }
 
   const result = (await response.json()) as {

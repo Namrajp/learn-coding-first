@@ -181,6 +181,7 @@ if (env?.GITHUB_TOKEN) {
 
   <script>
     import { marked } from "marked";
+    import DOMPurify from "isomorphic-dompurify";
 
     const slug = window.location.pathname.split("/").pop();
     const form = document.getElementById("post-form") as HTMLFormElement;
@@ -194,7 +195,7 @@ if (env?.GITHUB_TOKEN) {
 
     function renderPreview() {
       if (content.value.trim()) {
-        preview.innerHTML = marked.parse(content.value) as string;
+        preview.innerHTML = DOMPurify.sanitize(marked.parse(content.value) as string);
       }
     }
 

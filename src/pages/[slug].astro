@@ -1,5 +1,6 @@
 ---
 import { marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
 import { getEntry } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import { parsePostFile } from "../lib/frontmatter";
@@ -35,8 +36,8 @@ if (import.meta.env.DEV) {
     return Astro.redirect("/");
   }
 
-  const cacheKey = `post:${slug}`;
-  const dirShaKey = "posts:dir-sha";
+  const cacheKey = `cache:post:${slug}`;
+  const dirShaKey = "cache:posts:dir-sha";
   const DIR_SHA_TTL = 60;
   const POST_TTL = 300;
 
@@ -119,7 +120,7 @@ if (!post) {
   return Astro.redirect("/");
 }
 
-const htmlContent = marked.parse(post.content) as string;
+const htmlContent = DOMPurify.sanitize(marked.parse(post.content) as string);
 const postDate = new Date(post.date);
 
 Astro.response.headers.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
