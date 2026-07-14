@@ -30,7 +30,7 @@ wrangler.toml           # D1 + KV bindings, secrets
 env.d.ts                # CloudflareBindings, App.Locals types
 src/middleware.ts        # Auth guard + env injection (always checks session)
 src/lib/auth.ts         # better-auth instance (CSRF/origin enabled)
-src/lib/github.ts       # GitHub API (createOrUpdateFile, deleteFile, listFiles)
+src/lib/github.ts       # GitHub API (createOrUpdateFile, deleteFile, listFiles, getDirectorySha)
 src/lib/email.ts        # Resend magic link sender
 src/lib/frontmatter.ts  # YAML frontmatter (parseFrontmatter, parseFrontmatterBody, parsePostFile, yamlString, buildFrontmatter)
 src/content.config.ts   # Post schema (title, date, tags, status)
@@ -66,7 +66,25 @@ src/components/Footer.astro       # Footer (shows Login/Admin based on auth)
 
 ## Post Storage
 
-Posts are markdown files in `src/posts/` of the GitHub repo. Admin CRUD goes through GitHub Contents API — every create/edit/delete is a git commit. The `[slug].astro` page fetches directly via `api.github.com` (not `raw.githubusercontent.com` which caches). Draft posts are hidden from public pages.
+Posts are markdown files in `src/posts/` of the GitHub repo. Admin CRUD goes through GitHub Contents API — every create/edit/delete is a git commit. The `[slug].astro` page uses KV caching with SHA-based invalidation (see below). Draft posts are hidden from public pages.
+
+## KV Caching for Posts
+
+The `[slug].astro` page uses two-layer caching to avoid hitting the GitHub API on every request:
+
+- **`posts:dir-sha`** (60s TTL) — stores the directory tree SHA of `src/posts/`. Any file change (create/update/delete) changes this SHA, invalidating all cached posts.
+- **`post:{slug}`** (300s TTL) — stores parsed frontmatter + body for each post. Cached with the directory SHA at time of fetch.
+
+**Request flow (production):**
+1. Get `posts:dir-sha` from KV (1 GitHub API call per 60s if miss)
+2. Get `post:{slug}` from KV — if hit and dirSha matches, serve from KV (~1ms)
+3. If miss or stale — fetch from GitHub API, store in KV
+
+**Admin mutations** (`create.ts`, `update.ts`, `delete.ts`) invalidate `post:{slug}`, `posts:dir-sha`, and `posts:list` immediately after success.
+
+**Local dev:** Uses `getEntry("posts", slug)` from Astro's content collection (reads local `src/posts/` filesystem). No GitHub API calls, no draft filtering.
+
+**Response headers:** `Cache-Control: public, max-age=60, stale-while-revalidate=300` — browsers cache HTML for 60s, serve stale for up to 5min while revalidating.
 
 ## Frontmatter
 
@@ -98,7 +116,7 @@ All post API routes (`create`, `update`, `get`, `delete`) validate slugs with `/
 ## Cloudflare Bindings
 
 - `DB` — D1 database (auth tables)
-- `SESSION` — KV namespace (session store, rate limiting counters, post list cache with `posts:list` key)
+- `SESSION` — KV namespace (session store, rate limiting counters, post list cache with `posts:list` key, post cache with `post:{slug}` key, dir SHA cache with `posts:dir-sha` key)
 - `GITHUB_TOKEN` — Secret (GitHub PAT with Contents: Read/Write)
 - `RESEND_API_KEY` — Secret (Resend API)
 - `BETTER_AUTH_SECRET` — Secret (session signing)
