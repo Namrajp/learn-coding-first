@@ -134,10 +134,9 @@ export async function listFiles(
 
 export async function getDirectorySha(
   config: GitHubConfig,
-  dir = "src/posts",
   branch = "main",
 ): Promise<string | null> {
-  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${dir}?ref=${branch}`;
+  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/branches/${branch}`;
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${config.token}`,
@@ -147,8 +146,8 @@ export async function getDirectorySha(
     },
   });
   if (!response.ok) return null;
-  const data = (await response.json()) as { sha: string };
-  return data.sha;
+  const data = (await response.json()) as { commit: { sha: string } };
+  return data.commit?.sha ?? null;
 }
 
 export function generateSlug(title: string): string {
