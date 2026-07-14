@@ -50,36 +50,10 @@ src/components/Footer.astro       # Footer (shows Login/Admin based on auth)
 /admin                  Dashboard (SSR, protected)
 /admin/new              Create post (SSR, protected)
 /admin/edit/[slug]      Edit post (SSR, protected)
-/admin/config.yml       Decap CMS configuration (static)
-/admin/index.html       Decap CMS UI (static)
 /api/auth/[...all]      better-auth handler (public, rate-limited)
 /api/posts/*            Post CRUD API (protected)
 /404                    Custom 404 page
 ```
-
-## Decap CMS Setup
-
-Decap CMS provides an alternative admin UI at `/admin`. Both the existing custom admin routes and Decap CMS work:
-
-**Existing admin routes** (`/admin/*`): Use better-auth magic link + GitHub API directly.
-
-**Decap CMS** (`/admin`): Uses GitHub OAuth for authentication.
-
-### Configuration
-
-1. Create a GitHub OAuth App:
-   - Go to GitHub Settings → Developer settings → OAuth Apps → New OAuth App
-   - Homepage URL: `https://learncodingfirst.com`
-   - Authorization callback URL: `https://learncodingfirst.com/admin/`
-   - Note: Decap CMS handles OAuth in a popup
-
-2. Add secrets to Cloudflare Workers:
-   ```bash
-   npx wrangler secret put GITHUB_OAUTH_CLIENT_ID
-   npx wrangler secret put GITHUB_OAUTH_CLIENT_SECRET
-   ```
-
-3. The config is at `public/admin/config.yml` — edit there or override in Decap CMS UI.
 
 ## Auth Flow
 
