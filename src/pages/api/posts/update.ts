@@ -77,6 +77,8 @@ export const POST: APIRoute = async (ctx) => {
     );
 
     await env.SESSION.delete("posts:list");
+    await env.SESSION.delete(`post:${slug}`);
+    await env.SESSION.delete("posts:dir-sha");
 
     return new Response(JSON.stringify({ success: true, url: result.url }), {
       status: 200,

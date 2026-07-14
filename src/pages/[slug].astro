@@ -1,7 +1,8 @@
 ---
 import { marked } from "marked";
+import { getEntry } from "astro:content";
 import Layout from "@layouts/Layout.astro";
-import { parsePostFile } from "../lib/frontmatter";
+import { getDirectorySha } from "../lib/github";
 
 const slug = Astro.params.slug;
 if (!slug) {
@@ -9,63 +10,108 @@ if (!slug) {
   return Astro.redirect("/");
 }
 
-const env = Astro.locals.env;
-if (!env?.GITHUB_TOKEN) {
-  console.error("[slug] No GITHUB_TOKEN");
-  return Astro.redirect("/");
-}
-
 let post: { title: string; date: string; tags: string[]; description: string; status: string; content: string } | null = null;
 
-try {
-  const filePath = `src/posts/${slug}.md`;
-  const apiUrl = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${filePath}`;
-  const res = await fetch(apiUrl, {
-    headers: {
-      Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-      "User-Agent": "learncodingfirst-blog",
-    },
-  });
-
-  if (!res.ok) {
-    console.error(`[slug.${slug}] GitHub API failed:`, res.status, res.statusText);
+if (import.meta.env.DEV) {
+  const entry = await getEntry("posts", slug);
+  if (entry) {
+    const { data: fm, body } = entry as { data: { title: string; date: string; tags: string[]; description?: string; status: string }; body: string };
+    post = {
+      title: fm.title || slug,
+      date: fm.date,
+      tags: fm.tags,
+      description: fm.description || "",
+      status: fm.status,
+      content: body,
+    };
+  } else {
+    console.error(`[slug.${slug}] Post not found in content collection`);
+  }
+} else {
+  const env = Astro.locals.env;
+  if (!env?.GITHUB_TOKEN) {
+    console.error("[slug] No GITHUB_TOKEN");
     return Astro.redirect("/");
   }
 
-  const data = (await res.json()) as { content: string; encoding: string };
-  const raw = decodeURIComponent(
-    atob(data.content)
-      .split("")
-      .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-      .join(""),
-  );
+  const cacheKey = `post:${slug}`;
+  const dirShaKey = "posts:dir-sha";
+  const DIR_SHA_TTL = 60;
+  const POST_TTL = 300;
 
-  const parsed = parsePostFile(raw);
-  if (!parsed) {
-    console.error(`[slug.${slug}] No frontmatter found or invalid format`);
+  try {
+    let dirSha = await env.SESSION.get(dirShaKey);
+    if (!dirSha) {
+      dirSha = await getDirectorySha(
+        { token: env.GITHUB_TOKEN, owner: "Namrajp", repo: "my-new-astro-blog" },
+      );
+      if (dirSha) {
+        await env.SESSION.put(dirShaKey, dirSha, { expirationTtl: DIR_SHA_TTL });
+      }
+    }
+
+    const cached = await env.SESSION.get(cacheKey, { type: "json" }) as {
+      dirSha: string;
+      post: { title: string; date: string; tags: string[]; description: string; status: string; content: string };
+    } | null;
+
+    if (cached && cached.dirSha === dirSha) {
+      post = cached.post;
+    } else {
+      const filePath = `src/posts/${slug}.md`;
+      const apiUrl = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${filePath}`;
+      const res = await fetch(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+          "User-Agent": "learncodingfirst-blog",
+        },
+      });
+
+      if (!res.ok) {
+        console.error(`[slug.${slug}] GitHub API failed:`, res.status, res.statusText);
+        return Astro.redirect("/");
+      }
+
+      const data = (await res.json()) as { content: string; encoding: string };
+      const raw = decodeURIComponent(
+        atob(data.content)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join(""),
+      );
+
+      const parsed = parsePostFile(raw);
+      if (!parsed) {
+        console.error(`[slug.${slug}] No frontmatter found or invalid format`);
+        return Astro.redirect("/");
+      }
+
+      const { data: fm, body } = parsed;
+
+      if (fm.status === "draft") {
+        console.error(`[slug.${slug}] Post is draft`);
+        return Astro.redirect("/");
+      }
+
+      post = {
+        title: fm.title || slug,
+        date: fm.date,
+        tags: fm.tags,
+        description: fm.description,
+        status: fm.status,
+        content: body,
+      };
+
+      if (dirSha) {
+        await env.SESSION.put(cacheKey, JSON.stringify({ dirSha, post }), { expirationTtl: POST_TTL });
+      }
+    }
+  } catch (e) {
+    console.error(`[slug.${slug}] Error:`, e);
     return Astro.redirect("/");
   }
-
-  const { data: fm, body } = parsed;
-
-  if (fm.status === "draft") {
-    console.error(`[slug.${slug}] Post is draft`);
-    return Astro.redirect("/");
-  }
-
-  post = {
-    title: fm.title || slug,
-    date: fm.date,
-    tags: fm.tags,
-    description: fm.description,
-    status: fm.status,
-    content: body,
-  };
-} catch (e) {
-  console.error(`[slug.${slug}] Error:`, e);
-  return Astro.redirect("/");
 }
 
 if (!post) {
@@ -74,6 +120,8 @@ if (!post) {
 
 const htmlContent = marked.parse(post.content) as string;
 const postDate = new Date(post.date);
+
+Astro.response.headers.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
 ---
 
 <Layout frontmatter={{ title: post.title, description: post.description, date: postDate, tags: post.tags }} title={post.title} tags={post.tags}>

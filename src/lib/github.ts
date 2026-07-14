@@ -132,6 +132,25 @@ export async function listFiles(
   return data.filter((f) => f.type === "file" && f.name.endsWith(".md") && f.name !== "README.md");
 }
 
+export async function getDirectorySha(
+  config: GitHubConfig,
+  dir = "src/posts",
+  branch = "main",
+): Promise<string | null> {
+  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${dir}?ref=${branch}`;
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${config.token}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "learncodingfirst-blog",
+    },
+  });
+  if (!response.ok) return null;
+  const data = (await response.json()) as { sha: string };
+  return data.sha;
+}
+
 export function generateSlug(title: string): string {
   return title
     .toLowerCase()
