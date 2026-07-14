@@ -133,7 +133,6 @@ print('Hello, World!')
 
   <script>
     import { marked } from "marked";
-    import DOMPurify from "isomorphic-dompurify";
 
     const content = document.getElementById("content") as HTMLTextAreaElement;
     const preview = document.getElementById("preview") as HTMLDivElement;
@@ -151,7 +150,7 @@ print('Hello, World!')
     // Live preview
     content?.addEventListener("input", () => {
       if (content.value.trim()) {
-        preview.innerHTML = DOMPurify.sanitize(marked.parse(content.value) as string);
+        preview.innerHTML = marked.parse(content.value) as string;
       } else {
         preview.innerHTML =
           '<p class="text-gray-400 italic">Start typing to see the preview...</p>';

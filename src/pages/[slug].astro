@@ -1,6 +1,6 @@
 ---
 import { marked } from "marked";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 import { getEntry } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import { parsePostFile } from "../lib/frontmatter";
@@ -120,7 +120,7 @@ if (!post) {
   return Astro.redirect("/");
 }
 
-const htmlContent = DOMPurify.sanitize(marked.parse(post.content) as string);
+const htmlContent = sanitizeHtml(marked.parse(post.content) as string);
 const postDate = new Date(post.date);
 
 Astro.response.headers.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
