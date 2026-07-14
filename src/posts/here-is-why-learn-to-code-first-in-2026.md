@@ -1,7 +1,7 @@
 ---
 title: "Here is why Learning to Code in 2026 is powerful"
-tags: ['essay']
 date: 2026-07-13
+tags: ["essay"]
 status: draft
 ---
 
