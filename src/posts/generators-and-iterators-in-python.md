@@ -1,11 +1,8 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "Generators and Iterators in Python"
 date: 2025-08-21
-tags:
-  - python
-  - essay
-  - tutorial
+tags: ["python", "essay", "tutorial"]
+status: published
 ---
 
 Generator functions are functions that allow us to return multiple times using the yield keyword. This allows us to generate many values over time from a single function.
@@ -62,5 +59,3 @@ next(str_iter) # l
 next(str_iter) # o
 next(str_iter) # StopIteration Error!
 ```
-
-[generators-and-iterators-in-python](https://www.rithmschool.com/courses/python-fundamentals-part-2/lessons/python-generators-and-iterators/)
