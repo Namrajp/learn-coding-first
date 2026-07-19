@@ -6,6 +6,7 @@ tags:
   - news
   - tutorial
   - python environments
+status: published
 ---
 
 To run flask in this project:
