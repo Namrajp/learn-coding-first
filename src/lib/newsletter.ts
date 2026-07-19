@@ -6,6 +6,11 @@ export interface Contact {
   unsubscribed: boolean;
 }
 
+interface PostPreview {
+  slug: string;
+  title: string;
+}
+
 const SITE_URL = "https://learncodingfirst.com";
 const FROM = "Learn Coding First <newsletter@mail.learncodingfirst.com>";
 
@@ -163,6 +168,84 @@ export async function unsubscribeContact(
   return { success: true };
 }
 
+async function getRecentPosts(
+  env: CloudflareBindings,
+  count = 3,
+): Promise<PostPreview[]> {
+  if (!env.GITHUB_TOKEN) return [];
+
+  try {
+    const listRes = await fetch(
+      `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/src/posts`,
+      {
+        headers: {
+          Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+          "User-Agent": "learncodingfirst-blog",
+        },
+      },
+    );
+
+    if (!listRes.ok) return [];
+    const files = (await listRes.json()) as {
+      name: string;
+      path: string;
+      type: string;
+    }[];
+
+    const mdFiles = files
+      .filter((f) => f.type === "file" && f.name.endsWith(".md"))
+      .slice(0, 10);
+
+    const posts: PostPreview[] = [];
+
+    for (const file of mdFiles) {
+      if (posts.length >= count) break;
+
+      const contentRes = await fetch(
+        `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${file.path}`,
+        {
+          headers: {
+            Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+            Accept: "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "User-Agent": "learncodingfirst-blog",
+          },
+        },
+      );
+
+      if (!contentRes.ok) continue;
+      const json = (await contentRes.json()) as {
+        content: string;
+        encoding: string;
+      };
+
+      const content = decodeURIComponent(
+        atob(json.content)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join(""),
+      );
+
+      const statusMatch = content.match(/^status:\s*(.+)$/m);
+      if (statusMatch && statusMatch[1].trim() !== "published") continue;
+
+      const titleMatch = content.match(/^title:\s*(.+)$/m);
+      if (!titleMatch) continue;
+
+      const slug = file.name.replace(/\.md$/, "");
+      const title = titleMatch[1].trim().replace(/^["']|["']$/g, "");
+
+      posts.push({ slug, title });
+    }
+
+    return posts;
+  } catch {
+    return [];
+  }
+}
+
 export async function sendWelcomeEmail(
   env: CloudflareBindings,
   email: string,
@@ -170,6 +253,15 @@ export async function sendWelcomeEmail(
 ): Promise<void> {
   const unsub = unsubscribeUrl(email);
   const displayName = name || "there";
+  const posts = await getRecentPosts(env);
+
+  const postLinks = posts.length > 0
+    ? posts.map((p) => `<li><a href="${SITE_URL}/${p.slug}" style="color: hsl(21, 62%, 45%); text-decoration: none;">${p.title}</a></li>`).join("\n      ")
+    : `<li><a href="${SITE_URL}" style="color: hsl(21, 62%, 45%); text-decoration: none;">Visit the blog</a></li>`;
+
+  const postText = posts.length > 0
+    ? posts.map((p) => `- ${p.title}: ${SITE_URL}/${p.slug}`).join("\n")
+    : `- ${SITE_URL}`;
 
   const html = `
     ${emailHeader("Welcome to the newsletter!")}
@@ -177,12 +269,10 @@ export async function sendWelcomeEmail(
       Hi ${displayName}, thanks for subscribing! You'll get notified when we publish new tutorials and articles about coding.
     </p>
     <p style="color: #4b5563; line-height: 1.6;">
-      Here are some posts to get you started:
+      Here are our latest posts to get you started:
     </p>
     <ul style="color: #4b5563; line-height: 2;">
-      <li><a href="${SITE_URL}/python-environments" style="color: hsl(21, 62%, 45%); text-decoration: none;">Python Environments Guide</a></li>
-      <li><a href="${SITE_URL}/claude-code" style="color: hsl(21, 62%, 45%); text-decoration: none;">Getting Started with Claude Code</a></li>
-      <li><a href="${SITE_URL}/docker-for-beginners" style="color: hsl(21, 62%, 45%); text-decoration: none;">Docker for Beginners</a></li>
+      ${postLinks}
     </ul>
     <div style="text-align: center; margin: 30px 0;">
       <a href="${SITE_URL}" style="display: inline-block; padding: 14px 28px; background-color: hsl(21, 62%, 45%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
@@ -191,7 +281,7 @@ export async function sendWelcomeEmail(
     </div>
     ${emailFooter(unsub)}`;
 
-  const text = `Welcome to Learn Coding First!\n\nHi ${displayName}, thanks for subscribing. You'll get notified when we publish new tutorials.\n\nRecent posts:\n- ${SITE_URL}/python-environments\n- ${SITE_URL}/claude-code\n- ${SITE_URL}/docker-for-beginners\n\nVisit: ${SITE_URL}\n\nUnsubscribe: ${unsub}`;
+  const text = `Welcome to Learn Coding First!\n\nHi ${displayName}, thanks for subscribing. You'll get notified when we publish new tutorials.\n\nLatest posts:\n${postText}\n\nVisit: ${SITE_URL}\n\nUnsubscribe: ${unsub}`;
 
   await sendEmail(env, email, "Welcome to Learn Coding First!", html, text);
 }
