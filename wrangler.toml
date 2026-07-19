@@ -14,3 +14,4 @@ id = "b3bf4da7a0784275b628780e8354875c"
 
 [vars]
 BETTER_AUTH_URL = "https://learncodingfirst.com"
+RESEND_AUDIENCE_ID = ""

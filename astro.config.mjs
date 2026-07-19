@@ -16,6 +16,9 @@ export default defineConfig({
     optimizeDeps: {
       exclude: ["marked"],
     },
+    ssr: {
+      noExternal: ["sanitize-html"],
+    },
   },
   site: "https://learncodingfirst.com",
   integrations: [sitemap()],

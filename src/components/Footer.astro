@@ -1,4 +1,6 @@
 ---
+import NewsletterSignup from "./NewsletterSignup.astro";
+
 interface Props {
   user?: { email?: string } | null;
 }
@@ -7,6 +9,7 @@ const { user } = Astro.props;
 ---
 
 <footer class="mt-20 border-t-2 border-gray-300 pt-12 dark:border-gray-700">
+  <NewsletterSignup />
   <nav class="flex justify-center space-x-10 pb-10">
     <a href="/" class="font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">Home</a>
     <a href="/blog/page/1" class="font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">Blog</a>

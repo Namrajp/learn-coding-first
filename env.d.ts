@@ -6,6 +6,7 @@ interface CloudflareBindings {
   SESSION: KVNamespace;
   GITHUB_TOKEN: string;
   RESEND_API_KEY: string;
+  RESEND_AUDIENCE_ID: string;
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL: string;
 }
