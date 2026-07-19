@@ -29,6 +29,7 @@ export async function listContacts(
 export async function addSubscriber(
   env: CloudflareBindings,
   email: string,
+  name: string,
 ): Promise<{ success: boolean; error?: string }> {
   const response = await fetch(
     `https://api.resend.com/audiences/${env.RESEND_AUDIENCE_ID}/contacts`,
@@ -38,7 +39,7 @@ export async function addSubscriber(
         Authorization: `Bearer ${env.RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, unsubscribed: false }),
+      body: JSON.stringify({ email, name, unsubscribed: false }),
     },
   );
 

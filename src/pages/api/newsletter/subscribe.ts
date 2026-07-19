@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     );
   }
 
-  let body: { email?: string };
+  let body: { email?: string; name?: string };
   try {
     body = await request.json();
   } catch {
@@ -40,7 +40,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
     );
   }
 
-  const subResult = await addSubscriber(env, email);
+  const name = body.name?.trim() || "";
+  if (name.length > 200) {
+    return new Response(
+      JSON.stringify({ error: "Name must be 200 characters or less." }),
+      { status: 400, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  const subResult = await addSubscriber(env, email, name);
   if (!subResult.success) {
     return new Response(
       JSON.stringify({ error: "Failed to subscribe. Please try again." }),
