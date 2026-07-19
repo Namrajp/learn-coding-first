@@ -1,10 +1,23 @@
 import type { APIRoute } from "astro";
 import { deleteContact } from "../../../lib/newsletter";
+import { createAuth } from "../../../lib/auth";
 
 export const POST: APIRoute = async ({ request, locals }) => {
   const env = locals.env;
 
-  if (!locals.user) {
+  try {
+    const auth = createAuth(env, request.cf);
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+
+    if (!session) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized." }),
+        { status: 401, headers: { "Content-Type": "application/json" } },
+      );
+    }
+  } catch {
     return new Response(
       JSON.stringify({ error: "Unauthorized." }),
       { status: 401, headers: { "Content-Type": "application/json" } },
