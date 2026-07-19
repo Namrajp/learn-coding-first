@@ -51,6 +51,28 @@ export async function addSubscriber(
   return { success: true };
 }
 
+export async function deleteContact(
+  env: CloudflareBindings,
+  email: string,
+): Promise<{ success: boolean; error?: string }> {
+  const response = await fetch(
+    `https://api.resend.com/audiences/${env.RESEND_AUDIENCE_ID}/contacts/${encodeURIComponent(email)}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    const error = await response.text();
+    return { success: false, error };
+  }
+
+  return { success: true };
+}
+
 export async function sendWelcomeEmail(
   env: CloudflareBindings,
   email: string,

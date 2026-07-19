@@ -41,6 +41,7 @@ const unsubscribed = contacts.filter((c) => c.unsubscribed);
                 <th class="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Email</th>
                 <th class="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Name</th>
                 <th class="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Subscribed</th>
+                <th class="px-4 py-3 font-medium text-gray-700 dark:text-gray-300"></th>
               </tr>
             </thead>
             <tbody>
@@ -52,6 +53,14 @@ const unsubscribed = contacts.filter((c) => c.unsubscribed);
                   </td>
                   <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
                     {new Date(contact.created_at).toLocaleDateString()}
+                  </td>
+                  <td class="px-4 py-3">
+                    <button
+                      class="delete-btn text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                      data-email={contact.email}
+                    >
+                      Remove
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -72,6 +81,7 @@ const unsubscribed = contacts.filter((c) => c.unsubscribed);
               <tr class="border-b border-gray-200 dark:border-gray-700">
                 <th class="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Email</th>
                 <th class="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Name</th>
+                <th class="px-4 py-3 font-medium text-gray-700 dark:text-gray-300"></th>
               </tr>
             </thead>
             <tbody>
@@ -81,6 +91,14 @@ const unsubscribed = contacts.filter((c) => c.unsubscribed);
                   <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
                     {contact.name || "—"}
                   </td>
+                  <td class="px-4 py-3">
+                    <button
+                      class="delete-btn text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                      data-email={contact.email}
+                    >
+                      Remove
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -89,4 +107,26 @@ const unsubscribed = contacts.filter((c) => c.unsubscribed);
       </div>
     )}
   </div>
+
+  <script>
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const email = (btn as HTMLElement).dataset.email;
+        if (!confirm(`Remove "${email}" from the newsletter?`)) return;
+
+        const res = await fetch("/api/newsletter/delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
+        if (res.ok) {
+          window.location.reload();
+        } else {
+          const data = await res.json();
+          alert(`Delete failed: ${data.error}`);
+        }
+      });
+    });
+  </script>
 </Layout>
