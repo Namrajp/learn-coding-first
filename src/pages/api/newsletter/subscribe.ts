@@ -57,7 +57,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   try {
-    await sendWelcomeEmail(env, email);
+    await sendWelcomeEmail(env, email, name);
   } catch {
     // Welcome email is non-critical — subscriber is already added
   }

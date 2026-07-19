@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { createOrUpdateFile, generateSlug } from "../../../lib/github";
 import { buildFrontmatter } from "../../../lib/frontmatter";
 import { checkRateLimit } from "../../../lib/rate-limit";
+import { sendPostNotification } from "../../../lib/newsletter";
 
 const SLUG_RE = /^[a-z0-9-]+$/;
 const RATE_LIMIT_MAX = 10;
@@ -109,6 +110,18 @@ export const POST: APIRoute = async (ctx) => {
     await env.SESSION.delete("cache:posts:list");
     await env.SESSION.delete(`cache:post:${slug}`);
     await env.SESSION.delete("cache:posts:dir-sha");
+
+    if (status === "published") {
+      try {
+        await sendPostNotification(env, {
+          slug,
+          title,
+          description: description || "",
+        });
+      } catch {
+        // Notification failure is non-critical
+      }
+    }
 
     return new Response(
       JSON.stringify({ success: true, slug, url: result.url }),
