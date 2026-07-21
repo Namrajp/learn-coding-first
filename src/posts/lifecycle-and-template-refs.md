@@ -1,6 +1,6 @@
 ---
 title: "Lifecycle and Template Refs in Vue"
-description: "Vue refs introduction"
+description: "Understand Vue.js component lifecycle hooks and template refs: mounted, updated, destroyed, and accessing DOM elements directly."
 tags: ["vue"]
 date: 2026-07-13
 status: published

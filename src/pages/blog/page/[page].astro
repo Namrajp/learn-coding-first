@@ -30,7 +30,7 @@ page.data.forEach((post) => {
 });
 ---
 
-<Layout title="All Posts">
+<Layout title={`Blog Archive - Page ${page.currentPage} of ${page.lastPage}`}>
   <div class="mx-auto w-full max-w-[90vw] text-left">
     <div class="grid gap-8 md:grid-cols-[30%_70%]">
       <TagSidebar {tags} />
