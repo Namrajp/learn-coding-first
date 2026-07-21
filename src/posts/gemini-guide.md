@@ -6,6 +6,7 @@ tags:
   - tutorial
   - ai
   - gemini
+description: "Unlock Gemini AI's full potential: multimodal prompts, real-time data access, structured outputs, and code generation techniques."
 ---
 
 Gemini is Google's family of AI models, tightly integrated with Google's ecosystem — Search, Docs, Gmail, and more. It's multimodal by design, meaning it can reason over text, images, audio, video, and code within the same conversation. Knowing its strengths helps you prompt it effectively.

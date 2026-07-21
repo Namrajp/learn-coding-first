@@ -1,8 +1,10 @@
 ---
 import { marked } from "marked";
 import sanitizeHtml from "sanitize-html";
-import { getEntry } from "astro:content";
+import { getEntry, getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
+import PrevNext from "../components/PrevNext.astro";
+import RelatedPosts from "../components/RelatedPosts.astro";
 import { parsePostFile } from "../lib/frontmatter";
 import { getDirectorySha } from "../lib/github";
 
@@ -12,12 +14,28 @@ if (!slug) {
   return Astro.redirect("/");
 }
 
-let post: { title: string; date: string; tags: string[]; description: string; status: string; content: string } | null = null;
+let post: {
+  title: string;
+  date: string;
+  tags: string[];
+  description: string;
+  status: string;
+  content: string;
+} | null = null;
 
 if (import.meta.env.DEV) {
   const entry = await getEntry("posts", slug);
   if (entry) {
-    const { data: fm, body } = entry as { data: { title: string; date: string; tags: string[]; description?: string; status: string }; body: string };
+    const { data: fm, body } = entry as {
+      data: {
+        title: string;
+        date: string;
+        tags: string[];
+        description?: string;
+        status: string;
+      };
+      body: string;
+    };
     post = {
       title: fm.title || slug,
       date: fm.date,
@@ -44,17 +62,28 @@ if (import.meta.env.DEV) {
   try {
     let dirSha = await env.SESSION.get(dirShaKey);
     if (!dirSha) {
-      dirSha = await getDirectorySha(
-        { token: env.GITHUB_TOKEN, owner: "Namrajp", repo: "my-new-astro-blog" },
-      );
+      dirSha = await getDirectorySha({
+        token: env.GITHUB_TOKEN,
+        owner: "Namrajp",
+        repo: "my-new-astro-blog",
+      });
       if (dirSha) {
-        await env.SESSION.put(dirShaKey, dirSha, { expirationTtl: DIR_SHA_TTL });
+        await env.SESSION.put(dirShaKey, dirSha, {
+          expirationTtl: DIR_SHA_TTL,
+        });
       }
     }
 
-    const cached = await env.SESSION.get(cacheKey, { type: "json" }) as {
+    const cached = (await env.SESSION.get(cacheKey, { type: "json" })) as {
       dirSha: string;
-      post: { title: string; date: string; tags: string[]; description: string; status: string; content: string };
+      post: {
+        title: string;
+        date: string;
+        tags: string[];
+        description: string;
+        status: string;
+        content: string;
+      };
     } | null;
 
     if (cached && cached.dirSha === dirSha) {
@@ -72,7 +101,11 @@ if (import.meta.env.DEV) {
       });
 
       if (!res.ok) {
-        console.error(`[slug.${slug}] GitHub API failed:`, res.status, res.statusText);
+        console.error(
+          `[slug.${slug}] GitHub API failed:`,
+          res.status,
+          res.statusText,
+        );
         return Astro.redirect("/");
       }
 
@@ -107,7 +140,9 @@ if (import.meta.env.DEV) {
       };
 
       if (dirSha) {
-        await env.SESSION.put(cacheKey, JSON.stringify({ dirSha, post }), { expirationTtl: POST_TTL });
+        await env.SESSION.put(cacheKey, JSON.stringify({ dirSha, post }), {
+          expirationTtl: POST_TTL,
+        });
       }
     }
   } catch (e) {
@@ -123,17 +158,81 @@ if (!post) {
 const htmlContent = sanitizeHtml(marked.parse(post.content) as string);
 const postDate = new Date(post.date);
 
-Astro.response.headers.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+const postJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: post.title,
+  description: post.description,
+  author: {
+    "@type": "Person",
+    name: "Namraj Pudasaini",
+    url: "https://learncodingfirst.com",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Learn Coding First",
+    url: "https://learncodingfirst.com",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://learncodingfirst.com/my_logo.svg",
+    },
+  },
+  datePublished: postDate.toISOString(),
+  dateModified: postDate.toISOString(),
+  image: "https://learncodingfirst.com/og-default.png",
+  mainEntityOfPage: {
+    "@type": "WebPage",
+    "@id": `https://learncodingfirst.com/${slug}`,
+  },
+  keywords: post.tags.join(", "),
+};
+
+// Get all posts for prev/next navigation and related posts
+const allPosts = await getCollection("posts");
+const sortedPosts = allPosts.sort(
+  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
+);
+const currentIndex = sortedPosts.findIndex((p) => p.id === slug);
+const prevPost =
+  currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
+const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
+
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=60, stale-while-revalidate=300",
+);
 ---
 
-<Layout frontmatter={{ title: post.title, description: post.description, date: postDate, tags: post.tags }} title={post.title} tags={post.tags}>
+<Layout
+  frontmatter={{
+    title: post.title,
+    description: post.description,
+    date: postDate,
+    tags: post.tags,
+  }}
+  title={post.title}
+  tags={post.tags}
+  pageType="article"
+  description={post.description}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(postJsonLd)} />
   <div class="mx-auto max-w-[65ch]">
-    <h1 class="mt-8 mb-2 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
+    <h1
+      class="mt-8 mb-2 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100"
+    >
       {post.title}
     </h1>
-    <p class="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Namraj Pudasaini</p>
+    <p class="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+      Namraj Pudasaini
+    </p>
     <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">
-      {postDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+      {
+        postDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+      }
     </p>
     <div class="prose dark:prose-invert">
       <Fragment set:html={htmlContent} />
@@ -143,12 +242,17 @@ Astro.response.headers.set("Cache-Control", "public, max-age=60, stale-while-rev
         post.tags.map((tag) => (
           <a
             href={`/tag/${tag}`}
-            class="rounded-lg px-2 py-1 no-underline text-gray-700 dark:text-gray-300 hover:text-[hsl(21,62%,45%)]"
+            class="rounded-lg px-2 py-1 text-gray-700 no-underline hover:text-[hsl(21,62%,45%)] dark:text-gray-300"
           >
             {tag}
           </a>
         ))
       }
     </div>
+    <RelatedPosts
+      currentPost={{ id: slug, data: { title: post.title, tags: post.tags } }}
+      {allPosts}
+    />
+    <PrevNext prev={prevPost} next={nextPost} />
   </div>
 </Layout>

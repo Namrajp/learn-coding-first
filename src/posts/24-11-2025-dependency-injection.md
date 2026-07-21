@@ -3,6 +3,7 @@ title: "Dependency Injection in ASP.Net"
 date: 2025-11-24
 tags: ["news", "tutorial", "ASP.NET"]
 status: published
+description: "Understand dependency injection in ASP.NET Core: constructor, setter, and interface injection patterns explained with practical examples."
 ---
 
 # What is DI or Dependecy Injection?

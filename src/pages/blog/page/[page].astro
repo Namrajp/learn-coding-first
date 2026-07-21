@@ -30,16 +30,20 @@ page.data.forEach((post) => {
 });
 ---
 
-<Layout title="Blog archive">
+<Layout title="All Posts">
   <div class="mx-auto w-full max-w-[90vw] text-left">
     <div class="grid gap-8 md:grid-cols-[30%_70%]">
       <TagSidebar {tags} />
 
       <section>
-        <h1 class="mb-4 text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1
+          class="mb-4 text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100"
+        >
           Blog archive
         </h1>
-        <p class="my-4 text-xl font-semibold dark:text-gray-200">List of all the blog posts</p>
+        <p class="my-4 text-xl font-semibold dark:text-gray-200">
+          List of all the blog posts
+        </p>
 
         <ul class="space-y-2">
           {

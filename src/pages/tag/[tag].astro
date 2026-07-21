@@ -43,16 +43,20 @@ const otherPostsByTag = otherTags.map((t) => ({
 }));
 ---
 
-<Layout title={`Posts by tag: ${tag}`}>
+<Layout title={`Posts about ${tag}`}>
   <div class="mx-auto w-full max-w-[90vw] text-left">
     <div class="mt-8 grid gap-8 md:grid-cols-[30%_70%]">
       <TagSidebar tags={allTags} />
 
       <section>
-        <h1 class="mb-4 text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1
+          class="mb-4 text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100"
+        >
           Posts tagged {tag}
         </h1>
-        <p class="my-4 text-xl font-semibold dark:text-gray-200">Latest posts for this topic</p>
+        <p class="my-4 text-xl font-semibold dark:text-gray-200">
+          Latest posts for this topic
+        </p>
 
         <ul class="space-y-2">
           {
@@ -70,30 +74,34 @@ const otherPostsByTag = otherTags.map((t) => ({
           }
         </ul>
 
-        {otherPostsByTag.length > 0 && (
-          <div class="mt-12">
-            <h2 class="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100">Other posts you may be interested in</h2>
-            {otherPostsByTag.map((group) => (
-              <div class="mb-6">
-                <h3 class="mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300">
-                  Posts tagged "{group.tag}"
-                </h3>
-                <ul class="space-y-1">
-                  {group.posts.map((post) => (
-                    <li>
-                      <a
-                        href={`/${post.id}`}
-                        class="text-[hsl(21,62%,45%)] hover:text-[hsl(21,62%,35%)]"
-                      >
-                        {post.data.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        )}
+        {
+          otherPostsByTag.length > 0 && (
+            <div class="mt-12">
+              <h2 class="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100">
+                Other posts you may be interested in
+              </h2>
+              {otherPostsByTag.map((group) => (
+                <div class="mb-6">
+                  <h3 class="mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300">
+                    Posts tagged "{group.tag}"
+                  </h3>
+                  <ul class="space-y-1">
+                    {group.posts.map((post) => (
+                      <li>
+                        <a
+                          href={`/${post.id}`}
+                          class="text-[hsl(21,62%,45%)] hover:text-[hsl(21,62%,35%)]"
+                        >
+                          {post.data.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )
+        }
       </section>
     </div>
   </div>

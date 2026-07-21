@@ -64,7 +64,9 @@ export async function createOrUpdateFile(
     const error = await response.text();
     if (response.status === 403) {
       console.error("GitHub API 403:", error);
-      throw new Error("GitHub API permission denied. Check GITHUB_TOKEN permissions.");
+      throw new Error(
+        "GitHub API permission denied. Check GITHUB_TOKEN permissions.",
+      );
     }
     console.error("GitHub API error:", response.status, error);
     throw new Error(`Failed to save file: ${response.status}`);
@@ -131,7 +133,10 @@ export async function listFiles(
     sha: string;
     type: string;
   }[];
-  return data.filter((f) => f.type === "file" && f.name.endsWith(".md") && f.name !== "README.md");
+  return data.filter(
+    (f) =>
+      f.type === "file" && f.name.endsWith(".md") && f.name !== "README.md",
+  );
 }
 
 export async function getDirectorySha(

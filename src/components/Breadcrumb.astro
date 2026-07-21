@@ -8,7 +8,9 @@ const formatLabel = (segment: string) => {
   return decoded.replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
-const items: { label: string; href?: string }[] = [{ label: "Home", href: "/" }];
+const items: { label: string; href?: string }[] = [
+  { label: "Home", href: "/" },
+];
 
 // If we have tags, this is a post page — build Home / Tag / Post
 if (tags && tags.length > 0 && segments.length === 1) {
@@ -50,6 +52,17 @@ if (tags && tags.length > 0 && segments.length === 1) {
 }
 
 const visibleItems = items.filter((item) => item.label);
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: visibleItems.map((item, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: item.label,
+    item: item.href ? `https://learncodingfirst.com${item.href}` : undefined,
+  })),
+};
 ---
 
 {
@@ -66,7 +79,9 @@ const visibleItems = items.filter((item) => item.label);
             </span>
           )}
           {index === visibleItems.length - 1 || !item.href ? (
-            <span class="font-semibold text-gray-900 dark:text-gray-100">{item.label}</span>
+            <span class="font-semibold text-gray-900 dark:text-gray-100">
+              {item.label}
+            </span>
           ) : (
             <a
               href={item.href}
@@ -80,3 +95,7 @@ const visibleItems = items.filter((item) => item.label);
     </nav>
   )
 }
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify(breadcrumbJsonLd)}
+/>

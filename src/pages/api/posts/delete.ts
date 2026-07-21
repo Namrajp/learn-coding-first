@@ -21,10 +21,13 @@ export const POST: APIRoute = async (ctx) => {
   });
 
   if (!allowed) {
-    return new Response(JSON.stringify({ error: "Too many requests. Please try again later." }), {
-      status: 429,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "Too many requests. Please try again later." }),
+      {
+        status: 429,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 
   try {
@@ -39,10 +42,13 @@ export const POST: APIRoute = async (ctx) => {
     }
 
     if (!env.GITHUB_TOKEN) {
-      return new Response(JSON.stringify({ error: "GitHub token not configured" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "GitHub token not configured" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     const filePath = `src/posts/${slug}.md`;

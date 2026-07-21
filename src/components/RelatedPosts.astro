@@ -1,0 +1,46 @@
+---
+interface Post {
+  id: string;
+  data: {
+    title: string;
+    tags: string[];
+  };
+}
+
+const { currentPost, allPosts } = Astro.props as {
+  currentPost: Post;
+  allPosts: Post[];
+};
+
+const relatedPosts = allPosts
+  .filter((p) => p.id !== currentPost.id)
+  .map((p) => ({
+    ...p,
+    score: p.data.tags.filter((t) => currentPost.data.tags.includes(t)).length,
+  }))
+  .filter((p) => p.score > 0)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 3);
+---
+
+{
+  relatedPosts.length > 0 && (
+    <section class="mt-8">
+      <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-gray-100">
+        Related Posts
+      </h2>
+      <ul class="space-y-2">
+        {relatedPosts.map((post) => (
+          <li>
+            <a
+              href={`/${post.id}`}
+              class="text-[hsl(21,62%,45%)] hover:underline"
+            >
+              {post.data.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

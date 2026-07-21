@@ -6,6 +6,7 @@ tags:
   - news
   - tutorial
   - python environments
+description: "Set up Python virtual environments with venv and virtualenvwrapper: creation, activation, dependency management, and best practices."
 ---
 
 # Virtual environments setup

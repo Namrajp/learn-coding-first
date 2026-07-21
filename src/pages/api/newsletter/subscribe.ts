@@ -26,10 +26,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
   try {
     body = await request.json();
   } catch {
-    return new Response(
-      JSON.stringify({ error: "Invalid request body." }),
-      { status: 400, headers: { "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ error: "Invalid request body." }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const email = body.email?.trim().toLowerCase();
@@ -62,8 +62,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Welcome email is non-critical — subscriber is already added
   }
 
-  return new Response(
-    JSON.stringify({ message: "Subscribed successfully!" }),
-    { status: 200, headers: { "Content-Type": "application/json" } },
-  );
+  return new Response(JSON.stringify({ message: "Subscribed successfully!" }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 };

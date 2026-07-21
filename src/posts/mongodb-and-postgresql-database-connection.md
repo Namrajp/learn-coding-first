@@ -6,6 +6,7 @@ tags:
   - Mongodb and Postgresql
   - news
   - tutorial
+description: "Connect MongoDB and PostgreSQL from Node.js: mongoose setup, dotenv configuration, and PostgreSQL password management."
 ---
 
 Connection to mongodb from nodejs is straightforward, when our app folder myapp and we import mongoose from project root folder.

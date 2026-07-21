@@ -2,12 +2,15 @@
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Login">
+<Layout title="Login" robots="noindex, nofollow">
   <div class="mx-auto mt-20 max-w-md">
     <h1 class="mb-8 text-center text-3xl font-bold dark:text-white">Sign In</h1>
     <form id="login-form" class="space-y-4">
       <div>
-        <label for="email" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label
+          for="email"
+          class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+        >
           Email address
         </label>
         <input

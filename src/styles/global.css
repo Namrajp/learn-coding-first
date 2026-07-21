@@ -135,6 +135,6 @@
     word-break: break-word;
   }
   code {
-    @apply rounded bg-zinc-200 dark:bg-zinc-700 px-1 text-zinc-800 dark:text-zinc-200;
+    @apply rounded bg-zinc-200 px-1 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200;
   }
 }

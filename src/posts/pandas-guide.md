@@ -6,6 +6,7 @@ tags:
   - python
   - pandas
   - tutorial
+description: "Complete Pandas guide: DataFrames, data manipulation, filtering, grouping, and file I/O for Python data analysis."
 ---
 
 # Getting Started with Pandas

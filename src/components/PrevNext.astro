@@ -1,0 +1,33 @@
+---
+interface Post {
+  id: string;
+  data: {
+    title: string;
+  };
+}
+
+const { prev, next } = Astro.props as { prev: Post | null; next: Post | null };
+---
+
+<nav
+  class="mt-8 flex justify-between border-t border-gray-200 pt-4 dark:border-gray-700"
+>
+  {
+    prev ? (
+      <a href={`/${prev.id}`} class="text-[hsl(21,62%,45%)] hover:underline">
+        ← {prev.data.title}
+      </a>
+    ) : (
+      <span />
+    )
+  }
+  {
+    next ? (
+      <a href={`/${next.id}`} class="text-[hsl(21,62%,45%)] hover:underline">
+        {next.data.title} →
+      </a>
+    ) : (
+      <span />
+    )
+  }
+</nav>

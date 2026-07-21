@@ -31,10 +31,13 @@ export const POST: APIRoute = async (ctx) => {
   });
 
   if (!allowed) {
-    return new Response(JSON.stringify({ error: "Too many requests. Please try again later." }), {
-      status: 429,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "Too many requests. Please try again later." }),
+      {
+        status: 429,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 
   const contentLength = ctx.request.headers.get("content-length");
@@ -58,17 +61,27 @@ export const POST: APIRoute = async (ctx) => {
     }
 
     if (!title || typeof title !== "string" || title.length > 200) {
-      return new Response(JSON.stringify({ error: "Title must be 1-200 characters" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "Title must be 1-200 characters" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
-    if (description && typeof description === "string" && description.length > 500) {
-      return new Response(JSON.stringify({ error: "Description must be under 500 characters" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+    if (
+      description &&
+      typeof description === "string" &&
+      description.length > 500
+    ) {
+      return new Response(
+        JSON.stringify({ error: "Description must be under 500 characters" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     if (!content || typeof content !== "string" || content.length === 0) {
@@ -91,7 +104,10 @@ export const POST: APIRoute = async (ctx) => {
 
     let date = new Date().toISOString().split("T")[0];
     if (existingRes.ok) {
-      const existingData = (await existingRes.json()) as { content: string; encoding: string };
+      const existingData = (await existingRes.json()) as {
+        content: string;
+        encoding: string;
+      };
       const rawContent = decodeGitHubContent(existingData.content);
       const fm = parseFrontmatter(rawContent);
       if (fm) date = fm.date;

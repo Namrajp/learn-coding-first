@@ -5,8 +5,41 @@ import { ClientRouter } from "astro:transitions";
 import Breadcrumb from "../components/Breadcrumb.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
 import Footer from "../components/Footer.astro";
-const { frontmatter, title, tags, showSignOut } = Astro.props;
+import Nav from "../components/Nav.astro";
+const {
+  frontmatter,
+  title,
+  tags,
+  showSignOut,
+  canonical,
+  robots,
+  description,
+  ogImage,
+  author,
+  pageType,
+} = Astro.props;
 const user = Astro.locals.user ?? null;
+
+const metaDescription =
+  description ||
+  frontmatter?.description ||
+  "Learn programming and AI fundamentals";
+const metaOgImage = ogImage || "https://learncodingfirst.com/og-default.png";
+const metaAuthor = author || "Namraj Pudasaini";
+const metaPageType = pageType || "website";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Learn Coding First",
+  url: "https://learncodingfirst.com",
+  description: "Programming, AI, and developer tutorials",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://learncodingfirst.com/blog/page/1?q={search_term_string}",
+    "query-input": "required name=search_term_string",
+  },
+};
 ---
 
 <html lang="en">
@@ -14,25 +47,41 @@ const user = Astro.locals.user ?? null;
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preconnect" href="https://api.github.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <meta
-      name="description"
-      content={frontmatter?.description
-        ? frontmatter.description
-        : "My awesome blog"}
-    />
-    <meta
-      property="og:image"
-      content={`https://learncodingfirst.com/my_logo.svg`}
-    />
+    <link rel="canonical" href={canonical || Astro.url.href} />
+    {robots && <meta name="robots" content={robots} />}
+    <meta name="description" content={metaDescription} />
+    <meta name="author" content={metaAuthor} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={metaPageType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:site_name" content="Learn Coding First" />
+    <meta property="og:image" content={metaOgImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={metaOgImage} />
+    <meta name="twitter:creator" content="@namrajpudasaini" />
+
     <link
       rel="alternate"
       type="application/rss+xml"
       title="Learn Coding First"
       href="/rss.xml"
     />
-    <title>{title}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <title>{title} | Learn Coding First</title>
 
     <style is:global>
       html {
@@ -56,17 +105,20 @@ const user = Astro.locals.user ?? null;
 
     <ClientRouter />
   </head>
-  <body class="overflow-x-hidden px-5 pt-3 pb-5 bg-white text-gray-900 transition-colors dark:bg-gray-950 dark:text-gray-100">
-    <ThemeToggle showSignOut={showSignOut} />
+  <body
+    class="overflow-x-hidden bg-white px-5 pt-3 pb-5 text-gray-900 transition-colors dark:bg-gray-950 dark:text-gray-100"
+  >
+    <ThemeToggle {showSignOut} />
     <div class="py-2">
       <header id="home">
+        <Nav />
       </header>
 
       <div class="mx-auto max-w-[1200px] px-6">
-        <Breadcrumb tags={tags} />
+        <Breadcrumb {tags} />
         <slot />
       </div>
-      <Footer user={user} />
+      <Footer {user} />
     </div>
   </body>
 </html>

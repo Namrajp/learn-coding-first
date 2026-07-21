@@ -255,13 +255,20 @@ export async function sendWelcomeEmail(
   const displayName = name || "there";
   const posts = await getRecentPosts(env);
 
-  const postLinks = posts.length > 0
-    ? posts.map((p) => `<li><a href="${SITE_URL}/${p.slug}" style="color: hsl(21, 62%, 45%); text-decoration: none;">${p.title}</a></li>`).join("\n      ")
-    : `<li><a href="${SITE_URL}" style="color: hsl(21, 62%, 45%); text-decoration: none;">Visit the blog</a></li>`;
+  const postLinks =
+    posts.length > 0
+      ? posts
+          .map(
+            (p) =>
+              `<li><a href="${SITE_URL}/${p.slug}" style="color: hsl(21, 62%, 45%); text-decoration: none;">${p.title}</a></li>`,
+          )
+          .join("\n      ")
+      : `<li><a href="${SITE_URL}" style="color: hsl(21, 62%, 45%); text-decoration: none;">Visit the blog</a></li>`;
 
-  const postText = posts.length > 0
-    ? posts.map((p) => `- ${p.title}: ${SITE_URL}/${p.slug}`).join("\n")
-    : `- ${SITE_URL}`;
+  const postText =
+    posts.length > 0
+      ? posts.map((p) => `- ${p.title}: ${SITE_URL}/${p.slug}`).join("\n")
+      : `- ${SITE_URL}`;
 
   const html = `
     ${emailHeader("Welcome to the newsletter!")}
@@ -323,7 +330,13 @@ export async function sendPostNotification(
 
       const text = `New post: ${post.title}\n\n${excerpt}\n\nRead more: ${postUrl}\n\nUnsubscribe: ${unsub}`;
 
-      await sendEmail(env, contact.email, `New post: ${post.title}`, html, text);
+      await sendEmail(
+        env,
+        contact.email,
+        `New post: ${post.title}`,
+        html,
+        text,
+      );
       sent++;
     } catch {
       failed++;

@@ -6,6 +6,7 @@ tags:
   - miscellaneous
   - essay
   - ASP.NET
+description: "Build a controller-based web API with ASP.NET Core: project setup, NuGet packages, models, database context, and Entity Framework integration."
 ---
 
 # Following is the high level overview of step involved:

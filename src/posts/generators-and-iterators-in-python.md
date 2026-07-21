@@ -3,6 +3,7 @@ title: "Generators and Iterators in Python"
 date: 2025-08-21
 tags: ["python", "essay", "tutorial"]
 status: published
+description: "Master Python generators and iterators: yield keyword, memory-efficient sequences, and the next() function with practical examples."
 ---
 
 Generator functions are functions that allow us to return multiple times using the yield keyword. This allows us to generate many values over time from a single function.

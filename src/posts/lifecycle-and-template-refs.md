@@ -6,7 +6,8 @@ date: 2026-07-13
 status: published
 ---
 
-# Template refs 
+# Template refs
+
 So far, Vue has been handling all the DOM updates for us, thanks to reactivity and declarative rendering. However, inevitably there will be cases where we need to manually work with the DOM.
 
 We can request a template ref - i.e. a reference to an element in the template - using the special ref attribute:

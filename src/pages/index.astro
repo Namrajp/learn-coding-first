@@ -21,14 +21,21 @@ const randomPost = allPosts[Math.floor(Math.random() * allPosts.length)];
 const promptingPost = allPosts.find((p) => p.id === "prompting-guide");
 const claudePost = allPosts.find((p) => p.id === "claude-guide");
 
-const featuredIds = new Set([promptingPost?.id, claudePost?.id, randomPost?.id].filter(Boolean));
+const featuredIds = new Set(
+  [promptingPost?.id, claudePost?.id, randomPost?.id].filter(Boolean),
+);
 const otherPosts = allPosts
   .filter((p) => !featuredIds.has(p.id))
-  .sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf())
+  .sort(
+    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
+  )
   .slice(0, 2);
 ---
 
-<Layout title="Homepage">
+<Layout
+  title="Learn Coding First — Programming & AI Tutorials"
+  pageType="website"
+>
   <div class="w-full pt-[2.5rem] text-left">
     <div
       class="fixed top-0 right-0 left-0 z-50 flex items-center justify-center bg-[hsl(21,62%,45%)] px-8 pt-3 pb-[1.25rem] text-center text-white shadow-sm"
@@ -42,7 +49,9 @@ const otherPosts = allPosts
       <TagSidebar {tags} />
 
       <section>
-        <h1 class="mb-4 text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1
+          class="mb-4 text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100"
+        >
           Fundamentals of programming and AI
         </h1>
 
@@ -101,14 +110,16 @@ const otherPosts = allPosts
             excerpt={randomPost.data.description || "Check out this post!"}
             link={`/${randomPost.id}`}
           />
-          {otherPosts.map((post) => (
-            <PostCard
-              date={post.data.date.toLocaleDateString()}
-              title={post.data.title}
-              excerpt={post.data.description || "Check out this post!"}
-              link={`/${post.id}`}
-            />
-          ))}
+          {
+            otherPosts.map((post) => (
+              <PostCard
+                date={post.data.date.toLocaleDateString()}
+                title={post.data.title}
+                excerpt={post.data.description || "Check out this post!"}
+                link={`/${post.id}`}
+              />
+            ))
+          }
         </section>
       </section>
     </div>

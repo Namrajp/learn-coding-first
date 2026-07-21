@@ -76,6 +76,7 @@ The `[slug].astro` page uses two-layer caching to avoid hitting the GitHub API o
 - **`cache:post:{slug}`** (300s TTL) — stores parsed frontmatter + body for each post. Cached with the directory SHA at time of fetch.
 
 **Request flow (production):**
+
 1. Get `cache:posts:dir-sha` from KV (1 GitHub API call per 60s if miss)
 2. Get `cache:post:{slug}` from KV — if hit and dirSha matches, serve from KV (~1ms)
 3. If miss or stale — fetch from GitHub API, store in KV
@@ -89,6 +90,7 @@ The `[slug].astro` page uses two-layer caching to avoid hitting the GitHub API o
 ## Frontmatter
 
 Use shared helpers from `src/lib/frontmatter.ts`:
+
 - `parseFrontmatter(content)` — parses frontmatter from raw markdown (handles quoted/unquoted titles)
 - `parseFrontmatterBody(content)` — extracts markdown body after frontmatter
 - `parsePostFile(content)` — combines both into `{ data, body }`
@@ -116,6 +118,7 @@ All post API routes (`create`, `update`, `get`, `delete`) validate slugs with `/
 ## Input Validation
 
 Post API routes enforce size limits to prevent abuse:
+
 - **Payload size**: Max 1MB (`Content-Length` header check, returns 413)
 - **Title**: 1-200 characters (required)
 - **Description**: Max 500 characters (optional)
@@ -124,6 +127,7 @@ Post API routes enforce size limits to prevent abuse:
 ## Rate Limiting
 
 Admin write endpoints (`create`, `update`, `delete`) are rate-limited via KV counters:
+
 - **Key**: `ratelimit:post-write:{ip}` (shared across all write operations)
 - **Limit**: 10 requests per minute per IP
 - **Window**: 60 seconds

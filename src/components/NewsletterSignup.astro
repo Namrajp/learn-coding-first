@@ -1,4 +1,5 @@
 ---
+
 ---
 
 <div class="mx-auto max-w-md py-8">
@@ -72,8 +73,10 @@
         messageDiv.textContent = data.error || "Something went wrong.";
         messageDiv.className = "mt-2 text-sm text-red-600 dark:text-red-400";
       } else {
-        messageDiv.textContent = "You're subscribed! Check your inbox for a welcome email.";
-        messageDiv.className = "mt-2 text-sm text-green-600 dark:text-green-400";
+        messageDiv.textContent =
+          "You're subscribed! Check your inbox for a welcome email.";
+        messageDiv.className =
+          "mt-2 text-sm text-green-600 dark:text-green-400";
         emailInput.value = "";
         nameInput.value = "";
       }

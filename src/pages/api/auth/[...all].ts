@@ -34,7 +34,9 @@ export const ALL: APIRoute = async (ctx) => {
       const count = parseInt(current, 10);
       if (count >= RATE_LIMIT_MAX) {
         return new Response(
-          JSON.stringify({ error: "Too many requests. Please try again later." }),
+          JSON.stringify({
+            error: "Too many requests. Please try again later.",
+          }),
           { status: 429, headers: { "Content-Type": "application/json" } },
         );
       }

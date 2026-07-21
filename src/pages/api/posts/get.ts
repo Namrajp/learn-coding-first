@@ -1,5 +1,8 @@
 import type { APIRoute } from "astro";
-import { parseFrontmatter, parseFrontmatterBody } from "../../../lib/frontmatter";
+import {
+  parseFrontmatter,
+  parseFrontmatterBody,
+} from "../../../lib/frontmatter";
 
 const SLUG_RE = /^[a-z0-9-]+$/;
 
@@ -31,10 +34,13 @@ export const GET: APIRoute = async (ctx) => {
     }
 
     if (!env.GITHUB_TOKEN) {
-      return new Response(JSON.stringify({ error: "GitHub token not configured" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "GitHub token not configured" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     const filePath = `src/posts/${slug}.md`;
@@ -69,10 +75,10 @@ export const GET: APIRoute = async (ctx) => {
     const body = parseFrontmatterBody(content);
 
     if (!fm || !body) {
-      return new Response(
-        JSON.stringify({ error: "Invalid post format" }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
-      );
+      return new Response(JSON.stringify({ error: "Invalid post format" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     return new Response(

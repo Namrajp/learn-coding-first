@@ -6,6 +6,7 @@ tags:
   - tutorial
   - miscellaneous
   - ASP.NET
+description: "Learn the dependency inversion principle and architectural patterns for building maintainable, scalable .NET applications."
 ---
 
 Awesome!

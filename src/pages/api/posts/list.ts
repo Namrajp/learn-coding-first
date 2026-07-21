@@ -23,10 +23,13 @@ export const GET: APIRoute = async (ctx) => {
   try {
     const env = ctx.locals.env;
     if (!env.GITHUB_TOKEN) {
-      return new Response(JSON.stringify({ error: "GitHub token not configured" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "GitHub token not configured" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     const cached = await env.SESSION.get(CACHE_KEY, { type: "json" });
@@ -55,7 +58,10 @@ export const GET: APIRoute = async (ctx) => {
         });
         if (!response.ok) return null;
 
-        const json = (await response.json()) as { content: string; encoding: string };
+        const json = (await response.json()) as {
+          content: string;
+          encoding: string;
+        };
         const content = decodeGitHubContent(json.content);
         const fm = parseFrontmatter(content);
         if (!fm) return null;
@@ -73,8 +79,15 @@ export const GET: APIRoute = async (ctx) => {
 
     const posts = results
       .filter(
-        (r): r is PromiseFulfilledResult<{ slug: string; title: string; date: string; tags: string[]; status: string } | null> =>
-          r.status === "fulfilled" && r.value !== null,
+        (
+          r,
+        ): r is PromiseFulfilledResult<{
+          slug: string;
+          title: string;
+          date: string;
+          tags: string[];
+          status: string;
+        } | null> => r.status === "fulfilled" && r.value !== null,
       )
       .map((r) => r.value!);
 
@@ -82,7 +95,9 @@ export const GET: APIRoute = async (ctx) => {
       (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
     );
 
-    await env.SESSION.put(CACHE_KEY, JSON.stringify(posts), { expirationTtl: CACHE_TTL });
+    await env.SESSION.put(CACHE_KEY, JSON.stringify(posts), {
+      expirationTtl: CACHE_TTL,
+    });
 
     return new Response(JSON.stringify(posts), {
       status: 200,

@@ -6,6 +6,7 @@ tags:
   - python
   - numpy
   - tutorial
+description: "Complete NumPy guide: arrays, vectorized operations, broadcasting, linear algebra, and performance tips for Python developers."
 ---
 
 # Getting Started with NumPy

@@ -6,6 +6,7 @@ tags:
   - tutorial
   - python
   - python environments
+description: "Master Python workflows: virtual environments, pip dependency management, virtualenvwrapper, and WSL development tips."
 ---
 
 Python is one of the most widely used languages in the world, but a clean development workflow matters just as much as the code itself. This guide covers the essentials — virtual environments, dependency management, and handy tricks that save time day to day.

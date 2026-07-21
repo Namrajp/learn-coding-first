@@ -3,6 +3,7 @@ title: "npm on WSL mingw"
 date: 2026-07-21
 tags: []
 status: published
+description: "Fix npm run commands in Git Bash (MinGW64) on Windows: understand the issue and use cmd.exe workaround."
 ---
 
 # Why `npm run` Commands Don't Work in MinGW64 (Git Bash)
@@ -46,8 +47,8 @@ npx webpack
 
 ## Summary
 
-| Shell | Works? | Workaround |
-|-------|--------|------------|
-| PowerShell | Yes | — |
-| CMD | Yes | — |
-| Git Bash (MinGW64) | No | Use `cmd.exe /c npm run <script>` |
+| Shell              | Works? | Workaround                        |
+| ------------------ | ------ | --------------------------------- |
+| PowerShell         | Yes    | —                                 |
+| CMD                | Yes    | —                                 |
+| Git Bash (MinGW64) | No     | Use `cmd.exe /c npm run <script>` |

@@ -3,6 +3,7 @@ title: "Personal access tokens in GitHub"
 date: 2026-07-21
 tags: ["git", "coding", "tutorial", "essay"]
 status: draft
+description: "Create and use GitHub Personal Access Tokens (PAT) for secure Git authentication: step-by-step setup and security best practices."
 ---
 
 # How to Create a GitHub Personal Access Token (Classic)

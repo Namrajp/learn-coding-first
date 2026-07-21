@@ -4,3 +4,4 @@ Disallow: /admin
 Disallow: /api/
 
 Sitemap: https://learncodingfirst.com/sitemap-index.xml
+Sitemap: https://learncodingfirst.com/sitemap-posts.xml
