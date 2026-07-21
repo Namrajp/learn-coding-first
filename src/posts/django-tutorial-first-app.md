@@ -1,13 +1,9 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "Django Tutorial: Building Your First Polls App"
 date: 2026-07-21
 description: "A step-by-step guide to creating your first Django application with views, URL routing, database models, and the admin interface."
-tags:
-  - tutorial
-  - python
-  - django
-status: draft
+tags: ["tutorial", "python", "django"]
+status: published
 ---
 
 Django is a powerful Python web framework that makes it easy to build robust web applications quickly. In this tutorial, we will walk through creating a simple Polls application from scratch.
