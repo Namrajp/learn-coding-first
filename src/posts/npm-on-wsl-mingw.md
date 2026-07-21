@@ -2,7 +2,7 @@
 title: "npm on WSL mingw"
 date: 2026-07-21
 tags: []
-status: draft
+status: published
 ---
 
 # Why `npm run` Commands Don't Work in MinGW64 (Git Bash)
