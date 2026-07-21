@@ -16,5 +16,5 @@ Every week new releases of emerging models and every month new versions of exist
 ## Will AI vanish
 The prediction is rise of AI not its disappearance. Merging of many labs are happening and people are invested with time and money in this new field.
 
-### Conclusion
+## Conclusion
 The only 0.01 percent of people using AI heavily and rest of the AI users are between 70 percent who dabble with it occasionally. The productive nature of AI will produce more automation, but intelligence of human is always required.
