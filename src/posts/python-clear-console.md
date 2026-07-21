@@ -1,12 +1,9 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "Python Tip: Clearing the Console Cross-Platform"
 date: 2026-07-21
 description: "How to clear the Python interpreter console on Windows, Linux, and macOS with a reusable function."
-tags:
-  - tutorial
-  - python
-status: draft
+tags: ["tutorial", "python"]
+status: published
 ---
 
 A quick Python tip for clearing the interpreter console — useful when your terminal gets cluttered during long debugging sessions.
