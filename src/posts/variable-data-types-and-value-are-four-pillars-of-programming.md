@@ -6,10 +6,11 @@ tags: []
 status: draft
 ---
 
+## Common Terms between programming languages 
 Static properties of a class are not typed implicitly in php and JavaScript unlike Java and c++. 
 Behaviours and properties are fundamental of most languages. In php, Inheritance allows DRY by reusing code,methods and data can be overridden and shared and overloaded.
 
-Static variables are shared between subclasses and are inherited.
+## Static variables are shared between subclasses and are inherited.
 
 Late static binding use className::static 
 
@@ -18,10 +19,8 @@ To override a private variable, we declare a variable using $ sign. To access us
 
 late static binding uses::static::method()
 
-https://www.google.com/amp/s/macpaw.com/amp/how-to/speed-up-mac
-How to speed up your Mac
 
-Data structures 
+## Data structures 
 Remember, 
 Index in arrays == keys in object
 Values == data
