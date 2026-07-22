@@ -2,7 +2,7 @@
 
 ## Project
 
-Astro 7 blog on Cloudflare Workers. Posts stored as markdown in GitHub repo (`Namrajp/my-new-astro-blog`). Admin UI for create/edit/delete via GitHub API. Magic Link auth via better-auth + Resend email. Dark mode toggle with system preference support.
+Astro 7 blog on Cloudflare Workers. Posts stored as markdown in GitHub repo (`Namrajp/my-new-astro-blog`). Admin UI for create/edit/delete via GitHub API. Magic Link auth via better-auth + Resend email. Role-based access control (admin/editor). Dark mode toggle with system preference support. Comprehensive SEO implementation with structured data, sitemaps, OG/Twitter meta, and breadcrumbs.
 
 ## Stack
 
@@ -12,6 +12,9 @@ Astro 7 blog on Cloudflare Workers. Posts stored as markdown in GitHub repo (`Na
 - Drizzle ORM (SQLite/D1 for auth tables)
 - Resend (magic link emails)
 - GitHub Contents API (post CRUD)
+- `marked` + `sanitize-html` (markdown rendering with XSS protection)
+- `@astrojs/sitemap` (auto-generated sitemap index)
+- `@astrojs/rss` (RSS feed with content:encoded)
 
 ## Commands
 
@@ -25,48 +28,106 @@ npx prettier --write . # Format
 ## Key Files
 
 ```
-astro.config.mjs        # Cloudflare adapter, output: "server"
+astro.config.mjs        # Cloudflare adapter, output: "server", @astrojs/sitemap
 wrangler.toml           # D1 + KV bindings, secrets
 env.d.ts                # CloudflareBindings, App.Locals types
-src/middleware.ts        # Auth guard + env injection (always checks session)
-src/lib/auth.ts         # better-auth instance (CSRF/origin enabled)
+src/middleware.ts        # Auth guard + env injection (queries user table for role, protected: /admin, /api/posts, /api/admin)
+src/lib/auth.ts         # better-auth instance (CSRF/origin enabled, additionalFields for role)
+src/lib/auth-config.ts  # Authorized users list, DB queries, role management
 src/lib/github.ts       # GitHub API (createOrUpdateFile, deleteFile, listFiles, getDirectorySha)
 src/lib/email.ts        # Resend magic link sender
 src/lib/frontmatter.ts  # YAML frontmatter (parseFrontmatter, parseFrontmatterBody, parsePostFile, yamlString, buildFrontmatter)
-src/content.config.ts   # Post schema (title, date, tags, status)
-src/db/auth.schema.ts   # Drizzle: user, session, verification tables
-src/components/ThemeToggle.astro  # Dark/light theme switch
-src/components/Footer.astro       # Footer (shows Login/Admin based on auth)
+src/content.config.ts   # Post schema (title, date, tags, description, status)
+src/db/auth.schema.ts   # Drizzle: user, session, verification, authorized_user tables
+src/components/Nav.astro           # Site navigation (enabled in Layout)
+src/components/ThemeToggle.astro   # Dark/light theme switch
+src/components/Footer.astro        # Footer (shows Login/Admin based on auth)
+src/components/Breadcrumb.astro    # Breadcrumb nav + BreadcrumbList JSON-LD
+src/components/PrevNext.astro      # Previous/next post navigation
+src/components/RelatedPosts.astro  # Tag-based related posts (top 3)
+src/components/PostCard.astro      # Post card for archive/tag pages
+src/components/TagSidebar.astro    # Tag sidebar
+src/components/NewsletterSignup.astro # Newsletter signup
+public/robots.txt       # Crawl directives + sitemap references
+public/manifest.json    # PWA manifest (name, theme-color, icons)
+public/og-default.html  # OG image HTML template (PNG not yet generated)
 ```
 
 ## Routes
 
 ```
 /                       Homepage (SSR)
-/<slug>                 Blog post (SSR, draft posts hidden)
+/<slug>                 Blog post (SSR, draft posts hidden, prev/next nav, related posts)
 /blog/page/[page]       Paginated archive (prerendered)
 /tag/[tag]              Posts by tag (prerendered)
-/login                  Magic link login
-/admin                  Dashboard (SSR, protected)
+/login                  Magic link login (noindex)
+/admin                  Dashboard (SSR, protected, inline user management for admins)
 /admin/new              Create post (SSR, protected)
 /admin/edit/[slug]      Edit post (SSR, protected)
+/admin/users            User management page (admin-only)
 /api/auth/[...all]      better-auth handler (public, rate-limited)
 /api/posts/*            Post CRUD API (protected)
-/404                    Custom 404 page
+/api/admin/users        User management API (admin-only: GET/POST/DELETE)
+/sitemap-posts.xml      Custom sitemap for SSR blog posts
+/rss.xml                RSS feed with descriptions + content:encoded
+/404                    Custom 404 page (noindex)
 ```
 
 ## Auth Flow
 
 1. User enters email at `/login`
 2. Client sends POST to `/api/auth/sign-in/magic-link`
-3. Server sends magic link email via Resend (rate-limited: 3/15 min per IP+email)
-4. User clicks link → session cookie set → redirected to `/admin`
-5. Middleware protects `/admin/*` and `/api/posts/*`
-6. Footer shows "Login" on public pages, "Admin" on protected pages
+3. Server checks email against `authorized_user` table + hardcoded list (403 if unauthorized)
+4. Server sends magic link email via Resend (rate-limited: 3/15 min per IP+email)
+5. User clicks link → session cookie set → redirected to `/admin`
+6. Middleware protects `/admin/*` and `/api/posts/*`
+7. Footer shows "Login" on public pages, "Admin" on protected pages
+
+## Role-Based Access Control
+
+Two roles: `admin` (full access) and `editor` (create/edit only).
+
+**Admin-only features:**
+- `/admin/users` — manage authorized users
+- Delete posts (button hidden for editors)
+- Manage Users section on admin dashboard
+
+**Role assignment:**
+- Roles stored in `user` table via better-auth `additionalFields` with `returned: true`
+- New users get `editor` by default; admins auto-assigned via `databaseHooks.user.create.after`
+- Authorized emails checked against `authorized_user` table (D1) with hardcoded fallback
+- Role changes require re-login (session cookie caches user data)
 
 ## Post Storage
 
 Posts are markdown files in `src/posts/` of the GitHub repo. Admin CRUD goes through GitHub Contents API — every create/edit/delete is a git commit. The `[slug].astro` page uses KV caching with SHA-based invalidation (see below). Draft posts are hidden from public pages.
+
+## User Management
+
+Admins can manage authorized users via:
+- **Inline on dashboard** (`/admin`): Add user form + user table with remove buttons
+- **Dedicated page** (`/admin/users`): Full user management UI
+
+API endpoints at `/api/admin/users`:
+- `GET` — list all authorized users (admin-only)
+- `POST` — add/update user with role `{email, role}` (admin-only)
+- `DELETE` — remove user `{email}` (admin-only)
+
+The `authorized_user` table stores: `id`, `email`, `role`, `addedBy`, `createdAt`.
+
+## Database Schema
+
+Drizzle schema defined in `src/db/auth.schema.ts`:
+
+- **user**: `id`, `name`, `email`, `emailVerified`, `image`, `role` (default: "editor"), `createdAt`, `updatedAt`
+- **session**: `id`, `userId`, `token`, `expiresAt`, `ipAddress`, `userAgent`, `createdAt`, `updatedAt`, + Cloudflare geolocation fields
+- **verification**: `id`, `identifier`, `value`, `expiresAt`, `createdAt`, `updatedAt`
+- **authorized_user**: `id`, `email`, `role`, `addedBy`, `createdAt`
+
+Migrations in `drizzle/`:
+- `0000_stale_miek.sql` — base schema
+- `0001_add_user_role.sql` — adds `role` column to user table
+- `0002_add_authorized_user.sql` — creates `authorized_user` table
 
 ## KV Caching for Posts
 
@@ -162,3 +223,9 @@ Magic link endpoint uses `ratelimit:magic-link:{ip}:{email}` with 3 requests per
 - Magic link endpoint is rate-limited via KV counters. Keys use `ratelimit:magic-link:{ip}:{email}` with 15-min TTL.
 - CSRF and origin checks are enabled. `trustedOrigins` includes `https://learncodingfirst.com` and `http://localhost:4321`.
 - Do NOT check session on all routes in middleware — `createAuth()` creates a new better-auth + D1 connection per request, which makes `ClientRouter` navigation time out silently. Only check on protected routes.
+- Protected routes in middleware: `["/admin", "/api/posts", "/api/admin"]`. Any new protected API route must be added here or `ctx.locals.user` will be undefined.
+- Middleware queries the `user` table directly for the role (better-auth's `getSession` doesn't return custom fields). Role is stored in `context.locals.user.role`.
+- better-auth `additionalFields` with `returned: true` is required to include custom fields (like `role`) in the session object. Without it, `session.user.role` will be undefined at runtime even if the type says otherwise.
+- The `databaseHooks.user.create.after` hook runs only on NEW user creation. Existing users created before role column was added need manual UPDATE via D1 SQL.
+- Role changes in the `user` table don't invalidate existing sessions — users must re-login to see updated role in the UI.
+- The `authorized_user` table is separate from the `user` table. `authorized_user` controls who can receive magic links; `user.role` controls access level after login.

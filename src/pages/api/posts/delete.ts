@@ -12,6 +12,13 @@ export const POST: APIRoute = async (ctx) => {
     return new Response("Unauthorized", { status: 401 });
   }
 
+  if (user.role !== "admin") {
+    return new Response(
+      JSON.stringify({ error: "Only admins can delete posts" }),
+      { status: 403, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
   const ip = ctx.request.headers.get("cf-connecting-ip") || "unknown";
   const rateKey = `ratelimit:post-write:${ip}`;
   const { allowed } = await checkRateLimit(ctx.locals.env, {

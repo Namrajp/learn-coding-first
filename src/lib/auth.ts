@@ -4,6 +4,7 @@ import { magicLink } from "better-auth/plugins";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "../db/schema";
 import { sendMagicLinkEmail } from "./email";
+import { isAuthorizedEmail } from "./auth-config";
 
 export function createAuth(
   env: CloudflareBindings,
@@ -26,9 +27,35 @@ export function createAuth(
           "http://localhost:4321",
         ],
         emailAndPassword: { enabled: false },
+        user: {
+          additionalFields: {
+            role: {
+              type: "string",
+              required: true,
+              defaultValue: "editor",
+              input: false,
+              returned: true,
+            },
+          },
+        },
         session: {
           expiresIn: 60 * 60 * 24 * 7,
           updateAge: 60 * 60 * 24,
+        },
+        databaseHooks: {
+          user: {
+            create: {
+              after: async (user) => {
+                const authorized = await isAuthorizedEmail(user.email, env);
+                if (authorized) {
+                  await db
+                    .update(schema.user)
+                    .set({ role: authorized.role })
+                    .where(schema.user.id.eq(user.id));
+                }
+              },
+            },
+          },
         },
         plugins: [
           magicLink({

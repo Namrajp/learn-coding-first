@@ -14,7 +14,7 @@ interface CloudflareBindings {
 declare namespace App {
   interface Locals {
     env: CloudflareBindings;
-    user: { id: string; email: string; name: string } | null;
+    user: { id: string; email: string; name: string; role: string } | null;
     session: { id: string; expiresAt: Date } | null;
   }
 }

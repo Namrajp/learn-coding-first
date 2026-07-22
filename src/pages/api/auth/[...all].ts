@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { createAuth } from "../../../lib/auth";
+import { isAuthorizedEmail } from "../../../lib/auth-config";
 
 const RATE_LIMIT_MAX = 3;
 const RATE_LIMIT_WINDOW = 15 * 60; // 15 minutes in seconds
@@ -14,11 +15,6 @@ export const ALL: APIRoute = async (ctx) => {
     url.pathname.includes("/api/auth/sign-in/magic-link");
 
   if (isMagicLink) {
-    const ip =
-      ctx.request.headers.get("cf-connecting-ip") ||
-      ctx.request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      "unknown";
-
     let email = "";
     try {
       const body = await ctx.request.clone().json();
@@ -26,6 +22,21 @@ export const ALL: APIRoute = async (ctx) => {
     } catch {
       // ignore
     }
+
+    const authorized = await isAuthorizedEmail(email, env);
+    if (!authorized) {
+      return new Response(
+        JSON.stringify({
+          error: "This email is not authorized to access the admin panel.",
+        }),
+        { status: 403, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    const ip =
+      ctx.request.headers.get("cf-connecting-ip") ||
+      ctx.request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      "unknown";
 
     const rateKey = `ratelimit:magic-link:${ip}:${email}`;
     const current = await env.SESSION.get(rateKey);

@@ -1,16 +1,8 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
-import TagSidebar from "../components/TagSidebar.astro";
 import PostCard from "../components/PostCard.astro";
 let posts = await getCollection("posts");
-
-const tags: string[] = [];
-posts.map((post) => {
-  post.data.tags.map((tag) => {
-    if (!tags.includes(tag)) tags.push(tag);
-  });
-});
 
 posts = posts.sort(
   (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
@@ -30,98 +22,123 @@ const otherPosts = allPosts
     (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
   )
   .slice(0, 2);
+
+const tagCounts: Record<string, number> = {};
+allPosts.forEach((post) => {
+  post.data.tags.forEach((tag) => {
+    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+  });
+});
+const sortedTags = Object.entries(tagCounts)
+  .sort(([, a], [, b]) => b - a)
+  .map(([tag]) => tag);
 ---
 
 <Layout
   title="Learn Coding First — Programming & AI Tutorials"
   pageType="website"
+  showNav={false}
 >
-  <div class="w-full pt-[2.5rem] text-left">
+  <div class="w-full -mt-8">
     <div
-      class="fixed top-0 right-0 left-0 z-50 flex items-center justify-center bg-[hsl(21,62%,45%)] px-8 pt-3 pb-[1.25rem] text-center text-white shadow-sm"
+      class="fixed top-0 right-0 left-0 z-50 flex items-center justify-center bg-[hsl(21,62%,45%)] px-4 pt-3 pb-[1.25rem] text-center text-white shadow-sm sm:px-8"
     >
-      <p class="text-base leading-tight font-semibold">
+      <p class="text-sm leading-tight font-semibold sm:text-base">
         Coming Soon: AI Workshop and new content releasing every week.
       </p>
     </div>
 
-    <div class="mt-0 grid gap-6 md:grid-cols-[30%_70%] md:pl-[10rem]">
-      <TagSidebar {tags} />
+    <section class="mt-24 min-h-[70vh] flex flex-col items-center justify-center text-center">
+      <h1
+        class="mb-4 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl dark:text-slate-100"
+      >
+        Fundamentals of programming and using AI
+      </h1>
 
-      <section>
-        <h1
-          class="mb-4 text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100"
-        >
-          Fundamentals of programming and AI
-        </h1>
+      <p class="mx-auto mb-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
+        Tutorials, guides, and resources to help you learn coding from scratch and harness the power of artificial intelligence.
+      </p>
 
-        <p class="my-4 text-xl font-semibold dark:text-gray-200">All posts</p>
-        <ul class="space-y-2">
-          {
-            posts.map((post) => (
-              <li>
-                <a
-                  href={`/${post.id}`}
-                  class="no-underline hover:text-[hsl(21,62%,45%)] hover:underline-offset-4"
-                >
-                  {post.data.title}
-                </a>
-                <span class="ml-3 text-sm text-slate-500">
-                  ({post.data.date.toLocaleDateString()})
-                </span>
-              </li>
-            ))
-          }
-        </ul>
+      <ul class="mx-auto max-w-2xl list-none space-y-2 pl-4 text-left sm:pl-8">
+        {
+          posts.map((post) => (
+            <li>
+              <a
+                href={`/${post.id}`}
+                class="no-underline hover:text-[hsl(21,62%,45%)] hover:underline-offset-4"
+              >
+                {post.data.title}
+              </a>
+              <span class="ml-3 text-sm text-slate-500">
+                ({post.data.date.toLocaleDateString()})
+              </span>
+            </li>
+          ))
+        }
+      </ul>
 
-        <p class="py-4">
-          <a href={"/blog/page/1"}> See all posts ▶︎ </a>
-        </p>
+      <p class="py-4">
+        <a href={"/blog/page/1"}> See all posts ▶︎ </a>
+      </p>
+    </section>
 
-        <section class="mt-16">
-          <h2
-            class="mb-8 text-4xl font-extrabold tracking-tight text-slate-900"
-          >
-            What's New
-          </h2>
-          {
-            promptingPost && (
-              <PostCard
-                date={promptingPost.data.date.toLocaleDateString()}
-                title={promptingPost.data.title}
-                excerpt="Prompting is the art of giving AI clear, well-structured instructions to get the output you actually want. Learn how to be specific, give the AI a role, provide context, use step-by-step instructions, iterate and refine, and show examples to dramatically improve your results."
-                link={`/${promptingPost.id}`}
-              />
-            )
-          }
-          {
-            claudePost && (
-              <PostCard
-                date={claudePost.data.date.toLocaleDateString()}
-                title={claudePost.data.title}
-                excerpt="Claude is Anthropic's AI assistant, built with a strong emphasis on being helpful, harmless, and honest. It excels at long-form reasoning, nuanced writing, and following complex multi-step instructions — but like any tool, it rewards users who understand how it thinks."
-                link={`/${claudePost.id}`}
-              />
-            )
-          }
-          <PostCard
-            date={randomPost.data.date.toLocaleDateString()}
-            title={randomPost.data.title}
-            excerpt={randomPost.data.description || "Check out this post!"}
-            link={`/${randomPost.id}`}
-          />
-          {
-            otherPosts.map((post) => (
-              <PostCard
-                date={post.data.date.toLocaleDateString()}
-                title={post.data.title}
-                excerpt={post.data.description || "Check out this post!"}
-                link={`/${post.id}`}
-              />
-            ))
-          }
-        </section>
-      </section>
-    </div>
+    <section class="mt-16 text-center">
+      <div class="mx-auto mb-8 flex max-w-2xl flex-wrap justify-center gap-2">
+        {
+          sortedTags.map((tag) => (
+            <a
+              href={`/tag/${tag}`}
+              class="rounded-sm bg-gray-100 px-4 py-2 text-sm font-medium capitalize text-gray-700 no-underline hover:bg-[hsl(21,62%,45%)] hover:text-white dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-[hsl(21,62%,45%)]"
+            >
+              {tag}
+            </a>
+          ))
+        }
+      </div>
+
+      <h2
+        class="mb-8 text-4xl font-extrabold tracking-tight text-slate-900"
+      >
+        What's New
+      </h2>
+      <div class="mx-auto max-w-2xl text-left">
+        {
+          promptingPost && (
+            <PostCard
+              date={promptingPost.data.date.toLocaleDateString()}
+              title={promptingPost.data.title}
+              excerpt="Prompting is the art of giving AI clear, well-structured instructions to get the output you actually want. Learn how to be specific, give the AI a role, provide context, use step-by-step instructions, iterate and refine, and show examples to dramatically improve your results."
+              link={`/${promptingPost.id}`}
+            />
+          )
+        }
+        {
+          claudePost && (
+            <PostCard
+              date={claudePost.data.date.toLocaleDateString()}
+              title={claudePost.data.title}
+              excerpt="Claude is Anthropic's AI assistant, built with a strong emphasis on being helpful, harmless, and honest. It excels at long-form reasoning, nuanced writing, and following complex multi-step instructions — but like any tool, it rewards users who understand how it thinks."
+              link={`/${claudePost.id}`}
+            />
+          )
+        }
+        <PostCard
+          date={randomPost.data.date.toLocaleDateString()}
+          title={randomPost.data.title}
+          excerpt={randomPost.data.description || "Check out this post!"}
+          link={`/${randomPost.id}`}
+        />
+        {
+          otherPosts.map((post) => (
+            <PostCard
+              date={post.data.date.toLocaleDateString()}
+              title={post.data.title}
+              excerpt={post.data.description || "Check out this post!"}
+              link={`/${post.id}`}
+            />
+          ))
+        }
+      </div>
+    </section>
   </div>
 </Layout>

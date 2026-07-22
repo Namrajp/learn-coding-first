@@ -6,6 +6,7 @@ export const user = sqliteTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: integer("emailVerified", { mode: "boolean" }).notNull(),
   image: text("image"),
+  role: text("role").notNull().default("editor"),
   createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updatedAt", { mode: "timestamp" }).notNull(),
 });
@@ -38,4 +39,12 @@ export const verification = sqliteTable("verification", {
   expiresAt: integer("expiresAt", { mode: "timestamp" }).notNull(),
   createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updatedAt", { mode: "timestamp" }).notNull(),
+});
+
+export const authorized_user = sqliteTable("authorized_user", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  role: text("role").notNull().default("editor"),
+  addedBy: text("addedBy"),
+  createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),
 });

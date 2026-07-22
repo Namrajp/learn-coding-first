@@ -11,6 +11,7 @@ const {
   title,
   tags,
   showSignOut,
+  showNav = true,
   canonical,
   robots,
   description,
@@ -113,9 +114,11 @@ const jsonLd = {
   >
     <ThemeToggle {showSignOut} />
     <div class="py-2">
-      <header id="home">
-        <Nav />
-      </header>
+      {showNav && (
+        <header id="home">
+          <Nav />
+        </header>
+      )}
 
       <div class="mx-auto max-w-[1200px] px-6">
         <Breadcrumb {tags} />
