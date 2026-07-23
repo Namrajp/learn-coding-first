@@ -2,13 +2,17 @@
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import PostCard from "../components/PostCard.astro";
-let posts = await getCollection("posts");
+let posts = (await getCollection("posts")).filter(
+  (post) => post.data.status !== "draft",
+);
 
 posts = posts.sort(
   (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
 );
 
-const allPosts = await getCollection("posts");
+const allPosts = (await getCollection("posts")).filter(
+  (post) => post.data.status !== "draft",
+);
 const randomPost = allPosts[Math.floor(Math.random() * allPosts.length)];
 const promptingPost = allPosts.find((p) => p.id === "prompting-guide");
 const claudePost = allPosts.find((p) => p.id === "claude-guide");

@@ -44,6 +44,11 @@ if (import.meta.env.DEV) {
       status: fm.status,
       content: body,
     };
+
+    if (fm.status === "draft") {
+      console.error(`[slug.${slug}] Post is draft`);
+      return Astro.redirect("/");
+    }
   } else {
     console.error(`[slug.${slug}] Post not found in content collection`);
   }
@@ -188,7 +193,9 @@ const postJsonLd = {
 };
 
 // Get all posts for prev/next navigation and related posts
-const allPosts = await getCollection("posts");
+const allPosts = (await getCollection("posts")).filter(
+  (post) => post.data.status !== "draft",
+);
 const sortedPosts = allPosts.sort(
   (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
 );

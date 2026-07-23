@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { withCloudflare } from "better-auth-cloudflare";
 import { magicLink } from "better-auth/plugins";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "../db/schema";
 import { sendMagicLinkEmail } from "./email";
@@ -11,6 +12,8 @@ export function createAuth(
   cf?: IncomingRequestCfProperties,
 ) {
   const db = drizzle(env.DB, { schema });
+
+  const isSecure = env.BETTER_AUTH_URL?.startsWith("https");
 
   return betterAuth({
     ...withCloudflare(
@@ -26,6 +29,12 @@ export function createAuth(
           "https://learncodingfirst.com",
           "http://localhost:4321",
         ],
+        advanced: {
+          defaultCookieAttributes: {
+            secure: isSecure,
+            sameSite: "lax",
+          },
+        },
         emailAndPassword: { enabled: false },
         user: {
           additionalFields: {
@@ -51,7 +60,7 @@ export function createAuth(
                   await db
                     .update(schema.user)
                     .set({ role: authorized.role })
-                    .where(schema.user.id.eq(user.id));
+                    .where(eq(schema.user.id, user.id));
                 }
               },
             },

@@ -1,67 +1,106 @@
 ---
-title: "Html crash course in 10 minutes"
+title: "HTML Crash Course in 10 Minutes"
 date: 2026-07-23
+description: "A quick introduction to HTML fundamentals including elements, tags, block vs inline elements, and boilerplate."
 tags: ["HTML"]
 status: published
 ---
 
-# Introduction 
-I want to start with elements that are basic to understand html. By elements I mean each item of the document which are tags in html. The first element is With the introduction of html5, whole new tags have been introduced.
-## Getting started
-Coding with abbreviations of [Emmet](https://emmet.io/) makes it easy in my favourite editor visual studio code.If you open new file in vscode and type ! you see a markup called boilerplate.The top of which is `<!DOCTYPE html>` which conveys its a document of type html. The next line is `<html>` which says its the outermost tag of this code. The `html` tag encloses the `head` and `body`.
+HTML is the foundation of every web page. It defines the structure and meaning of content using elements — the building blocks that browsers interpret and render. This crash course covers the essentials you need to start building pages.
+
+## The Boilerplate
+
+Every HTML page starts with the same skeleton. In VS Code, type `!` and press Tab (using [Emmet](https://emmet.io/)) to generate it instantly:
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Page</title>
 </head>
 <body>
-	
+  <!-- Your content goes here -->
 </body>
 </html>
 ```
-So by now it may be clear tags are the main elements we were talking before. Two basic tags are block level tags and inline tags. 
-### Elements of html document 
-Headings in a document are h1, h2, h3, h4, h5, h6. The first level heading is h1 which is largest in font size and h6 is smallest. They are **block level elements**. Similarly, paragraph tag `p`, unordered list `ul`,list items `li`,`div` s, `table`, `form` these tags are block level elements.
+
+- **`<!DOCTYPE html>`** tells the browser this is an HTML5 document.
+- **`<html lang="en">`** is the root element. The `lang` attribute helps screen readers and search engines.
+- **`<head>`** contains metadata — character set, viewport settings, title, and links to stylesheets or scripts.
+- **`<body>`** contains everything the user sees and interacts with.
+
+## Block vs Inline Elements
+
+Understanding the difference between block and inline elements is key to layout:
+
+### Block-Level Elements
+
+Block elements take up the full width available. They stack vertically. Common block elements:
+
+- Headings: `<h1>` through `<h6>` (h1 is largest, h6 is smallest)
+- Paragraphs: `<p>`
+- Lists: `<ul>`, `<ol>`, `<li>`
+- Containers: `<div>`, `<section>`, `<article>`, `<header>`, `<footer>`
+- Tables: `<table>`, `<form>`
+
 ```html
-<body>
-    <!-- Headings -->
-
-    <h1>My Heading one</h1>
-    <h2>My Heading three</h2>
-    <h3>My Heading two</h3>
-
-    <!-- Paragraphs with text formatting -->
-    <p>
-      Lorem ipsum dolor sit amet consectetur, <del>adipisicing</del> elit.
-      Praesentium, veniam! Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur saepe molestias nostrum fuga possimus, natus quia repellat sit autem in voluptatum reprehenderit sint iste explicabo eos impedit quo dolores modi? 
-    </p>
-    <p>
-      Lorem <em>ipsum dolor</em> sit amet <mark>consectetur</mark>,
-      <del>adipisicing</del>
+<h1>Main Heading</h1>
+<p>This paragraph takes up the full width.</p>
+<div>This div is also full width by default.</div>
 ```
 
+### Inline Elements
 
-The block level elements take the whole line.**Inline elements** take up the space of their text only.Some common inline elements are `span, img, anchor` tags and text formatting tags like `strong`,`em`,`mark`,`del`,`sup`,`sub` etc.The browser interprets the tags from a tree like structure called [Document Object Model(DOM)](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction),Where the tags inside of `head` are used for information only. The content inside `title` tag is displayed on top of document in tabs. The content of meta tags are used for [Search Engine Optimization](https://moz.com/beginners-guide-to-seo) purpose for search engines to index the pages
-   ```html
- <p>
-      Lorem <em>ipsum dolor</em> sit amet <mark>consectetur</mark>,
-      <del>adipisicing</del>
-      elit. Praesentium, veniam!
-    </p>
-    <p>
-      <strong> ipsum dolor</strong> sit amet consectetur, adipisicing elit.
-      Praesentium, veniam!
-    </p>
-    <p>
-      Lorem <small>ipsum</small>, <sup>dolor</sup> <sub>sit</sub> amet
-      consectetur adipisicing elit.
-      <!-- inline span image and anchor a tags -->
-      <span style="color: blue">Necessitatibus</span>, eius.
-    </p>
+Inline elements only take up the space of their content. They flow within the surrounding text. Common inline elements:
+
+- **`<span>`** — a generic inline container
+- **`<a>`** — a link
+- **`<img>`** — an image (technically replaced, but behaves inline)
+- Text formatting: **`<strong>`**, *`<em>`*, ~~`<del>`~~, `<mark>`, `<sup>`, `<sub>`, `<small>`
+
+```html
+<p>
+  This is a <strong>bold</strong> word and an <em>italic</em> word
+  in the same paragraph.
+</p>
 ```
 
-# Conclusion
-HTML and CSS is easy to learn the basics but to master the CSS to an expert level need a lot of practice. I mean by practice is doing projects to learn the CSS and master the language.
+## Text Formatting Examples
+
+```html
+<p>
+  Normal text with <strong>strong emphasis</strong> and
+  <em>italic emphasis</em>.
+</p>
+<p>
+  H<sub>2</sub>O — subscript for chemical formulas.
+</p>
+<p>
+  E = mc<sup>2</sup> — superscript for exponents.
+</p>
+<p>
+  <del>Deleted text</del> and <mark>highlighted text</mark>.
+</p>
+<p>
+  <small>Fine print goes here.</small>
+</p>
+```
+
+## Links and Images
+
+```html
+<a href="https://example.com">Visit Example</a>
+<img src="photo.jpg" alt="A description of the image" />
+```
+
+Always include the `alt` attribute on images. It improves accessibility and is required by the HTML specification.
+
+## How the Browser Interprets HTML
+
+The browser parses your HTML into a tree structure called the [Document Object Model (DOM)](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction). Elements in the `<head>` are not displayed — they provide information to the browser and search engines. The `<title>` content appears in the browser tab. Meta tags influence how search engines index your page.
+
+## Conclusion
+
+HTML and CSS are easy to learn at a basic level, but mastering them takes practice. Build projects — landing pages, portfolios, dashboards — to reinforce what you learn. The structure you define with HTML today is the foundation for every interactive experience on the web.
