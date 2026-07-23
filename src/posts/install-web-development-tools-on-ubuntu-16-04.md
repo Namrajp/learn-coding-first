@@ -1,7 +1,7 @@
 ---
 title: "Install web development tools on Ubuntu 16.04"
 date: 2026-07-23
-tags: ["Ubuntu"]
+tags: ["ubuntu", "git", "npm", "web developement"]
 status: draft
 ---
 
