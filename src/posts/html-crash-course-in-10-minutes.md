@@ -2,7 +2,7 @@
 title: "Html crash course in 10 minutes"
 date: 2026-07-23
 tags: ["HTML"]
-status: draft
+status: published
 ---
 
 # Introduction 
