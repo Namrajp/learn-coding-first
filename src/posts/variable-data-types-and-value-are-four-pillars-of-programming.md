@@ -2,7 +2,7 @@
 title: "Variable, Data, Types and Value are Four pillars of Programming"
 date: 2026-07-22
 description: "JavaScript"
-tags: []
+tags: ["Javascript", "Programming"]
 status: draft
 ---
 
