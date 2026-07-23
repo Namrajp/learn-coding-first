@@ -9,7 +9,7 @@ tags:
 status: published
 ---
 
-Working with Node.js inside Windows Subsystem for Linux (WSL) comes with a few gotchas. Here are the solutions to the most common problems.
+Working with Node.js inside Windows Subsystem for Linux (WSL) comes with a few pitfalls. Here are the solutions to the most common problems.
 
 ## Accessing Windows Files from WSL
 

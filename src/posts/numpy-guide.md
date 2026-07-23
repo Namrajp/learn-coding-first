@@ -209,7 +209,7 @@ np.split(a, 3)              # split into 3 equal parts
 
 ## ⚠️ Copies vs. Views
 
-This is the most common gotcha, especially coming from C:
+This is the most common pitfall, especially coming from C:
 
 ```python
 a = np.array([1, 2, 3])
