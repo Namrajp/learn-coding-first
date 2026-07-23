@@ -1,9 +1,9 @@
 ---
 title: "Sharing-computers-mac-windows-linux"
 date: 2026-07-21
-tags: []
-status: draft
 description: "Set up file sharing between Mac, Windows, and Linux on a local network: SMB configuration, access methods, and quick reference."
+tags: ["networking"]
+status: draft
 ---
 
 # Sharing Files Between Mac, Windows, and Linux on a Local Network
