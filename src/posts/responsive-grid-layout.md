@@ -1,9 +1,9 @@
 ---
 title: "Responsive Grid Layout with CSS"
-date: 2026-07-23
+date: 2026-07-26
 description: "Build responsive grid layouts using CSS Grid and media queries for different screen sizes."
 tags: ["CSS", "Responsive Design"]
-status: draft
+status: published
 ---
 
 Responsive design means writing CSS that adapts to different screen sizes. A layout that looks great on a desktop might be unusable on a phone without the right breakpoints and flexible units.

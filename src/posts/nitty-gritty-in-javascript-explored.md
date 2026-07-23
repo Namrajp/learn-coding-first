@@ -1,9 +1,9 @@
 ---
 title: "Nitty Gritty in Javascript Explored"
-date: 2026-07-22
+date: 2026-07-24
 description: "Understand how JavaScript values, prototypes, constructors, and methods connect — and why the distinctions matter in everyday code."
 tags: ["JavaScript", "Programming"]
-status: draft
+status: published
 ---
 
 You call `toUpperCase()` on a string and get a new string back. You call `push()` on an array and the original array changes. Same language, same dot syntax, completely different behavior. The confusion stops making sense once you understand that JavaScript treats primitives and objects as two separate systems, each with its own rules for storage, mutation, and method access.

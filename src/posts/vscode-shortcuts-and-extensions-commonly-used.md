@@ -1,9 +1,9 @@
 ---
 title: "VS Code Shortcuts and Extensions I Use Daily"
-date: 2026-07-23
+date: 2026-07-27
 description: "A practical reference of essential VS Code keyboard shortcuts and must-have extensions for faster development."
 tags: ["VS Code", "Productivity"]
-status: draft
+status: published
 ---
 
 VS Code is the editor most web developers spend their days in. Learning a handful of shortcuts and installing the right extensions can shave hours off your week. Here is what I use every day.

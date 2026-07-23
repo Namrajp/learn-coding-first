@@ -1,9 +1,9 @@
 ---
 title: "Positioning a Navbar and Logo on a Landing Page"
-date: 2026-07-23
+date: 2026-07-25
 description: "Understand CSS positioning properties — static, relative, absolute, and fixed — and how to use them for navbars and logos."
 tags: ["CSS"]
-status: draft
+status: published
 ---
 
 Positioning is one of the most useful — and most misunderstood — areas of CSS. Elements follow the normal document flow by default, but the `position` property lets you break out of that flow and place elements exactly where you need them.
