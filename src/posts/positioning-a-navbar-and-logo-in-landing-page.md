@@ -2,7 +2,7 @@
 title: "Positioning a Navbar and Logo on a Landing Page"
 date: 2026-07-25
 description: "Understand CSS positioning properties — static, relative, absolute, and fixed — and how to use them for navbars and logos."
-tags: ["CSS"]
+tags: ["CSS", "programming"]
 status: published
 ---
 
