@@ -1,13 +1,12 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "WSL Development Tips: Paths, Node, and Fixing Vite"
-date: 2026-07-21
+date: 2026-07-29
 description: "Practical tips for developing with Node.js inside WSL — fixing paths, setting up nvm, and solving the Vite file-watching problem."
 tags:
   - tutorial
   - cli
   - tools
-status: draft
+status: published
 ---
 
 Working with Node.js inside Windows Subsystem for Linux (WSL) comes with a few gotchas. Here are the solutions to the most common problems.
@@ -24,7 +23,6 @@ You can set up shortcuts in `~/.bashrc` for convenience:
 
 ```bash
 alias home="cd /mnt/c/Users/activ/"
-alias ~="cd /mnt/c/Users/activ/"
 alias lab="cd /mnt/e/lab/"
 ```
 
@@ -39,7 +37,7 @@ source ~/.bashrc
 If you use nvm for Windows (nvm4w), the Node and npm binaries are at a different path than the default install. Add them to your PATH in `~/.bashrc`:
 
 ```bash
-# Node path in MingW — nvm4w installs to c:\nvm4w, not the default c:\Program Files\nodejs
+# nvm4w installs to c:\nvm4w, not the default c:\Program Files\nodejs
 PATH=$PATH:"/c/nvm4w/nodejs"
 ```
 
@@ -81,18 +79,8 @@ echo $SHELL
 
 `echo $0` is more accurate — it reflects the current running shell, even if you temporarily switched with `bash` or `zsh`.
 
-## Customizing the Prompt
+> **Rule:** keep your project files inside WSL (`~/`), not on a Windows drive (`/mnt/c/`). This avoids file-watching issues, path problems, and slow I/O.
 
-To add a new line to your shell prompt:
+---
 
-```bash
-PS1="$PS1\n"
-```
-
-## Summary
-
-- Windows drives are at `/mnt/c/`, `/mnt/e/`, etc.
-- Set up PATH for nvm4w Node binaries in `~/.bashrc`
-- Use `CHOKIDAR_USEPOLLING=true` to fix Vite hot reload in WSL
-- Reinstall `node_modules` from WSL if switching between Windows and Linux npm
-- Use `echo $0` to check your current shell
+_Next steps: for general dev environment fixes (PostgreSQL, FAT32, disk space), see **Dev Environment Quick Fixes**._

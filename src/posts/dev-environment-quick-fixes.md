@@ -1,13 +1,12 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "Dev Environment Quick Fixes: VSCode, PostgreSQL, FAT32, and Disk Space"
-date: 2026-07-21
+date: 2026-07-24
 description: "A collection of quick fixes for common developer environment issues — from VSCode shortcuts to PostgreSQL config and filesystem limitations."
 tags:
   - miscellaneous
   - tools
   - cli
-status: draft
+status: published
 ---
 
 A collection of quick solutions to problems that come up during day-to-day development. Bookmark this one — you will probably need it.
@@ -87,10 +86,8 @@ echo $SHELL
 
 `echo $0` is more accurate since it reflects the actual running shell.
 
-## Summary
+> **Rule:** most dev environment problems come down to three things — permissions, file systems, and paths. Check those first.
 
-- Use Alt + Click for multi-cursor editing in VSCode
-- PostgreSQL local connections can use `trust` for development
-- FAT32/exFAT do not support symlinks — use NTFS for dev projects
-- WSL disk space issues require moving the virtual disk to a larger partition
-- Keep Drizzle ORM packages updated before running migrations
+---
+
+_Next steps: for WSL-specific issues like Vite hot reload and Node path setup, see **WSL Development Tips**._

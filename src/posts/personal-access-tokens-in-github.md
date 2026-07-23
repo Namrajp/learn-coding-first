@@ -1,22 +1,20 @@
 ---
-title: "Personal access tokens in GitHub"
-date: 2026-07-21
-tags: ["git", "coding", "tutorial", "essay"]
-status: draft
+title: "GitHub Personal Access Tokens: Setup and Security"
+date: 2026-07-28
+tags: ["git", "tutorial"]
+status: published
 description: "Create and use GitHub Personal Access Tokens (PAT) for secure Git authentication: step-by-step setup and security best practices."
 ---
 
-# How to Create a GitHub Personal Access Token (Classic)
+A Personal Access Token (PAT) replaces your password when Git authenticates with GitHub from the terminal. GitHub no longer accepts password authentication for Git operations — tokens are the standard.
 
-A Personal Access Token (PAT) is used as a password replacement when authenticating with GitHub from the terminal.
-
-## Steps
+## Creating a Token
 
 1. Go to **GitHub Settings** → **Developer Settings** → **Personal access tokens** → **Tokens (classic)**
 2. Click **Generate new token**
 3. Set an expiry (e.g., 7 days for short-lived terminal use)
 4. Select the scopes/permissions you need
-5. Copy the generated token immediately — you won't see it again
+5. Copy the generated token immediately — you will not see it again
 
 ## Using the Token
 
@@ -33,9 +31,17 @@ Or set it in your remote URL:
 git remote set-url origin https://<YOUR_TOKEN>@github.com/your-username/your-repo.git
 ```
 
+The second approach stores the token in your Git config, so you do not need to paste it each time. Be aware this puts the token in plain text on disk.
+
 ## Security Tips
 
 - **Never commit tokens** to source control
 - Use short expiry dates (7 days recommended)
 - Store tokens in a password manager
 - Revoke tokens you no longer need from the same settings page
+
+> **Rule:** treat tokens like passwords. If a token leaks, revoke it immediately from GitHub settings.
+
+---
+
+_Next steps: for automated CI/CD pipelines, use **GitHub Apps** or **deploy keys** instead of personal tokens — they provide scoped access without linking to your account._

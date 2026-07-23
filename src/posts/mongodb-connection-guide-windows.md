@@ -1,13 +1,12 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "MongoDB Connection Guide for Windows"
-date: 2026-07-21
+date: 2026-07-27
 description: "How to start MongoDB on Windows, connect with mongosh, and use Mongoose in Node.js applications."
 tags:
   - tutorial
   - tools
   - Mongodb and Postgresql
-status: draft
+status: published
 ---
 
 A quick reference for getting MongoDB running on Windows and connecting to it from your applications.
@@ -17,7 +16,7 @@ A quick reference for getting MongoDB running on Windows and connecting to it fr
 To start the MongoDB server on Windows, open Command Prompt and run:
 
 ```bash
-C:\mongodb\bin>mongod.exe --dbpath "C:\data\db"
+mongod.exe --dbpath "C:\data\db"
 ```
 
 Make sure the `C:\data\db` directory exists before running this command. MongoDB stores its data there.
@@ -52,7 +51,7 @@ mongoose
   .catch((err) => console.error("Could not connect to MongoDB:", err));
 ```
 
-Note: Use `127.0.0.1` instead of `localhost` — this avoids DNS resolution issues in Node.js 18+.
+Use `127.0.0.1` instead of `localhost` — this avoids DNS resolution issues in Node.js 18+.
 
 ## Using Environment Variables
 
@@ -77,28 +76,8 @@ db.on("error", (error) => console.error(error));
 db.once("open", () => console.log("Connected to Database"));
 ```
 
-## PostgreSQL Password Reset (Bonus)
+> **Rule:** never hardcode connection strings in source code. Use `.env` files and add `.env` to `.gitignore`.
 
-If you also use PostgreSQL and need to reset the default user password:
+---
 
-```bash
-psql -U postgres
-ALTER USER postgres PASSWORD 'your_new_password';
-```
-
-## Navigating from WSL
-
-To open Windows File Explorer from WSL:
-
-```bash
-explorer.exe /c start .
-```
-
-To access WSL files from Windows, navigate to `\\wsl$` in File Explorer.
-
-## Summary
-
-- Start MongoDB with `mongod.exe --dbpath "C:\data\db"`
-- Connect with `mongosh mongodb://localhost:27017`
-- Use Mongoose `connect()` with `127.0.0.1` for reliable connections
-- Store connection strings in `.env` files for security
+_Next steps: once connected, explore **Mongoose schemas** to define your data models, and **MongoDB Atlas** for cloud-hosted databases._
