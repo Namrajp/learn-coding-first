@@ -1,6 +1,6 @@
 ---
 title: "GitHub Personal Access Tokens: Setup and Security"
-date: 2026-07-28
+date: 2026-07-21
 tags: ["git", "tutorial"]
 status: published
 description: "Create and use GitHub Personal Access Tokens (PAT) for secure Git authentication: step-by-step setup and security best practices."

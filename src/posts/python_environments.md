@@ -1,7 +1,7 @@
 ---
 layout: "@layouts/Layout.astro"
 title: "Virtual Environments in Python"
-date: 2025-10-12
+date: 2026-07-27
 tags:
   - news
   - tutorial

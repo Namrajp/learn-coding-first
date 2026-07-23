@@ -1,6 +1,6 @@
 ---
 title: "Sharing Files Between Mac, Windows, and Linux"
-date: 2026-07-26
+date: 2026-07-16
 description: "Set up file sharing between Mac, Windows, and Linux on a local network: SMB configuration, access methods, and quick reference."
 tags: ["networking"]
 status: published

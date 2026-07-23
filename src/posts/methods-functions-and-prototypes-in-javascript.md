@@ -1,6 +1,6 @@
 ---
 title: "Methods, Functions and Prototypes in JavaScript"
-date: 2026-07-25
+date: 2026-07-04
 description: "Understand how methods, constructors, and prototypes work together to create objects in JavaScript."
 tags: ["Javascript", "Programming"]
 status: published

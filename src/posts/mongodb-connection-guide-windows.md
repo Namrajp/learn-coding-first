@@ -1,6 +1,6 @@
 ---
 title: "MongoDB Connection Guide for Windows"
-date: 2026-07-27
+date: 2026-07-18
 description: "How to start MongoDB on Windows, connect with mongosh, and use Mongoose in Node.js applications."
 tags:
   - tutorial

@@ -1,7 +1,7 @@
 ---
 layout: "@layouts/Layout.astro"
 title: "The Gemini Guide: How to Get the Most Out of Google's AI"
-date: 2026-02-14
+date: 2026-07-30
 tags:
   - tutorial
   - ai

@@ -1,6 +1,6 @@
 ---
 title: "Here is why Learning to Code in 2026 is powerful"
-date: 2026-07-13
+date: 2026-05-05
 description: "Why learning to code in 2026 matters more than ever: AI tools, career opportunities, and the fundamentals every developer needs."
 tags: ["essay"]
 status: published

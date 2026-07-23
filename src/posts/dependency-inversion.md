@@ -1,7 +1,7 @@
 ---
 layout: "@layouts/Layout.astro"
 title: "Dependency inversion and architectural-principles"
-date: 2025-10-11
+date: 2026-07-26
 tags:
   - tutorial
   - miscellaneous

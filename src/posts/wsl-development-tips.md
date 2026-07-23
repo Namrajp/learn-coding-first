@@ -1,6 +1,6 @@
 ---
 title: "WSL Development Tips: Paths, Node, and Fixing Vite"
-date: 2026-07-29
+date: 2026-07-23
 description: "Practical tips for developing with Node.js inside WSL — fixing paths, setting up nvm, and solving the Vite file-watching problem."
 tags:
   - tutorial

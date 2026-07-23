@@ -1,7 +1,7 @@
 ---
 layout: "@layouts/Layout.astro"
 title: "Flask and Virtual Environments in Python"
-date: 2025-10-12
+date: 2026-04-27
 tags:
   - news
   - tutorial

@@ -1,7 +1,7 @@
 ---
 layout: "@layouts/Layout.astro"
 title: "Part1: Containerize an application"
-date: 2025-10-16
+date: 2026-07-29
 description: "Learn how to containerize applications with Docker: Dockerfile creation, image building, container management, and deployment best practices."
 tags:
   - docker

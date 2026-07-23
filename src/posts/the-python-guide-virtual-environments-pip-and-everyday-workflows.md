@@ -1,6 +1,6 @@
 ---
 title: "The Python Guide: Virtual Environments, pip, and Everyday Workflows"
-date: 2026-07-23
+date: 2026-06-22
 description: "Master Python virtual environments, pip dependency management, and daily workflows for clean, reproducible projects."
 tags: ["Python", "Programming", "Web Development"]
 status: published

@@ -1,6 +1,6 @@
 ---
 title: "Claude Code: Commands & Skills Guide"
-date: 2026-03-19
+date: 2026-08-05
 tags: ["claude", "ai", "cli", "tools"]
 description: "A practical reference for Claude Code slash commands, keyboard shortcuts, IDE integration, and how skills work."
 layout: "@layouts/Layout.astro"

@@ -1,6 +1,6 @@
 ---
 title: "npm on WSL mingw"
-date: 2026-07-21
+date: 2026-05-25
 description: "Fix npm run commands in Git Bash (MinGW64) on Windows: understand the issue and use cmd.exe workaround."
 tags: ["npm"]
 status: published

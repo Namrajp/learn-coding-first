@@ -1,6 +1,6 @@
 ---
 title: "HTML Crash Course in 10 Minutes"
-date: 2026-07-23
+date: 2026-06-14
 description: "A quick introduction to HTML fundamentals including elements, tags, block vs inline elements, and boilerplate."
 tags: ["HTML"]
 status: published

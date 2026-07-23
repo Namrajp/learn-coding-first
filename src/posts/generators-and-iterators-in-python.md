@@ -1,6 +1,6 @@
 ---
 title: "Generators and Iterators in Python"
-date: 2025-08-21
+date: 2026-04-23
 tags: ["python", "essay", "tutorial"]
 status: published
 description: "Master Python generators and iterators: yield keyword, memory-efficient sequences, and the next() function with practical examples."

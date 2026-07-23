@@ -1,6 +1,6 @@
 ---
 title: "Django Tutorial: Building Your First Polls App"
-date: 2026-07-21
+date: 2026-05-13
 description: "A step-by-step guide to creating your first Django application with views, URL routing, database models, and the admin interface."
 tags: ["tutorial", "python", "django"]
 status: published

@@ -1,7 +1,7 @@
 ---
 layout: "@layouts/Layout.astro"
 title: "How  to use diff in git"
-date: 2026-05-27
+date: 2026-08-06
 tags:
   - essay
   - tutorial

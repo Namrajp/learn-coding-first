@@ -1,6 +1,6 @@
 ---
 title: "Python Tip: Clearing the Console Cross-Platform"
-date: 2026-07-21
+date: 2026-05-21
 description: "How to clear the Python interpreter console on Windows, Linux, and macOS with a reusable function."
 tags: ["tutorial", "python"]
 status: published

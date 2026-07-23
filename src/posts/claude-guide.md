@@ -1,7 +1,7 @@
 ---
 layout: "@layouts/Layout.astro"
 title: "The Claude Guide: How to Get the Most Out of Anthropic's AI"
-date: 2026-02-18
+date: 2026-07-31
 tags:
   - tutorial
   - ai

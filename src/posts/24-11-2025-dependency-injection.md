@@ -1,6 +1,6 @@
 ---
 title: "Dependency Injection in ASP.Net"
-date: 2025-11-24
+date: 2026-05-01
 tags: ["news", "tutorial", "ASP.NET"]
 status: published
 description: "Understand dependency injection in ASP.NET Core: constructor, setter, and interface injection patterns explained with practical examples."

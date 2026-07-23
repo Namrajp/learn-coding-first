@@ -1,6 +1,6 @@
 ---
 title: "Dev Environment Quick Fixes: VSCode, PostgreSQL, FAT32, and Disk Space"
-date: 2026-07-24
+date: 2026-06-26
 description: "A collection of quick fixes for common developer environment issues — from VSCode shortcuts to PostgreSQL config and filesystem limitations."
 tags:
   - miscellaneous

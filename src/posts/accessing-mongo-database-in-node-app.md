@@ -1,6 +1,6 @@
 ---
 title: "Accessing a Mongo Database in a Node.js App"
-date: 2026-07-23
+date: 2026-06-02
 description: "Learn how to connect to MongoDB from a Node.js application using both the native driver and Mongoose ODM."
 tags: ["MongoDB", "Node.js"]
 status: published

@@ -1,7 +1,7 @@
 ---
 layout: "@layouts/Layout.astro"
 title: "Create a controller-based web API with ASP.NET Core"
-date: 2025-09-10
+date: 2026-07-24
 tags:
   - miscellaneous
   - essay

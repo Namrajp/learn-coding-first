@@ -1,7 +1,7 @@
 ---
 layout: "@layouts/Layout.astro"
 title: "The Python Guide: Virtual Environments, pip, and Everyday Workflows"
-date: 2026-02-21
+date: 2026-08-02
 tags:
   - tutorial
   - python

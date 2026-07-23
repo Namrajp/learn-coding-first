@@ -1,7 +1,7 @@
 ---
 layout: "@layouts/Layout.astro"
 title: "Getting Started with NumPy"
-date: 2026-02-22
+date: 2026-08-03
 tags:
   - python
   - numpy
