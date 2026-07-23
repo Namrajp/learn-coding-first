@@ -2,7 +2,7 @@
 title: "Accessing Mongo database in Node app"
 date: 2026-07-23
 tags: ["MongoDB"]
-status: draft
+status: published
 ---
 
 MongoDB is no-sql non-relational database. Means data is stored as documents similar to objects in javascript.
