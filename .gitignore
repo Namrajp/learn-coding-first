@@ -35,3 +35,6 @@ drizzle/
 
 # Agent prompts
 prompts.md
+
+# Local skills (not tracked in repo)
+skills/
