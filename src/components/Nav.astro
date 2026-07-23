@@ -23,8 +23,8 @@ const url = new URL(Astro.request.url).pathname;
         </li>
         <li>
           <a
-            href="/blog/page/1"
-            class={url === "/blog/page/1"
+            href="/blog"
+            class={url.startsWith("/blog")
               ? "font-medium text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"
               : "font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 scroll-link"}
             >Blog</a

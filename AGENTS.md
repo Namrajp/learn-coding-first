@@ -28,7 +28,7 @@ npx prettier --write . # Format
 ## Key Files
 
 ```
-astro.config.mjs        # Cloudflare adapter, output: "server", @astrojs/sitemap
+astro.config.mjs        # Cloudflare adapter, output: "server", @astrojs/sitemap, redirects
 wrangler.toml           # D1 + KV bindings, secrets
 env.d.ts                # CloudflareBindings, App.Locals types
 src/middleware.ts        # Auth guard + env injection (queries user table for role, protected: /admin, /api/posts, /api/admin)
@@ -58,7 +58,8 @@ public/og-default.html  # OG image HTML template (PNG not yet generated)
 ```
 /                       Homepage (SSR)
 /<slug>                 Blog post (SSR, draft posts hidden, prev/next nav, related posts)
-/blog/page/[page]       Paginated archive (prerendered)
+/blog                   Blog archive, page 1 (SSR, search by title/tag, filter by tag)
+/blog/[page]            Blog archive, page 2+ (SSR, search/filter via query params)
 /tag/[tag]              Posts by tag (prerendered)
 /login                  Magic link login (noindex)
 /admin                  Dashboard (SSR, protected, inline user management for admins)
@@ -101,6 +102,18 @@ Two roles: `admin` (full access) and `editor` (create/edit only).
 ## Post Storage
 
 Posts are markdown files in `src/posts/` of the GitHub repo. Admin CRUD goes through GitHub Contents API — every create/edit/delete is a git commit. The `[slug].astro` page uses KV caching with SHA-based invalidation (see below). Draft posts are hidden from public pages.
+
+## Blog Search
+
+The blog archive (`/blog` and `/blog/[page]`) has server-side search and tag filtering:
+
+- **Search**: `?q=keyword` — filters by title or tag (case-insensitive substring match)
+- **Tag filter**: `?tag=tagname` — filters to posts with exact tag match
+- **Combined**: `?q=python&tag=tutorial` — both filters applied with AND logic
+- **Pagination**: Results are paginated (8 per page). Search/filter params are preserved across pages.
+- **Redirect**: `/blog/page/1` → `/blog` (301 redirect in astro.config.mjs)
+
+The search form uses `method="get"` with standard form fields (`name="q"`, `name="tag"`), so filters are reflected in the URL and are shareable/bookmarkable.
 
 ## User Management
 

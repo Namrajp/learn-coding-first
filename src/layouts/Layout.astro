@@ -37,7 +37,7 @@ const jsonLd = {
   description: "Programming, AI, and developer tutorials",
   potentialAction: {
     "@type": "SearchAction",
-    target: "https://learncodingfirst.com/blog/page/1?q={search_term_string}",
+    target: "https://learncodingfirst.com/blog?q={search_term_string}",
     "query-input": "required name=search_term_string",
   },
 };
@@ -114,11 +114,13 @@ const jsonLd = {
   >
     <ThemeToggle {showSignOut} />
     <div class="py-2">
-      {showNav && (
-        <header id="home">
-          <Nav />
-        </header>
-      )}
+      {
+        showNav && (
+          <header id="home">
+            <Nav />
+          </header>
+        )
+      }
 
       <div class="mx-auto max-w-[1200px] px-6">
         <Breadcrumb {tags} />

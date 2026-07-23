@@ -22,4 +22,7 @@ export default defineConfig({
   },
   site: "https://learncodingfirst.com",
   integrations: [sitemap()],
+  redirects: {
+    "/blog/page/1": "/blog",
+  },
 });
