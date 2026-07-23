@@ -2,6 +2,7 @@
 layout: "@layouts/Layout.astro"
 title: "How  to use diff in git"
 date: 2026-08-06
+status: draft
 tags:
   - essay
   - tutorial

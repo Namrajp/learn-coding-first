@@ -90,9 +90,11 @@ try {
       )
       .map((r) => r.value!);
 
-    posts.sort(
-      (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
-    );
+    posts.sort((a, b) => {
+      if (a.status === "published" && b.status !== "published") return -1;
+      if (a.status !== "published" && b.status === "published") return 1;
+      return new Date(b.date).valueOf() - new Date(a.date).valueOf();
+    });
   }
 } catch {
   posts = [];
@@ -239,7 +241,7 @@ if (isAdmin) {
                       </div>
                       <div class="flex flex-wrap gap-1 sm:hidden">
                         {post.tags.slice(0, 2).map((tag) => (
-                          <span class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                          <span class="capitalize rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                             {tag}
                           </span>
                         ))}
@@ -257,7 +259,7 @@ if (isAdmin) {
                   <td class="hidden px-4 py-3 md:table-cell">
                     <div class="flex flex-wrap gap-1">
                       {post.tags.slice(0, 3).map((tag) => (
-                        <span class="rounded bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                        <span class="capitalize rounded bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                           {tag}
                         </span>
                       ))}

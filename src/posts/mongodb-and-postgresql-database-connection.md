@@ -2,6 +2,7 @@
 layout: "@layouts/Layout.astro"
 title: "Mongodb and Postgresql database connection"
 date: 2026-07-28
+status: draft
 tags:
   - Mongodb and Postgresql
   - news

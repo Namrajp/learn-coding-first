@@ -2,6 +2,7 @@
 layout: "@layouts/Layout.astro"
 title: "The Prompting Guide: Get Better Results from AI"
 date: 2026-08-01
+status: draft
 tags:
   - tutorial
   - ai

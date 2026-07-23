@@ -2,6 +2,7 @@
 layout: "@layouts/Layout.astro"
 title: "Create a minimal API with ASP.NET Core"
 date: 2026-07-25
+status: draft
 tags:
   - news
   - ASP.NET

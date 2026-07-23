@@ -2,6 +2,7 @@
 layout: "@layouts/Layout.astro"
 title: "The Python Guide: Virtual Environments, pip, and Everyday Workflows"
 date: 2026-08-02
+status: draft
 tags:
   - tutorial
   - python

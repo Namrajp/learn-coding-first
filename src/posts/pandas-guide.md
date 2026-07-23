@@ -2,6 +2,7 @@
 layout: "@layouts/Layout.astro"
 title: "Getting Started with Pandas"
 date: 2026-08-04
+status: draft
 tags:
   - python
   - pandas
