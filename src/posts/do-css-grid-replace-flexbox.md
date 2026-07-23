@@ -2,7 +2,7 @@
 title: "Do CSS Grid replace Flexbox?"
 date: 2026-07-23
 tags: ["CSS"]
-status: draft
+status: published
 ---
 
 **Grid** is better than **flexbox** for a number of valid points. _There are things grid do better than flexbox and vice versa_.On March 2017 with less browser support than flexbox grid was released unprefixed and ready-to-go, in Chrome, Opera, Firefox, and Safari.
