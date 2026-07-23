@@ -2,7 +2,7 @@
 title: "Methods, Functions and Prototypes in JavaScript"
 date: 2026-07-22
 description: "Construction functions are way to encapsulate data"
-tags: ["JavaScript"]
+tags: ["Javascript", "Programming"]
 status: draft
 ---
 
