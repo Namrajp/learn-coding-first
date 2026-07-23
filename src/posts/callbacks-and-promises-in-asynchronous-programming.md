@@ -2,7 +2,7 @@
 title: "Callbacks and Promises in Asynchronous Programming"
 date: 2026-07-23
 tags: ["Javascript"]
-status: draft
+status: published
 ---
 
 **Asynchronous Programming means running programs without waiting for execution line by line**. We can move onto next line during execution. If one line accessing data from database or server is taking wait time and we donot want to halt entire program.
