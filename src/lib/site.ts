@@ -16,7 +16,7 @@ export const SOCIAL_LINKS = [
   },
   {
     label: "X",
-    href: "https://twitter.com/namrajpudasaini",
+    href: "https://x.com/wouraj",
     rel: "me noopener noreferrer",
   },
 ] as const;

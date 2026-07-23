@@ -12,9 +12,10 @@ Astro 7 blog on Cloudflare Workers. Posts stored as markdown in GitHub repo (`Na
 - Drizzle ORM (SQLite/D1 for auth tables)
 - Resend (magic link emails)
 - GitHub Contents API (post CRUD)
-- `marked` + `sanitize-html` (markdown rendering with XSS protection)
+- `marked` + `sanitize-html` via `src/lib/markdown.ts` (markdown rendering with XSS protection + TOC extraction)
 - `@astrojs/sitemap` (auto-generated sitemap index)
 - `@astrojs/rss` (RSS feed with content:encoded)
+- Google Search Console verified (meta tag), sitemaps submitted
 
 ## Commands
 
@@ -48,9 +49,17 @@ src/components/RelatedPosts.astro  # Tag-based related posts (top 3)
 src/components/PostCard.astro      # Post card for archive/tag pages
 src/components/TagSidebar.astro    # Tag sidebar
 src/components/NewsletterSignup.astro # Newsletter signup
+src/components/PopularPosts.astro  # Popular posts in footer
+src/components/ShareButtons.astro  # Share to X/Facebook/LinkedIn
+src/components/TableOfContents.astro # Auto-generated TOC from headings
+src/components/AuthorBio.astro     # Author section + Person schema + social links
+src/lib/markdown.ts               # renderMarkdown() — marked + sanitize + TOC extraction
+src/lib/site.ts                   # Centralized AUTHOR, SITE_URL, SOCIAL_LINKS constants
+src/lib/tag-meta.ts               # formatTagTitle(), getTagDescription() for SEO-friendly tag pages
 public/robots.txt       # Crawl directives + sitemap references
 public/manifest.json    # PWA manifest (name, theme-color, icons)
-public/og-default.html  # OG image HTML template (PNG not yet generated)
+public/og-default.png   # OG image (1200×630)
+public/apple-touch-icon.png # Apple touch icon (180×180)
 ```
 
 ## Routes
@@ -161,6 +170,30 @@ The `[slug].astro` page uses two-layer caching to avoid hitting the GitHub API o
 
 **Response headers:** `Cache-Control: public, max-age=60, stale-while-revalidate=300` — browsers cache HTML for 60s, serve stale for up to 5min while revalidating.
 
+## Google Search Console
+
+- **Property**: `learncodingfirst.com`
+- **Verification method**: HTML meta tag in `<head>` — `<meta name="google-site-verification" content="XGluNkoesK7Q1TLP07cdzPkFPe9w-_pj_VyTHJsjz2A" />`
+- **Sitemaps submitted**: `sitemap-index.xml`, `sitemap-posts.xml`
+- **Crawl confirmed**: `methods-functions-and-prototypes-in-javascript` (Jul 23, 2026)
+
+### Structured Data (JSON-LD)
+
+- **WebSite** + SearchAction: homepage (`src/layouts/Layout.astro`)
+- **Article**: each blog post (`src/pages/[slug].astro`)
+- **BreadcrumbList**: every page via `src/components/Breadcrumb.astro`
+- **Person**: author bio section (`src/components/AuthorBio.astro`)
+
+### SEO Components
+
+- `src/components/TableOfContents.astro` — auto-generated from headings (3+ required)
+- `src/components/ShareButtons.astro` — share to X, Facebook, LinkedIn
+- `src/components/AuthorBio.astro` — author section with `rel="me"` social links
+- `src/components/PopularPosts.astro` — popular posts in footer
+- `src/lib/markdown.ts` — `renderMarkdown()` returns `{ html, toc }` (TOC extracted from headings)
+- `src/lib/tag-meta.ts` — `formatTagTitle()`, `getTagDescription()` for SEO-friendly tag pages
+- `src/lib/site.ts` — centralized `AUTHOR`, `SITE_URL`, `SOCIAL_LINKS` constants
+
 ## Frontmatter
 
 Use shared helpers from `src/lib/frontmatter.ts`:
@@ -242,3 +275,5 @@ Magic link endpoint uses `ratelimit:magic-link:{ip}:{email}` with 3 requests per
 - The `databaseHooks.user.create.after` hook runs only on NEW user creation. Existing users created before role column was added need manual UPDATE via D1 SQL.
 - Role changes in the `user` table don't invalidate existing sessions — users must re-login to see updated role in the UI.
 - The `authorized_user` table is separate from the `user` table. `authorized_user` controls who can receive magic links; `user.role` controls access level after login.
+- Use `renderMarkdown()` from `src/lib/markdown.ts` — returns `{ html, toc }`. Do not import `marked`/`sanitizeHtml` directly in page components.
+- `src/lib/site.ts` centralizes `AUTHOR`, `SITE_URL`, `SOCIAL_LINKS`. Use these instead of hardcoding URLs/names.
