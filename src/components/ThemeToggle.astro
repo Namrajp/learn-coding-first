@@ -1,8 +1,23 @@
 ---
 const { showSignOut = false } = Astro.props;
+const url = new URL(Astro.request.url).pathname;
 ---
 
 <div class="fixed top-4 right-4 z-[100] flex items-center gap-2">
+  <nav class="flex items-center gap-4 text-sm">
+    <a
+      href="/"
+      class={url === "/"
+        ? "font-bold text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"
+        : "font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"}
+    >Home</a>
+    <a
+      href="/blog"
+      class={url.startsWith("/blog")
+        ? "font-bold text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"
+        : "font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"}
+    >Blog</a>
+  </nav>
   <button
     id="theme-toggle"
     class="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition-colors hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
