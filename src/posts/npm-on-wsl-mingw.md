@@ -1,9 +1,9 @@
 ---
 title: "npm on WSL mingw"
 date: 2026-07-21
-tags: []
-status: published
 description: "Fix npm run commands in Git Bash (MinGW64) on Windows: understand the issue and use cmd.exe workaround."
+tags: ["npm"]
+status: published
 ---
 
 # Why `npm run` Commands Don't Work in MinGW64 (Git Bash)
