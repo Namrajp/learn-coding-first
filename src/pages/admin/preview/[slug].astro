@@ -1,8 +1,8 @@
 ---
-import { marked } from "marked";
-import sanitizeHtml from "sanitize-html";
 import Layout from "../../../layouts/Layout.astro";
+import TableOfContents from "../../../components/TableOfContents.astro";
 import { parsePostFile } from "../../../lib/frontmatter";
+import { renderMarkdown } from "../../../lib/markdown";
 
 const { slug } = Astro.params;
 if (!slug) {
@@ -63,7 +63,7 @@ if (!post) {
   return Astro.redirect("/admin");
 }
 
-const htmlContent = sanitizeHtml(marked.parse(post.content) as string);
+const { html: htmlContent, toc } = renderMarkdown(post.content);
 const postDate = new Date(post.date);
 ---
 
@@ -109,6 +109,7 @@ const postDate = new Date(post.date);
         })
       }
     </p>
+    <TableOfContents items={toc} />
     <div class="prose dark:prose-invert">
       <Fragment set:html={htmlContent} />
     </div>

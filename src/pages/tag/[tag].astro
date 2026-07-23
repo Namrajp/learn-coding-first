@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import TagSidebar from "../../components/TagSidebar.astro";
+import { formatTagTitle, getTagDescription } from "../../lib/tag-meta";
 
 export const prerender = true;
 
@@ -46,9 +47,17 @@ const otherPostsByTag = otherTags.map((t) => ({
   tag: t,
   posts: allPosts.filter((p) => p.data.tags.includes(t)).slice(0, 3),
 }));
+
+const tagTitle = formatTagTitle(tag!);
+const tagDescription = getTagDescription(tag!, posts);
+const tagUrl = `https://learncodingfirst.com/tag/${tag}`;
 ---
 
-<Layout title={`Posts about ${tag}`}>
+<Layout
+  title={`${tagTitle} Articles`}
+  description={tagDescription}
+  canonical={tagUrl}
+>
   <div class="mx-auto w-full max-w-4xl text-left">
     <div class="mt-8 grid gap-4 md:grid-cols-[250px_1fr] md:gap-8">
       <TagSidebar tags={allTags} {tagCounts} />
@@ -57,10 +66,10 @@ const otherPostsByTag = otherTags.map((t) => ({
         <h1
           class="mb-4 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl dark:text-slate-100"
         >
-          Posts tagged {tag}
+          {tagTitle} articles
         </h1>
         <p class="my-4 text-xl font-semibold dark:text-gray-200">
-          Latest posts for this topic
+          {tagDescription}
         </p>
 
         <ul class="space-y-2">

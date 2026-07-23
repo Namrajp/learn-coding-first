@@ -1,12 +1,14 @@
 ---
-import { marked } from "marked";
-import sanitizeHtml from "sanitize-html";
 import { getEntry, getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import PrevNext from "../components/PrevNext.astro";
 import RelatedPosts from "../components/RelatedPosts.astro";
+import ShareButtons from "../components/ShareButtons.astro";
+import TableOfContents from "../components/TableOfContents.astro";
 import { parsePostFile } from "../lib/frontmatter";
 import { getDirectorySha } from "../lib/github";
+import { renderMarkdown } from "../lib/markdown";
+import { AUTHOR, SITE_URL } from "../lib/site";
 
 const slug = Astro.params.slug;
 if (!slug) {
@@ -160,8 +162,9 @@ if (!post) {
   return Astro.redirect("/");
 }
 
-const htmlContent = sanitizeHtml(marked.parse(post.content) as string);
+const { html: htmlContent, toc } = renderMarkdown(post.content);
 const postDate = new Date(post.date);
+const postUrl = new URL(`/${slug}`, Astro.url).href;
 
 const postJsonLd = {
   "@context": "https://schema.org",
@@ -170,24 +173,24 @@ const postJsonLd = {
   description: post.description,
   author: {
     "@type": "Person",
-    name: "Namraj Pudasaini",
-    url: "https://learncodingfirst.com",
+    name: AUTHOR.name,
+    url: AUTHOR.url,
   },
   publisher: {
     "@type": "Organization",
     name: "Learn Coding First",
-    url: "https://learncodingfirst.com",
+    url: SITE_URL,
     logo: {
       "@type": "ImageObject",
-      url: "https://learncodingfirst.com/my_logo.svg",
+      url: `${SITE_URL}/my_logo.svg`,
     },
   },
   datePublished: postDate.toISOString(),
   dateModified: postDate.toISOString(),
-  image: "https://learncodingfirst.com/og-default.png",
+  image: `${SITE_URL}/og-default.png`,
   mainEntityOfPage: {
     "@type": "WebPage",
-    "@id": `https://learncodingfirst.com/${slug}`,
+    "@id": `${SITE_URL}/${slug}`,
   },
   keywords: post.tags.join(", "),
 };
@@ -221,6 +224,7 @@ Astro.response.headers.set(
   tags={post.tags}
   pageType="article"
   description={post.description}
+  canonical={postUrl}
 >
   <script type="application/ld+json" set:html={JSON.stringify(postJsonLd)} />
   <div class="mx-auto max-w-[65ch]">
@@ -230,7 +234,7 @@ Astro.response.headers.set(
       {post.title}
     </h1>
     <p class="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-      Namraj Pudasaini
+      {AUTHOR.name}
     </p>
     <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">
       {
@@ -241,9 +245,11 @@ Astro.response.headers.set(
         })
       }
     </p>
+    <TableOfContents items={toc} />
     <div class="prose dark:prose-invert">
       <Fragment set:html={htmlContent} />
     </div>
+    <ShareButtons title={post.title} url={postUrl} />
     <div class="my-4 space-x-2">
       {
         post.tags.map((tag) => (

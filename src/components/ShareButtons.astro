@@ -1,0 +1,70 @@
+---
+interface Props {
+  title: string;
+  url: string;
+}
+
+const { title, url } = Astro.props;
+const encodedUrl = encodeURIComponent(url);
+const encodedTitle = encodeURIComponent(title);
+const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
+const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+---
+
+<aside
+  aria-label="Share this post"
+  class="not-prose my-8 flex flex-wrap items-center gap-3 border-t border-gray-200 pt-6 dark:border-gray-700"
+>
+  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Share:</span>
+  <a
+    href={twitterUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 no-underline hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+  >
+    X / Twitter
+  </a>
+  <a
+    href={linkedInUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 no-underline hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+  >
+    LinkedIn
+  </a>
+  <button
+    type="button"
+    data-share-copy={url}
+    class="share-copy-btn rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+  >
+    Copy link
+  </button>
+</aside>
+
+<script>
+  function bindShareCopyButtons() {
+    document.querySelectorAll<HTMLButtonElement>(".share-copy-btn").forEach((btn) => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+
+      btn.addEventListener("click", async () => {
+        const url = btn.dataset.shareCopy;
+        if (!url) return;
+
+        try {
+          await navigator.clipboard.writeText(url);
+          const original = btn.textContent;
+          btn.textContent = "Copied!";
+          window.setTimeout(() => {
+            btn.textContent = original;
+          }, 2000);
+        } catch {
+          btn.textContent = "Copy failed";
+        }
+      });
+    });
+  }
+
+  bindShareCopyButtons();
+  document.addEventListener("astro:after-swap", bindShareCopyButtons);
+</script>

@@ -6,6 +6,7 @@ import Breadcrumb from "../components/Breadcrumb.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
 import Footer from "../components/Footer.astro";
 import Nav from "../components/Nav.astro";
+import { AUTHOR, SOCIAL_LINKS } from "../lib/site";
 const {
   frontmatter,
   title,
@@ -26,7 +27,7 @@ const metaDescription =
   frontmatter?.description ||
   "Learn programming and AI fundamentals";
 const metaOgImage = ogImage || "https://learncodingfirst.com/og-default.png";
-const metaAuthor = author || "Namraj Pudasaini";
+const metaAuthor = author || AUTHOR.name;
 const metaPageType = pageType || "website";
 
 const jsonLd = {
@@ -52,7 +53,19 @@ const jsonLd = {
     <meta name="theme-color" content="#d4601a" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="preconnect" href="https://api.github.com" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml" />
+    {
+      SOCIAL_LINKS.map((link) => (
+        <link rel="me" href={link.href} />
+      ))
+    }
+    <meta name="google-site-verification" content="XGluNkoesK7Q1TLP07cdzPkFPe9w-_pj_VyTHJsjz2A" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical || Astro.url.href} />
@@ -110,7 +123,7 @@ const jsonLd = {
     <ClientRouter />
   </head>
   <body
-    class="overflow-x-hidden bg-white px-5 pt-3 pb-5 text-gray-900 transition-colors dark:bg-gray-950 dark:text-gray-100"
+    class="overflow-x-hidden bg-white px-5 pt-3 pb-5 font-sans text-gray-900 transition-colors dark:bg-gray-950 dark:text-gray-100"
   >
     <ThemeToggle {showSignOut} />
     <div class="py-2">

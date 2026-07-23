@@ -1,0 +1,35 @@
+---
+import type { TocItem } from "../lib/markdown";
+
+interface Props {
+  items: TocItem[];
+}
+
+const { items } = Astro.props;
+const show = items.length >= 3;
+---
+
+{
+  show && (
+    <nav
+      aria-label="Table of contents"
+      class="not-prose mb-8 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900"
+    >
+      <h2 class="mb-3 text-sm font-semibold tracking-wide text-gray-900 uppercase dark:text-gray-100">
+        On this page
+      </h2>
+      <ol class="list-none space-y-2">
+        {items.map((item) => (
+          <li class={item.level === 3 ? "ml-4" : ""}>
+            <a
+              href={`#${item.id}`}
+              class="text-sm text-[hsl(21,62%,45%)] no-underline hover:underline"
+            >
+              {item.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}

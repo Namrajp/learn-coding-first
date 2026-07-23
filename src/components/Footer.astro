@@ -1,5 +1,7 @@
 ---
 import NewsletterSignup from "./NewsletterSignup.astro";
+import PopularPosts from "./PopularPosts.astro";
+import AuthorBio from "./AuthorBio.astro";
 
 interface Props {
   user?: { email?: string } | null;
@@ -10,6 +12,8 @@ const { user } = Astro.props;
 
 <footer class="mt-20 border-t-2 border-gray-300 pt-12 dark:border-gray-700">
   <NewsletterSignup />
+  <PopularPosts />
+  <AuthorBio />
   <nav class="flex justify-center space-x-10 pb-10">
     <a
       href="/"
