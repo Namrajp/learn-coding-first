@@ -137,12 +137,12 @@
     scroll-margin-top: 5rem;
   }
   pre {
-    @apply overflow-x-auto rounded-lg p-6;
-    background: #ffffff;
+    @apply mt-6 overflow-x-auto rounded-lg p-4;
+    background: #374151;
     text-align: left;
   }
   pre code {
-    @apply block text-gray-800;
+    @apply block text-white;
     background: transparent;
     white-space: pre-wrap;
     word-break: break-word;
