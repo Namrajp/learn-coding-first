@@ -166,6 +166,8 @@ const { html: htmlContent, toc } = renderMarkdown(post.content);
 const postDate = new Date(post.date);
 const postUrl = new URL(`/${slug}`, Astro.url).href;
 
+const ogImageUrl = `${SITE_URL}/og/${slug}.svg`;
+
 const postJsonLd = {
   "@context": "https://schema.org",
   "@type": "Article",
@@ -187,7 +189,7 @@ const postJsonLd = {
   },
   datePublished: postDate.toISOString(),
   dateModified: postDate.toISOString(),
-  image: `${SITE_URL}/og-default.png`,
+  image: ogImageUrl,
   mainEntityOfPage: {
     "@type": "WebPage",
     "@id": `${SITE_URL}/${slug}`,
@@ -225,6 +227,7 @@ Astro.response.headers.set(
   pageType="article"
   description={post.description}
   canonical={postUrl}
+  ogImage={ogImageUrl}
 >
   <script type="application/ld+json" set:html={JSON.stringify(postJsonLd)} />
   <div class="mx-auto max-w-[65ch]">
