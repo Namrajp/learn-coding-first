@@ -1,0 +1,40 @@
+---
+import { MONETIZATION } from "../lib/monetization";
+
+if (!MONETIZATION.ads.enabled) {
+  return null;
+}
+---
+
+{
+  MONETIZATION.ads.carbon.enabled && MONETIZATION.ads.carbon.tag && (
+    <div class="my-8 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+      <p class="mb-2 text-xs text-gray-400 dark:text-gray-500">Sponsored</p>
+      <script
+        type="text/javascript"
+        src="https://cdn.carbonads.com/carbon.js"
+        id="_carbonads_js"
+        data-cfasync="false"
+        data-serve={MONETIZATION.ads.carbon.tag}
+      />
+    </div>
+  )
+}
+
+{
+  MONETIZATION.ads.ethicalads.enabled && (
+    <div class="my-8 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+      <p class="mb-2 text-xs text-gray-400 dark:text-gray-500">Sponsored</p>
+      <div
+        data-ea-type="sidebar"
+        data-ea-style="stickybox"
+        class="ethicalads-placement"
+      />
+      <script
+        type="text/javascript"
+        src="https://cdn.ethicalads.io/media/client/ethicalads.min.js"
+        async
+      />
+    </div>
+  )
+}

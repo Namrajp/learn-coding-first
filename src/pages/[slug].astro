@@ -1,6 +1,7 @@
 ---
 import { getEntry, getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
+import AdSlot from "../components/AdSlot.astro";
 import PrevNext from "../components/PrevNext.astro";
 import RelatedPosts from "../components/RelatedPosts.astro";
 import ShareButtons from "../components/ShareButtons.astro";
@@ -253,6 +254,7 @@ Astro.response.headers.set(
       <Fragment set:html={htmlContent} />
     </div>
     <ShareButtons title={post.title} url={postUrl} />
+    <AdSlot />
     <div class="my-4 space-x-2">
       {
         post.tags.map((tag) => (

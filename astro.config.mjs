@@ -14,7 +14,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
-      exclude: ["marked", "sanitize-html"],
+      exclude: ["marked", "sanitize-html", "better-auth"],
     },
     ssr: {
       noExternal: ["sanitize-html"],
