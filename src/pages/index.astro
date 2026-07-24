@@ -73,6 +73,7 @@ const sortedTags = Object.entries(tagCounts)
         {
           posts.map((post) => (
             <li>
+              <span class="mr-2 text-slate-400">-</span>
               <a
                 href={`/${post.id}`}
                 class="no-underline hover:text-[hsl(21,62%,45%)] hover:underline-offset-4"
