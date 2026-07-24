@@ -4,20 +4,21 @@ Living plan for growing learncodingfirst.com's traffic and hardening its archite
 full audit (2026-07-24) of analytics, performance, content taxonomy, SEO, distribution, testing,
 and accessibility. Update this file as items ship or priorities change.
 
-## Current state (baseline, 2026-07-24)
+## Current state
 
-| Area | Status |
+| Area | Status (as of 2026-07-24, post-Tier-1) |
 |---|---|
-| Analytics | ❌ None — no GA, no Cloudflare Web Analytics, no Plausible. Only Google Search Console impressions/clicks. |
+| Analytics | ❌ Still none — blocked on manually creating the Web Analytics site in the dashboard to get a beacon token. |
 | Images / Cloudflare Images | ❌ Not declared in bindings, not used. No post currently has embedded images. |
-| Content taxonomy | ⚠️ Tags only (no category/series field), inconsistent casing fragments `/tag/[tag]` pages. |
-| Newsletter | ✅ Fully automated: signup → welcome email → new-post blast (Resend), admin UI at `/admin/newsletter`. Gap: cron auto-publish doesn't trigger the blast, only manual create does. |
+| Content taxonomy | ✅ Tags normalized (lowercase/trimmed/deduped) going forward + backfilled. ⚠️ Still no category/series field. |
+| Newsletter | ✅ Fully automated: signup → welcome email → new-post blast (create, update, **and cron auto-publish** all trigger it now), admin UI at `/admin/newsletter`. |
 | Search | ⚠️ Title/tag substring match only, no full-text body search. Fine at ~28 published posts, won't scale. |
-| Caching | ⚠️ Only `[slug].astro` sets `Cache-Control`. Homepage and `/blog` archive (highest-traffic entry points) are fully uncached SSR. |
+| Caching | ✅ Homepage, `/blog` archive, and `[slug].astro` all set `Cache-Control: public, max-age=60, stale-while-revalidate=300`. |
 | SEO | ✅ Strong: structured data (WebSite/Article/BreadcrumbList/Person), sitemaps, OG/Twitter meta, canonical tags, RSS. ❌ One static OG image shared by every post/page. Naive tag-overlap-only related posts. |
 | Social distribution | ⚠️ Manual share buttons (X, LinkedIn) only. No auto cross-posting, no comments/webmentions. |
 | Testing | ❌ Zero test files or test runner configured. |
 | Accessibility | ⚠️ No skip-link, no `<main>` landmark, no systemic focus-visible styles. |
+| CI/CD safety | ✅ Post-deploy health check added — catches domain-binding/routing regressions automatically. |
 
 Full audit detail: see the research notes in commit history / AGENTS.md for the current
 infrastructure model (KV caching, cron auto-publish, GitHub-API-backed CRUD).
@@ -26,24 +27,32 @@ infrastructure model (KV caching, cron auto-publish, GitHub-API-backed CRUD).
 
 - [ ] **Add Cloudflare Web Analytics.** Free, cookieless, one script tag in `Layout.astro`. Closes
       the current zero-visibility gap — no way to measure page views, referrers, or which posts
-      drive newsletter signups today.
-- [ ] **Cache the homepage and `/blog` archive.** Add `Cache-Control: public, max-age=60,
-      stale-while-revalidate=300` (matching `[slug].astro`'s existing pattern) to `src/pages/index.astro`
-      and `src/pages/blog/index.astro` / `[page].astro`. These are the highest-traffic entry points
-      and currently re-run full SSR logic on every request.
-- [ ] **Normalize tag casing.** Lowercase-and-trim tags at write time in `buildFrontmatter()` /
-      `parseFrontmatter()` (`src/lib/frontmatter.ts`), and backfill existing posts (`python`/`Python`,
-      `git`/`Git`, `Javascript`/`JavaScript` currently split tag pages and related-posts matching).
-- [ ] **Trigger newsletter blast from the cron auto-publish path.** `sendPostNotification()`
-      (`src/lib/newsletter.ts`) is only called from `api/posts/create.ts`. Drafts flipped to
-      published by `scripts/inject-cron.mjs`'s `scheduled()` handler currently publish silently
-      with no subscriber notification — extend the shim to call the same notification pipeline
-      (or write a KV flag the next request picks up, since the shim has no direct import access to
-      `src/lib/newsletter.ts`).
-- [ ] **Add a post-deploy health check to CI.** After `wrangler deploy` in
-      `.github/workflows/deploy.yml`, curl the live domain and assert 200 + a sane
-      `sitemap-posts.xml` post count, to catch a repeat of the domain-binding regression
-      automatically instead of relying on manual discovery.
+      drive newsletter signups today. **Blocked**: requires a beacon token from the Cloudflare
+      dashboard (Analytics & Logs → Web Analytics → Add a site) — the API token available to
+      automation doesn't have the RUM/Analytics scope to provision this. Add the site in the
+      dashboard, then paste the `data-cf-beacon` snippet into `Layout.astro`'s `<head>`.
+- [x] **Cache the homepage and `/blog` archive.** *(Shipped 2026-07-24)* Added
+      `Cache-Control: public, max-age=60, stale-while-revalidate=300` (matching `[slug].astro`'s
+      existing pattern) to `src/pages/index.astro`, `src/pages/blog/index.astro`, and
+      `src/pages/blog/[page].astro`.
+- [x] **Normalize tag casing.** *(Shipped 2026-07-24)* Added `normalizeTags()` to
+      `src/lib/frontmatter.ts` (lowercase, trim, dedupe), wired into `buildFrontmatter()` so all
+      future create/update writes are normalized automatically. Backfilled all 20 affected existing
+      posts via the new rerunnable `scripts/normalize-tags.mjs` (`node scripts/normalize-tags.mjs
+      --dry-run` to preview, without `--dry-run` to apply).
+- [x] **Trigger newsletter blast from the cron auto-publish path.** *(Shipped 2026-07-24)*
+      `scripts/inject-cron.mjs`'s generated `scheduled()` shim now inlines a `sendPostNotification()`
+      equivalent (mirrors `src/lib/newsletter.ts`, duplicated rather than imported since the shim is
+      a standalone post-build file with no access to Astro's hashed build chunks) and calls it after
+      each successful auto-publish. Also fixed the equivalent gap in `src/pages/api/posts/update.ts`
+      — manually flipping a draft to published via the admin edit UI now notifies subscribers too
+      (only on the draft→published transition, not on every edit of an already-published post).
+      Verified end-to-end against the real repo + Resend's `delivered@resend.dev` test address.
+- [x] **Add a post-deploy health check to CI.** *(Shipped 2026-07-24)* `.github/workflows/deploy.yml`
+      now curls the live domain after `wrangler deploy` (5 retries, 10s apart) and asserts 200, then
+      checks `sitemap-posts.xml` has at least 1 post — fails the CI run with a pointer to
+      `skills/deployment/SKILL.md` if either check fails, to catch a repeat of the domain-binding
+      regression automatically instead of relying on manual discovery.
 
 ## Tier 2 — Medium effort, meaningful SEO/growth levers
 

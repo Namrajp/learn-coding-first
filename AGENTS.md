@@ -169,7 +169,33 @@ The `[slug].astro` page uses two-layer caching to avoid hitting the GitHub API o
 
 **Local dev:** Uses `getEntry("posts", slug)` from Astro's content collection (reads local `src/posts/` filesystem). No GitHub API calls, no draft filtering.
 
-**Response headers:** `Cache-Control: public, max-age=60, stale-while-revalidate=300` — browsers cache HTML for 60s, serve stale for up to 5min while revalidating.
+**Response headers:** `Cache-Control: public, max-age=60, stale-while-revalidate=300` — browsers cache HTML for 60s, serve stale for up to 5min while revalidating. Also set on `src/pages/index.astro`, `src/pages/blog/index.astro`, and `src/pages/blog/[page].astro` (the homepage and blog archive are the highest-traffic entry points and use the same 60s pattern).
+
+## Tag Normalization
+
+All tags are normalized (lowercased, trimmed, deduplicated) via `normalizeTags()` in
+`src/lib/frontmatter.ts`, applied automatically inside `buildFrontmatter()` for every create/update.
+This prevents `/tag/[tag]` page fragmentation and search/related-posts mismatches from casing
+variants (e.g. `python` vs `Python`). Existing posts were backfilled once via
+`scripts/normalize-tags.mjs` (rerunnable — `node scripts/normalize-tags.mjs --dry-run` to preview
+any drift, without the flag to apply). Display-side capitalization (e.g. "Python" shown in the UI)
+is handled separately by CSS `capitalize` classes and `formatTagTitle()` in `src/lib/tag-meta.ts` —
+the underlying stored tag value should always stay lowercase.
+
+## Newsletter Auto-Publish Notifications
+
+`sendPostNotification()` (`src/lib/newsletter.ts`) emails all active (non-unsubscribed) Resend
+audience contacts when a post goes live. It's triggered from three places, all on the
+draft→published transition specifically (not on every edit of an already-published post):
+
+- `src/pages/api/posts/create.ts` — creating a post with `status: published`.
+- `src/pages/api/posts/update.ts` — editing a draft to `status: published` (compares against the
+  post's previous status fetched from GitHub before overwriting).
+- `scripts/inject-cron.mjs`'s generated `scheduled()` shim — the daily auto-publish cron. Since
+  that shim is a standalone post-build file with no access to Astro's hashed build chunks, it
+  inlines its own copy of the Resend API calls (`listContacts`/`sendEmail` equivalents) rather than
+  importing `src/lib/newsletter.ts` directly. Keep both in sync if the email template or Resend API
+  usage changes.
 
 ## Google Search Console
 
