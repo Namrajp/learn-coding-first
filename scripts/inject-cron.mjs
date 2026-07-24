@@ -86,11 +86,108 @@ function parseFrontmatterStatus(content) {
   const statusMatch = fm.match(/^status:\\s*(\\w+)/m);
   const dateMatch = fm.match(/^date:\\s*(\\S+)$/m);
   const titleMatch = fm.match(/^title:\\s*"?(.+?)"?\\s*$/m);
+  const descMatch = fm.match(/^description:\\s*"?(.*?)"?\\s*$/m);
   return {
     status: statusMatch ? statusMatch[1] : "published",
     date: dateMatch ? dateMatch[1] : "",
     title: titleMatch ? titleMatch[1].trim() : "",
+    description: descMatch ? descMatch[1].trim() : "",
   };
+}
+
+// Mirrors sendPostNotification() in src/lib/newsletter.ts. Inlined here
+// (rather than imported) because this shim is generated post-build as a
+// standalone file with no access to Astro's hashed build chunks.
+const SITE_URL = "https://learncodingfirst.com";
+const FROM = "Learn Coding First <newsletter@mail.learncodingfirst.com>";
+
+function unsubscribeUrl(email) {
+  return \`\${SITE_URL}/api/newsletter/unsubscribe?email=\${encodeURIComponent(email)}\`;
+}
+
+async function sendEmail(env, to, subject, html, text) {
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: \`Bearer \${env.RESEND_API_KEY}\`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: FROM,
+      to: [to],
+      subject,
+      html,
+      text,
+      headers: { "List-Unsubscribe": \`<\${unsubscribeUrl(to)}>\` },
+    }),
+  });
+  if (!response.ok) {
+    throw new Error(\`Failed to send email: \${await response.text()}\`);
+  }
+}
+
+async function listContacts(env) {
+  if (!env.RESEND_API_KEY || !env.RESEND_AUDIENCE_ID) return [];
+  const response = await fetch(
+    \`https://api.resend.com/audiences/\${env.RESEND_AUDIENCE_ID}/contacts\`,
+    { headers: { Authorization: \`Bearer \${env.RESEND_API_KEY}\` } },
+  );
+  if (!response.ok) return [];
+  const data = await response.json();
+  return data.data || [];
+}
+
+async function sendPostNotification(env, post) {
+  const contacts = await listContacts(env);
+  const active = contacts.filter((c) => !c.unsubscribed);
+
+  let sent = 0;
+  let failed = 0;
+
+  for (const contact of active) {
+    try {
+      const unsub = unsubscribeUrl(contact.email);
+      const displayName = contact.name || "there";
+      const postUrl = \`\${SITE_URL}/\${post.slug}\`;
+      const excerpt = post.description || "New post on Learn Coding First";
+
+      const html = \`
+        <!DOCTYPE html>
+        <html>
+          <head><meta charset="utf-8"></head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: hsl(21, 62%, 45%); color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+              <h1 style="margin: 0; font-size: 24px;">Learn Coding First</h1>
+            </div>
+            <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-top: none;">
+              <h2 style="color: #1f2937; margin-top: 0;">New post published!</h2>
+              <p style="color: #4b5563; line-height: 1.6;">Hi \${displayName}, we just published a new post you might like:</p>
+              <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <h3 style="color: #1f2937; margin-top: 0;"><a href="\${postUrl}" style="color: hsl(21, 62%, 45%); text-decoration: none;">\${post.title}</a></h3>
+                <p style="color: #6b7280; margin-bottom: 0;">\${excerpt}</p>
+              </div>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="\${postUrl}" style="display: inline-block; padding: 14px 28px; background-color: hsl(21, 62%, 45%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">Read More</a>
+              </div>
+              <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+              <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+                You received this because you subscribed to the Learn Coding First newsletter.<br>
+                <a href="\${unsub}" style="color: #9ca3af; text-decoration: underline;">Unsubscribe</a>
+              </p>
+            </div>
+          </body>
+        </html>\`;
+
+      const text = \`New post: \${post.title}\\n\\n\${excerpt}\\n\\nRead more: \${postUrl}\\n\\nUnsubscribe: \${unsub}\`;
+
+      await sendEmail(env, contact.email, \`New post: \${post.title}\`, html, text);
+      sent++;
+    } catch {
+      failed++;
+    }
+  }
+
+  return { sent, failed };
 }
 
 async function autoPublishDrafts(env) {
@@ -147,6 +244,22 @@ async function autoPublishDrafts(env) {
 
         console.log(\`[auto-publish] Published: \${fm.title} (\${slug})\`);
         publishedCount++;
+
+        try {
+          const { sent, failed } = await sendPostNotification(env, {
+            slug,
+            title: fm.title,
+            description: fm.description || "",
+          });
+          console.log(
+            \`[auto-publish] Newsletter notification for \${slug}: \${sent} sent, \${failed} failed\`,
+          );
+        } catch (e) {
+          console.error(
+            \`[auto-publish] Newsletter notification failed for \${slug}:\`,
+            e,
+          );
+        }
       } catch (e) {
         console.error(\`[auto-publish] Failed to process \${file.name}:\`, e);
       }

@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { createOrUpdateFile } from "../../../lib/github";
 import { parseFrontmatter, buildFrontmatter } from "../../../lib/frontmatter";
 import { checkRateLimit } from "../../../lib/rate-limit";
+import { sendPostNotification } from "../../../lib/newsletter";
 
 const SLUG_RE = /^[a-z0-9-]+$/;
 const RATE_LIMIT_MAX = 10;
@@ -103,6 +104,7 @@ export const POST: APIRoute = async (ctx) => {
     });
 
     let date = new Date().toISOString().split("T")[0];
+    let previousStatus = "draft";
     if (existingRes.ok) {
       const existingData = (await existingRes.json()) as {
         content: string;
@@ -110,7 +112,10 @@ export const POST: APIRoute = async (ctx) => {
       };
       const rawContent = decodeGitHubContent(existingData.content);
       const fm = parseFrontmatter(rawContent);
-      if (fm) date = fm.date;
+      if (fm) {
+        date = fm.date;
+        previousStatus = fm.status;
+      }
     }
 
     const tagsArray = tags
@@ -142,6 +147,20 @@ export const POST: APIRoute = async (ctx) => {
     await env.SESSION.delete("cache:posts:list");
     await env.SESSION.delete(`cache:post:${slug}`);
     await env.SESSION.delete("cache:posts:dir-sha");
+
+    // Only notify subscribers on the draft -> published transition, not on
+    // every edit of an already-published post.
+    if (status === "published" && previousStatus !== "published") {
+      try {
+        await sendPostNotification(env, {
+          slug,
+          title,
+          description: description || "",
+        });
+      } catch {
+        // Notification failure is non-critical
+      }
+    }
 
     return new Response(JSON.stringify({ success: true, url: result.url }), {
       status: 200,
