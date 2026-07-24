@@ -8,7 +8,7 @@ and accessibility. Update this file as items ship or priorities change.
 
 | Area | Status (as of 2026-07-24, post-Tier-1) |
 |---|---|
-| Analytics | ❌ Still none — blocked on manually creating the Web Analytics site in the dashboard to get a beacon token. |
+| Analytics | ✅ Cloudflare Web Analytics wired in — page views/referrers/Core Web Vitals now tracked. |
 | Images / Cloudflare Images | ❌ Not declared in bindings, not used. No post currently has embedded images. |
 | Content taxonomy | ✅ Tags normalized (lowercase/trimmed/deduped) going forward + backfilled. ⚠️ Still no category/series field. |
 | Newsletter | ✅ Fully automated: signup → welcome email → new-post blast (create, update, **and cron auto-publish** all trigger it now), admin UI at `/admin/newsletter`. |
@@ -25,12 +25,11 @@ infrastructure model (KV caching, cron auto-publish, GitHub-API-backed CRUD).
 
 ## Tier 1 — High impact, low effort
 
-- [ ] **Add Cloudflare Web Analytics.** Free, cookieless, one script tag in `Layout.astro`. Closes
-      the current zero-visibility gap — no way to measure page views, referrers, or which posts
-      drive newsletter signups today. **Blocked**: requires a beacon token from the Cloudflare
-      dashboard (Analytics & Logs → Web Analytics → Add a site) — the API token available to
-      automation doesn't have the RUM/Analytics scope to provision this. Add the site in the
-      dashboard, then paste the `data-cf-beacon` snippet into `Layout.astro`'s `<head>`.
+- [x] **Add Cloudflare Web Analytics.** *(Shipped 2026-07-24)* Beacon script added to
+      `src/layouts/Layout.astro`'s `<head>` (token generated via the Cloudflare dashboard, since
+      the automation API token doesn't have the RUM/Analytics scope to provision this
+      programmatically). Closes the previous zero-visibility gap — page views, referrers, and
+      Core Web Vitals are now tracked cookielessly.
 - [x] **Cache the homepage and `/blog` archive.** *(Shipped 2026-07-24)* Added
       `Cache-Control: public, max-age=60, stale-while-revalidate=300` (matching `[slug].astro`'s
       existing pattern) to `src/pages/index.astro`, `src/pages/blog/index.astro`, and
