@@ -64,7 +64,7 @@ export const POST: APIRoute = async (ctx) => {
       {
         token: env.GITHUB_TOKEN,
         owner: "Namrajp",
-        repo: "my-new-astro-blog",
+        repo: "learn-coding-first",
       },
       filePath,
       `Delete post: ${slug}`,

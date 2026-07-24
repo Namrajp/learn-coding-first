@@ -72,7 +72,7 @@ if (import.meta.env.DEV) {
       dirSha = await getDirectorySha({
         token: env.GITHUB_TOKEN,
         owner: "Namrajp",
-        repo: "my-new-astro-blog",
+        repo: "learn-coding-first",
       });
       if (dirSha) {
         await env.SESSION.put(dirShaKey, dirSha, {
@@ -97,7 +97,7 @@ if (import.meta.env.DEV) {
       post = cached.post;
     } else {
       const filePath = `src/posts/${slug}.md`;
-      const apiUrl = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${filePath}`;
+      const apiUrl = `https://api.github.com/repos/Namrajp/learn-coding-first/contents/${filePath}`;
       const res = await fetch(apiUrl, {
         headers: {
           Authorization: `Bearer ${env.GITHUB_TOKEN}`,

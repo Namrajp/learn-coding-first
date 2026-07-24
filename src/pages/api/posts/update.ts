@@ -92,7 +92,7 @@ export const POST: APIRoute = async (ctx) => {
     }
 
     const filePath = `src/posts/${slug}.md`;
-    const apiUrl = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${filePath}`;
+    const apiUrl = `https://api.github.com/repos/Namrajp/learn-coding-first/contents/${filePath}`;
     const existingRes = await fetch(apiUrl, {
       headers: {
         Authorization: `Bearer ${env.GITHUB_TOKEN}`,
@@ -132,7 +132,7 @@ export const POST: APIRoute = async (ctx) => {
       {
         token: env.GITHUB_TOKEN,
         owner: "Namrajp",
-        repo: "my-new-astro-blog",
+        repo: "learn-coding-first",
       },
       filePath,
       fileContent,

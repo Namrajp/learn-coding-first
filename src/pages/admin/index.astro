@@ -41,13 +41,13 @@ let posts: {
 try {
   if (env.GITHUB_TOKEN) {
     const files = await listFiles(
-      { token: env.GITHUB_TOKEN, owner: "Namrajp", repo: "my-new-astro-blog" },
+      { token: env.GITHUB_TOKEN, owner: "Namrajp", repo: "learn-coding-first" },
       "src/posts",
     );
 
     const results = await Promise.allSettled(
       files.map(async (file) => {
-        const url = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${file.path}`;
+        const url = `https://api.github.com/repos/Namrajp/learn-coding-first/contents/${file.path}`;
         const res = await fetch(url, {
           headers: {
             Authorization: `Bearer ${env.GITHUB_TOKEN}`,

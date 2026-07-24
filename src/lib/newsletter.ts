@@ -176,7 +176,7 @@ async function getRecentPosts(
 
   try {
     const listRes = await fetch(
-      `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/src/posts`,
+      `https://api.github.com/repos/Namrajp/learn-coding-first/contents/src/posts`,
       {
         headers: {
           Authorization: `Bearer ${env.GITHUB_TOKEN}`,
@@ -204,7 +204,7 @@ async function getRecentPosts(
       if (posts.length >= count) break;
 
       const contentRes = await fetch(
-        `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${file.path}`,
+        `https://api.github.com/repos/Namrajp/learn-coding-first/contents/${file.path}`,
         {
           headers: {
             Authorization: `Bearer ${env.GITHUB_TOKEN}`,

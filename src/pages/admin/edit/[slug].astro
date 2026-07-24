@@ -22,7 +22,7 @@ let post = {
 if (env?.GITHUB_TOKEN) {
   try {
     const filePath = `src/posts/${slug}.md`;
-    const url = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${filePath}`;
+    const url = `https://api.github.com/repos/Namrajp/learn-coding-first/contents/${filePath}`;
     const res = await fetch(url, {
       headers: {
         Authorization: `Bearer ${env.GITHUB_TOKEN}`,

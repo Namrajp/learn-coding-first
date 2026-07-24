@@ -2,7 +2,7 @@
 
 ## Project
 
-Astro 7 blog on Cloudflare Workers. Posts stored as markdown in GitHub repo (`Namrajp/my-new-astro-blog`). Admin UI for create/edit/delete via GitHub API. Magic Link auth via better-auth + Resend email. Role-based access control (admin/editor). Dark mode toggle with system preference support. Comprehensive SEO implementation with structured data, sitemaps, OG/Twitter meta, and breadcrumbs.
+Astro 7 blog on Cloudflare Workers. Posts stored as markdown in GitHub repo (`Namrajp/learn-coding-first`). Admin UI for create/edit/delete via GitHub API. Magic Link auth via better-auth + Resend email. Role-based access control (admin/editor). Dark mode toggle with system preference support. Comprehensive SEO implementation with structured data, sitemaps, OG/Twitter meta, and breadcrumbs.
 
 ## Stack
 

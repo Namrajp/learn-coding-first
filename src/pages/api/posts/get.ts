@@ -44,7 +44,7 @@ export const GET: APIRoute = async (ctx) => {
     }
 
     const filePath = `src/posts/${slug}.md`;
-    const apiUrl = `https://api.github.com/repos/Namrajp/my-new-astro-blog/contents/${filePath}`;
+    const apiUrl = `https://api.github.com/repos/Namrajp/learn-coding-first/contents/${filePath}`;
 
     const response = await fetch(apiUrl, {
       headers: {
