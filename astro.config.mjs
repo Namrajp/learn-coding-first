@@ -14,10 +14,10 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
-      exclude: ["marked", "sanitize-html", "better-auth"],
+      exclude: ["marked", "sanitize-html"],
     },
     ssr: {
-      noExternal: ["sanitize-html"],
+      noExternal: ["sanitize-html", "better-auth"],
     },
   },
   site: "https://learncodingfirst.com",
