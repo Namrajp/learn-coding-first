@@ -81,7 +81,7 @@ const sortedTags = Object.entries(tagCounts)
                 {post.data.title}
               </a>
               <span class="ml-3 text-sm text-slate-500">
-                ({post.data.date.toLocaleDateString()})
+                ({post.data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
               </span>
             </li>
           ))
