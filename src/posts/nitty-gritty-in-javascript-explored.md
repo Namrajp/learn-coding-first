@@ -2,7 +2,7 @@
 title: "Nitty Gritty in Javascript Explored"
 date: 2026-06-30
 description: "Understand how JavaScript values, prototypes, constructors, and methods connect — and why the distinctions matter in everyday code."
-tags: ["JavaScript", "Programming"]
+tags: ["javascript", "programming"]
 status: published
 ---
 

@@ -6,7 +6,7 @@ status: published
 tags:
   - miscellaneous
   - essay
-  - ASP.NET
+  - asp.net
 description: "Build a controller-based web API with ASP.NET Core: project setup, NuGet packages, models, database context, and Entity Framework integration."
 ---
 

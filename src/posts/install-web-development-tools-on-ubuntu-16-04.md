@@ -2,7 +2,7 @@
 title: "Install Web Development Tools on Ubuntu"
 date: 2026-06-18
 description: "Set up Git, Node.js, npm, Composer, and other essential web development tools on Ubuntu."
-tags: ["Ubuntu", "Git", "Node.js", "Web Development"]
+tags: ["ubuntu", "git", "node.js", "web development"]
 status: published
 ---
 

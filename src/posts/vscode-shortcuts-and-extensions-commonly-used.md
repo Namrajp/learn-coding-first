@@ -2,7 +2,7 @@
 title: "VS Code Shortcuts and Extensions I Use Daily"
 date: 2026-07-20
 description: "A practical reference of essential VS Code keyboard shortcuts and must-have extensions for faster development."
-tags: ["VS Code", "Productivity"]
+tags: ["vs code", "productivity"]
 status: published
 ---
 

@@ -2,7 +2,7 @@
 title: "Callbacks and Promises in Asynchronous Programming"
 date: 2026-06-06
 description: "Learn how callbacks, promises, and async/await enable non-blocking code in JavaScript."
-tags: ["JavaScript"]
+tags: ["javascript"]
 status: published
 ---
 

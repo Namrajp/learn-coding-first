@@ -2,7 +2,7 @@
 title: "Does CSS Grid Replace Flexbox?"
 date: 2026-06-10
 description: "Compare CSS Grid and Flexbox to understand when to use each layout method and why both still matter."
-tags: ["CSS"]
+tags: ["css"]
 status: published
 ---
 

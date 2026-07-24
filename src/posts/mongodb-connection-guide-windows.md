@@ -5,7 +5,7 @@ description: "How to start MongoDB on Windows, connect with mongosh, and use Mon
 tags:
   - tutorial
   - tools
-  - Mongodb and Postgresql
+  - mongodb and postgresql
 status: published
 ---
 

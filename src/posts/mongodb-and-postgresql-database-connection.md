@@ -4,7 +4,7 @@ title: "Mongodb and Postgresql database connection"
 date: 2026-07-28
 status: draft
 tags:
-  - Mongodb and Postgresql
+  - mongodb and postgresql
   - news
   - tutorial
 description: "Connect MongoDB and PostgreSQL from Node.js: mongoose setup, dotenv configuration, and PostgreSQL password management."

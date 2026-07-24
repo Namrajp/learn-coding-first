@@ -2,7 +2,7 @@
 title: "A Simple Web Development Workflow"
 date: 2026-05-29
 description: "Organize your web development projects with a clean folder structure, VS Code setup, and Sass workflow."
-tags: ["Web Development", "VS Code", "Sass"]
+tags: ["web development", "vs code", "sass"]
 status: published
 ---
 

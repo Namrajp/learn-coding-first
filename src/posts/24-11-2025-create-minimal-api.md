@@ -5,7 +5,7 @@ date: 2026-07-25
 status: draft
 tags:
   - news
-  - ASP.NET
+  - asp.net
 description: "Learn how to build minimal APIs with ASP.NET Core for microservices and lightweight applications. Step-by-step tutorial with code examples."
 ---
 

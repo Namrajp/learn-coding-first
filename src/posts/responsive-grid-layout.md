@@ -2,7 +2,7 @@
 title: "Responsive Grid Layout with CSS"
 date: 2026-07-12
 description: "Build responsive grid layouts using CSS Grid and media queries for different screen sizes."
-tags: ["CSS", "Responsive Design"]
+tags: ["css", "responsive design"]
 status: published
 ---
 

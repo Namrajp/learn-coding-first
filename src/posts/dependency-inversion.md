@@ -6,7 +6,7 @@ status: draft
 tags:
   - tutorial
   - miscellaneous
-  - ASP.NET
+  - asp.net
 description: "Learn the dependency inversion principle and architectural patterns for building maintainable, scalable .NET applications."
 ---
 

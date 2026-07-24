@@ -2,7 +2,7 @@
 title: "Do AI replace the Developers in few years"
 date: 2026-05-17
 description: "Before AI we have few unfinished projects, now we have hundreds."
-tags: ["essay", "AI"]
+tags: ["essay", "ai"]
 status: published
 ---
 

@@ -56,6 +56,24 @@ export function parsePostFile(content: string): ParsedPostFile | null {
   return { data, body };
 }
 
+/**
+ * Normalize tags to a consistent, deduplicated casing (lowercase, trimmed).
+ * Prevents tag fragmentation like "Python" vs "python" creating separate
+ * /tag/[tag] pages and splitting search/related-posts matching.
+ */
+export function normalizeTags(tags: string[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const tag of tags) {
+    const normalized = tag.trim().toLowerCase();
+    if (normalized && !seen.has(normalized)) {
+      seen.add(normalized);
+      result.push(normalized);
+    }
+  }
+  return result;
+}
+
 export function yamlString(s: string): string {
   return s
     .replace(/\\/g, "\\\\")
@@ -82,8 +100,9 @@ export function buildFrontmatter(opts: {
     lines.push(`description: "${yamlString(opts.description)}"`);
   }
 
+  const tags = normalizeTags(opts.tags);
   lines.push(
-    `tags: [${opts.tags.map((t) => `"${yamlString(t)}"`).join(", ")}]`,
+    `tags: [${tags.map((t) => `"${yamlString(t)}"`).join(", ")}]`,
     `status: ${opts.status}`,
     "---",
   );
