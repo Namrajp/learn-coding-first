@@ -9,12 +9,12 @@ import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
-  adapter: cloudflare({ entrypoint: "./src/entry.mjs" }),
+  adapter: cloudflare(),
   output: "server",
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
-      exclude: ["marked"],
+      exclude: ["marked", "sanitize-html"],
     },
     ssr: {
       noExternal: ["sanitize-html"],
