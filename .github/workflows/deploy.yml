@@ -19,3 +19,28 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy
+      - name: Post-deploy health check
+        run: |
+          set -e
+          SITE="https://learncodingfirst.com"
+          echo "Checking $SITE ..."
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$SITE/")
+            if [ "$STATUS" = "200" ]; then
+              echo "Homepage OK ($STATUS)"
+              break
+            fi
+            echo "Attempt $i: homepage returned $STATUS, retrying in 10s..."
+            sleep 10
+            if [ "$i" = "5" ]; then
+              echo "::error::Homepage did not return 200 after deploy (last status: $STATUS). Check that the custom domain is bound to the correct Worker (see skills/deployment/SKILL.md)."
+              exit 1
+            fi
+          done
+
+          POST_COUNT=$(curl -s "$SITE/sitemap-posts.xml" | grep -o "<url>" | wc -l)
+          echo "sitemap-posts.xml reports $POST_COUNT post(s)"
+          if [ "$POST_COUNT" -lt 1 ]; then
+            echo "::error::sitemap-posts.xml has $POST_COUNT posts after deploy — expected at least 1. This usually means the domain is pointed at the wrong Worker (see skills/deployment/SKILL.md)."
+            exit 1
+          fi
