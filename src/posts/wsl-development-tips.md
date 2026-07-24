@@ -84,3 +84,5 @@ echo $SHELL
 ---
 
 _Next steps: for general dev environment fixes (PostgreSQL, FAT32, disk space), see **Dev Environment Quick Fixes**._
+
+_Tools mentioned: <AffiliateLink program="cloudflare" label="Cloudflare Workers" /> for edge deployment, <AffiliateLink program="digitalocean" label="DigitalOcean" /> for cloud servers._

@@ -10,7 +10,7 @@ export const MONETIZATION = {
     },
   },
   affiliates: {
-    enabled: false,
+    enabled: true,
     programs: {
       cloudflare: {
         name: "Cloudflare",

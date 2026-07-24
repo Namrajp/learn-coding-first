@@ -9,22 +9,28 @@ interface Props {
 const { program, label } = Astro.props;
 
 const affiliate = MONETIZATION.affiliates.programs[program];
-if (!affiliate || !MONETIZATION.affiliates.enabled) {
-  return null;
-}
-
-const displayLabel = label || affiliate.name;
+const displayLabel = label || affiliate?.name || program;
+const show = affiliate && MONETIZATION.affiliates.enabled;
 ---
 
-<a
-  href={affiliate.url}
-  target="_blank"
-  rel="noopener noreferrer"
-  class="text-[hsl(21,62%,45%)] underline underline-offset-2 hover:text-[hsl(21,62%,35%)]"
->
-  {displayLabel}
-  <span class="sr-only"> (affiliate)</span>
-</a>
-<span class="ml-1 text-xs text-gray-400 dark:text-gray-500" title={affiliate.disclosure}>
-  *
-</span>
+{
+  show && (
+    <>
+      <a
+        href={affiliate.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-[hsl(21,62%,45%)] underline underline-offset-2 hover:text-[hsl(21,62%,35%)]"
+      >
+        {displayLabel}
+        <span class="sr-only"> (affiliate)</span>
+      </a>
+      <span
+        class="ml-1 text-xs text-gray-400 dark:text-gray-500"
+        title={affiliate.disclosure}
+      >
+        *
+      </span>
+    </>
+  )
+}

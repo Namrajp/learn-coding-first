@@ -1,0 +1,82 @@
+---
+import Layout from "@layouts/Layout.astro";
+import AffiliateLink from "../components/AffiliateLink.astro";
+
+export const prerender = true;
+---
+
+<Layout title="Tools I Recommend" description="Development tools and services I use and recommend.">
+  <div class="mx-auto max-w-[65ch]">
+    <h1 class="mt-8 mb-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
+      Tools I Recommend
+    </h1>
+    <p class="mb-8 text-gray-600 dark:text-gray-400">
+      The tools and services I use regularly for development. Some links are affiliate links — I earn a commission if you sign up, at no extra cost to you.
+    </p>
+
+    <section class="mb-12">
+      <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">Hosting &amp; Deployment</h2>
+      <ul class="space-y-4">
+        <li>
+          <h3 class="font-semibold text-gray-900 dark:text-gray-100">
+            <AffiliateLink program="cloudflare" /> Workers
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Serverless edge computing. This blog runs on Cloudflare Workers — fast, free tier, zero cold starts.
+          </p>
+        </li>
+        <li>
+          <h3 class="font-semibold text-gray-900 dark:text-gray-100">
+            <AffiliateLink program="digitalocean" /> App Platform
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Simple PaaS for deploying apps. Great for Django, Node.js, and containerized apps. $200 free credit for new users.
+          </p>
+        </li>
+        <li>
+          <h3 class="font-semibold text-gray-900 dark:text-gray-100">
+            <AffiliateLink program="railway" />
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Modern full-stack deployment. Git push → live in seconds. Great for side projects and prototypes.
+          </p>
+        </li>
+        <li>
+          <h3 class="font-semibold text-gray-900 dark:text-gray-100">
+            <AffiliateLink program="vercel" />
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Frontend-first deployment. Best for Next.js, Astro, and static sites. Generous free tier.
+          </p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">Databases &amp; Backend</h2>
+      <ul class="space-y-4">
+        <li>
+          <h3 class="font-semibold text-gray-900 dark:text-gray-100">
+            <AffiliateLink program="supabase" />
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Open-source Firebase alternative. Postgres database, auth, storage, and edge functions. Free tier is generous.
+          </p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">My Setup</h2>
+      <ul class="list-disc space-y-2 pl-6 text-gray-600 dark:text-gray-400">
+        <li><strong>Editor:</strong> VS Code with Vim keybindings</li>
+        <li><strong>Terminal:</strong> Windows Terminal + WSL2 (Ubuntu)</li>
+        <li><strong>Version control:</strong> Git + GitHub</li>
+        <li><strong>Blog framework:</strong> Astro 7 on Cloudflare Workers</li>
+        <li><strong>Styling:</strong> Tailwind CSS 4</li>
+        <li><strong>Auth:</strong> better-auth with D1 + KV</li>
+        <li><strong>Email:</strong> Resend</li>
+      </ul>
+    </section>
+  </div>
+</Layout>

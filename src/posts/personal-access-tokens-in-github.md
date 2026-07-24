@@ -45,3 +45,5 @@ The second approach stores the token in your Git config, so you do not need to p
 ---
 
 _Next steps: for automated CI/CD pipelines, use **GitHub Apps** or **deploy keys** instead of personal tokens — they provide scoped access without linking to your account._
+
+_Tools mentioned: <AffiliateLink program="cloudflare" label="Cloudflare Workers" /> for CI/CD deployment, <AffiliateLink program="digitalocean" label="DigitalOcean" /> for cloud servers._

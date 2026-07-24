@@ -81,3 +81,5 @@ db.once("open", () => console.log("Connected to Database"));
 ---
 
 _Next steps: once connected, explore **Mongoose schemas** to define your data models, and **MongoDB Atlas** for cloud-hosted databases._
+
+_Tools mentioned: <AffiliateLink program="digitalocean" label="DigitalOcean" /> for cloud hosting and managed databases._
