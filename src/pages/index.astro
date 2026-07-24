@@ -36,6 +36,11 @@ allPosts.forEach((post) => {
 const sortedTags = Object.entries(tagCounts)
   .sort(([, a], [, b]) => b - a)
   .map(([tag]) => tag);
+
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=60, stale-while-revalidate=300",
+);
 ---
 
 <Layout
@@ -81,7 +86,13 @@ const sortedTags = Object.entries(tagCounts)
                 {post.data.title}
               </a>
               <span class="ml-3 text-sm text-slate-500">
-                ({post.data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
+                (
+                {post.data.date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+                )
               </span>
             </li>
           ))

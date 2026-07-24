@@ -60,6 +60,11 @@ function pageUrl(p: number): string {
   if (p === 1) return `${blogPath()}/`;
   return `${blogPath()}/${p}/${qs ? `?${qs}` : ""}`;
 }
+
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=60, stale-while-revalidate=300",
+);
 ---
 
 <Layout
