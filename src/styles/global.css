@@ -138,11 +138,11 @@
   }
   pre {
     @apply overflow-x-auto rounded-lg p-6;
-    background: hsl(21, 62%, 45%);
+    background: #ffffff;
     text-align: left;
   }
   pre code {
-    @apply block text-white;
+    @apply block text-gray-800;
     background: transparent;
     white-space: pre-wrap;
     word-break: break-word;
