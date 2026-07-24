@@ -97,11 +97,13 @@ const jsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <title>{title} | Learn Coding First</title>
 
-    <!-- Cloudflare Web Analytics -->
-    <script
-      type="module"
-      src="https://static.cloudflareinsights.com/beacon.min.js"
-      data-cf-beacon='{"token": "1ec7db8a5033408d80f39f0f42289faa"}'></script>
+    <!-- Cloudflare Web Analytics (production only) -->
+    {import.meta.env.PROD && (
+      <script
+        type="module"
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon='{"token": "1ec7db8a5033408d80f39f0f42289faa"}'></script>
+    )}
     <!-- End Cloudflare Web Analytics -->
 
     <style is:global>
