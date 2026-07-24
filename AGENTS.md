@@ -314,7 +314,7 @@ Draft posts scheduled for the future are auto-published by a daily Cloudflare Cr
 - Theme toggle button needs `z-[100]` to stay above the homepage banner (`z-50`).
 - Theme toggle script must clone/replace button on `astro:after-swap` to avoid duplicate event listeners.
 - Use `api.github.com/repos/.../contents/...` for always-fresh data. `raw.githubusercontent.com` caches after writes.
-- `marked` and `sanitize-html` both need `optimizeDeps.exclude` in astro.config.mjs — Vite's dep optimizer breaks the import (stale/missing `deps_ssr` cache file errors).
+- `marked` needs `optimizeDeps.exclude` in astro.config.mjs — Vite's dep optimizer breaks the import (stale/missing `deps_ssr` cache file errors). `sanitize-html` must NOT be in `optimizeDeps.exclude` — it causes `require is not defined` on post pages in the Cloudflare Workers dev runner. Both need `ssr.noExternal` for proper SSR bundling.
 - `BETTER_AUTH_URL` in `[vars]` applies to local dev. Override in `.dev.vars` with `http://localhost:4321`.
 - Cancel/navigation links should be outside `<form>` tags to avoid browser quirks.
 - Edit page SSR should fetch file directly (`src/posts/${slug}.md`) instead of calling `listFiles()` first.
