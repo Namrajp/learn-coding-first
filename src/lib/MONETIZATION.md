@@ -201,33 +201,22 @@ Google AdSense is the most accessible display ad network for new blogs. No minim
 ### Step-by-Step
 
 1. **Open the post** in `src/posts/` (e.g., `wsl-development-tips.md`)
-2. **Add the import** at the top of the markdown file:
+2. **Add affiliate links** using plain HTML `<a>` tags (Astro components don't work in markdown posts — `sanitize-html` strips unknown tags):
 ```markdown
----
-import AffiliateLink from "../components/AffiliateLink.astro";
----
+_Tools mentioned: <a href="https://www.cloudflare.com/?ref=learncodingfirst" target="_blank" rel="noopener noreferrer">Cloudflare Workers</a> for edge deployment, <a href="https://www.digitalocean.com/?ref=learncodingfirst" target="_blank" rel="noopener noreferrer">DigitalOcean</a> for cloud servers._
 ```
-3. **Insert affiliate links** naturally in the content:
-```markdown
-## My Setup
+3. **Use these affiliate URLs:**
+   - Cloudflare: `https://www.cloudflare.com/?ref=learncodingfirst`
+   - DigitalOcean: `https://www.digitalocean.com/?ref=learncodingfirst`
+   - Vercel: `https://vercel.com/?ref=learncodingfirst`
+   - Supabase: `https://supabase.com/?ref=learncodingfirst`
+   - Railway: `https://railway.app/?ref=learncodingfirst`
 
-I use <AffiliateLink program="cloudflare" /> Workers for hosting — fast, free tier, zero cold starts.
+### Important: Markdown vs Astro Components
 
-For databases, I recommend <AffiliateLink program="supabase" label="Supabase" />.
-```
-4. **Or add a "Tools mentioned" section** at the end:
-```markdown
----
+**In markdown posts** (`src/posts/*.md`): Use plain HTML `<a>` tags. The `<AffiliateLink>` Astro component **does not work** in markdown — `marked` passes it as raw HTML, then `sanitize-html` strips it because it's not in the allowed tags list.
 
-_Tools mentioned: <AffiliateLink program="digitalocean" label="DigitalOcean" />, <AffiliateLink program="cloudflare" label="Cloudflare" />_
-```
-
-### What Renders
-
-The `<AffiliateLink>` component renders as:
-- A styled link opening in a new tab
-- A disclosure asterisk (`*`) with tooltip
-- Screen reader text: "(affiliate)"
+**In Astro components** (`.astro` files): Use `<AffiliateLink program="..." />` — it works correctly with disclosure, styling, and screen reader text.
 
 ### Guidelines
 
@@ -310,21 +299,6 @@ If you prefer AdSense over Carbon/EthicalAds:
 | Google AdSense | `adsense.google.com` | Display ads (requires approval) |
 | Carbon Ads | `carbonads.net` | Developer-focused ads |
 | EthicalAds | `ethicalads.io` | Privacy-focused ads |
-
-## Adding a New Affiliate Program
-
-1. Add entry to `MONETIZATION.affiliates.programs` in `src/lib/monetization.ts`:
-
-```typescript
-newprogram: {
-  name: "New Program",
-  url: "https://newprogram.com/?ref=learncodingfirst",
-  disclosure: "Affiliate link — I earn a commission if you sign up.",
-},
-```
-
-2. Update the `AffiliateProgram` type (auto-inferred from `keyof typeof`)
-3. Use in posts: `<AffiliateLink program="newprogram" />`
 
 ## File Locations
 
