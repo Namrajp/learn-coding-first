@@ -3,7 +3,6 @@ import "../styles/global.css";
 
 import { ClientRouter } from "astro:transitions";
 import Breadcrumb from "../components/Breadcrumb.astro";
-import ThemeToggle from "../components/ThemeToggle.astro";
 import Footer from "../components/Footer.astro";
 import { AUTHOR, SOCIAL_LINKS } from "../lib/site";
 const {
@@ -121,15 +120,14 @@ const jsonLd = {
     <ClientRouter />
   </head>
   <body
-    class="overflow-x-hidden bg-white px-5 pt-3 pb-5 font-sans text-gray-900 transition-colors dark:bg-gray-950 dark:text-gray-100"
+    class="overflow-x-hidden bg-[rgb(var(--color-bg-body))] px-5 pt-3 pb-5 font-sans text-gray-900 transition-colors dark:bg-gray-950 dark:text-gray-100"
   >
-    <ThemeToggle {showSignOut} />
     <div class="py-2">
       <div class="mx-auto max-w-[1200px] px-6">
         <Breadcrumb {tags} />
         <slot />
       </div>
-      <Footer {user} />
+      <Footer {user} {showSignOut} />
     </div>
   </body>
 </html>
