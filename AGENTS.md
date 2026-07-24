@@ -29,8 +29,9 @@ npx prettier --write . # Format
 ## Key Files
 
 ```
-astro.config.mjs        # Cloudflare adapter, output: "server", @astrojs/sitemap, redirects
-wrangler.toml           # D1 + KV bindings, secrets
+astro.config.mjs        # Cloudflare adapter, output: "server", @astrojs/sitemap, redirects, optimizeDeps.exclude
+wrangler.toml           # Worker name, D1 + KV bindings, cron_triggers (top-level source of truth for deploy)
+scripts/inject-cron.mjs # Postbuild: injects cron_triggers + scheduled() auto-publish shim into dist/server/wrangler.json (see "Cron / Auto-Publish Drafts")
 env.d.ts                # CloudflareBindings, App.Locals types
 src/middleware.ts        # Auth guard + env injection (queries user table for role, protected: /admin, /api/posts, /api/admin)
 src/lib/auth.ts         # better-auth instance (CSRF/origin enabled, additionalFields for role)
@@ -247,8 +248,36 @@ Magic link endpoint uses `ratelimit:magic-link:{ip}:{email}` with 3 requests per
 - `SESSION` — KV namespace (session store, rate limiting counters, post list cache with `cache:posts:list` key, post cache with `cache:post:{slug}` key, dir SHA cache with `cache:posts:dir-sha` key)
 - `GITHUB_TOKEN` — Secret (GitHub PAT with Contents: Read/Write)
 - `RESEND_API_KEY` — Secret (Resend API)
+- `RESEND_AUDIENCE_ID` — Secret (Resend newsletter audience)
 - `BETTER_AUTH_SECRET` — Secret (session signing)
-- `BETTER_AUTH_URL` — Env var (`https://learncodingfirst.com`)
+- `BETTER_AUTH_URL` — Secret/env var (`https://learncodingfirst.com`)
+
+Set secrets with `npx wrangler secret put <NAME>` (reads value from stdin). Local dev reads the same names from `.dev.vars`.
+
+## Deployment & Worker Identity
+
+- **Worker name**: `learn-coding-first` (must match `name` in `wrangler.toml` — this is the single source of truth for which Worker is "the project").
+- **Custom domain**: `learncodingfirst.com` is bound to the `learn-coding-first` Worker via a Cloudflare Custom Domain (zone `learncodingfirst.com`), not a Route pattern.
+- **CI/CD**: `.github/workflows/deploy.yml` triggers on push to `main` — `npm ci` → `npm run build` (runs `postbuild` → `scripts/inject-cron.mjs`) → `wrangler deploy` via `cloudflare/wrangler-action@v3` using the `CLOUDFLARE_API_TOKEN` repo secret.
+- **Verifying prod is in sync**: If prod behaves differently from local dev (e.g. stale data, missing features) with no code-level explanation, check whether the custom domain is actually bound to the `learn-coding-first` Worker and not an old/orphaned Worker name. Query via:
+  ```bash
+  curl -s -H "Authorization: Bearer $CF_TOKEN" \
+    "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/workers/domains/records?zone_id=$ZONE_ID"
+  ```
+  This has bitten the project once before — an old Worker (`my-new-astro-blog`) held the domain and all the secrets while CI kept deploying an unrelated, secret-less Worker. Both stale Workers were deleted; only `learn-coding-first` should exist on the account now.
+
+## Cron / Auto-Publish Drafts
+
+Draft posts scheduled for the future are auto-published by a daily Cloudflare Cron Trigger — no manual "publish" click needed once the post's `date` arrives.
+
+- **Schedule**: `wrangler.toml` → `[[cron_triggers]] cron = "0 0 * * *"` — runs once daily at **00:00 UTC**.
+- **Publish rule**: for every `status: draft` post in `src/posts/`, compare frontmatter `date` (string `YYYY-MM-DD`) to today's UTC date (also `YYYY-MM-DD`):
+  - `date <= today` → flip `status: draft` → `status: published` (commits directly via GitHub Contents API) and invalidate `cache:post:{slug}`, `cache:posts:list`, `cache:posts:dir-sha` in KV.
+  - `date > today` → skip; stays a draft until its own day's midnight run.
+  - A post dated **today** publishes on **today's** midnight-UTC run (not tomorrow's) — the check is `date <= today`, not `date < today`.
+- **Implementation gotcha**: `@astrojs/cloudflare` v14+ has **no `entrypoint` option** — you cannot pass a custom Worker entry file to `cloudflare()` in `astro.config.mjs` to add a `scheduled()` export. An earlier attempt to do this (`adapter: cloudflare({ entrypoint: "./src/entry.mjs" })`) was silently ignored by the adapter; the cron fired on schedule but the deployed Worker had no `scheduled()` handler at all, so drafts never actually auto-published. Verify with `wrangler dev` + `curl "http://localhost:PORT/cdn-cgi/handler/scheduled"` against a real build — if it prints `Handler does not export a scheduled() function`, the handler isn't wired.
+- **Fix / current mechanism**: `scripts/inject-cron.mjs` (run via `package.json`'s `postbuild` hook, after `astro build`) generates `dist/server/scheduled-entry.mjs` — a small shim that imports the real Astro-generated entry (`config.main`), re-exports `fetch` untouched, and adds the `scheduled()` handler with the auto-publish logic inline (no imports needed beyond global `fetch`/`atob`/`btoa`). It then rewrites `dist/server/wrangler.json`'s `main` to point at the shim instead of the original entry file. This is why the auto-publish logic lives in `scripts/inject-cron.mjs` rather than a `src/` file — it must be generated post-build, after Astro has produced the real entry point to wrap.
+- **Testing the cron locally**: `npm run build && npx wrangler dev --config dist/server/wrangler.json --port 8788` then `curl "http://localhost:8788/cdn-cgi/handler/scheduled"`. This uses the real `GITHUB_TOKEN` from `.dev.vars` and **will make real commits** to the GitHub repo for any due draft — only run against test posts, not real in-progress drafts, unless you intend to publish them.
 
 ## Gotchas
 
@@ -277,3 +306,5 @@ Magic link endpoint uses `ratelimit:magic-link:{ip}:{email}` with 3 requests per
 - The `authorized_user` table is separate from the `user` table. `authorized_user` controls who can receive magic links; `user.role` controls access level after login.
 - Use `renderMarkdown()` from `src/lib/markdown.ts` — returns `{ html, toc }`. Do not import `marked`/`sanitizeHtml` directly in page components.
 - `src/lib/site.ts` centralizes `AUTHOR`, `SITE_URL`, `SOCIAL_LINKS`. Use these instead of hardcoding URLs/names.
+- `@astrojs/cloudflare`'s `cloudflare()` adapter has no `entrypoint` option (as of v14) — do not try to pass a custom Worker entry file there to add `scheduled()`/other exports; it's silently ignored. Use `scripts/inject-cron.mjs` (postbuild) to wrap the generated entry instead. See "Cron / Auto-Publish Drafts" above.
+- If `/admin` (or any GitHub-API-backed page) shows fewer/older posts on production than in local dev with no code explanation, don't assume it's a caching or code bug first — check that `learncodingfirst.com`'s custom domain actually points at the `learn-coding-first` Worker (see "Deployment & Worker Identity" above). A second, orphaned Worker holding the domain + secrets is a real failure mode that happened here.
