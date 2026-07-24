@@ -116,27 +116,39 @@ export async function listFiles(
   dir: string,
   branch = "main",
 ): Promise<{ name: string; path: string; sha: string }[]> {
-  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${dir}?ref=${branch}`;
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${config.token}`,
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-      "User-Agent": "learncodingfirst-blog",
-    },
-  });
+  const allFiles: { name: string; path: string; sha: string }[] = [];
+  let page = 1;
 
-  if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
-  const data = (await response.json()) as {
-    name: string;
-    path: string;
-    sha: string;
-    type: string;
-  }[];
-  return data.filter(
-    (f) =>
-      f.type === "file" && f.name.endsWith(".md") && f.name !== "README.md",
-  );
+  while (true) {
+    const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${dir}?ref=${branch}&per_page=100&page=${page}`;
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${config.token}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "learncodingfirst-blog",
+      },
+    });
+
+    if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+    const data = (await response.json()) as {
+      name: string;
+      path: string;
+      sha: string;
+      type: string;
+    }[];
+
+    const mdFiles = data.filter(
+      (f) =>
+        f.type === "file" && f.name.endsWith(".md") && f.name !== "README.md",
+    );
+    allFiles.push(...mdFiles);
+
+    if (data.length < 100) break;
+    page++;
+  }
+
+  return allFiles;
 }
 
 export async function getDirectorySha(
