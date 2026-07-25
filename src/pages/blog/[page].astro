@@ -165,7 +165,7 @@ function pageUrl(p: number): string {
                   {post.data.title}
                 </a>
                 <span class="text-gray-500 dark:text-gray-400">
-                  ({post.data.date.toLocaleDateString()})
+                  ({post.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })})
                 </span>
                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                   {post.data.description}

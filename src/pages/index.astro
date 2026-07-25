@@ -125,7 +125,7 @@ Astro.response.headers.set(
         {
           promptingPost && (
             <PostCard
-              date={promptingPost.data.date.toLocaleDateString()}
+              date={promptingPost.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               title={promptingPost.data.title}
               excerpt="Prompting is the art of giving AI clear, well-structured instructions to get the output you actually want. Learn how to be specific, give the AI a role, provide context, use step-by-step instructions, iterate and refine, and show examples to dramatically improve your results."
               link={`/${promptingPost.id}`}
@@ -135,7 +135,7 @@ Astro.response.headers.set(
         {
           claudePost && (
             <PostCard
-              date={claudePost.data.date.toLocaleDateString()}
+              date={claudePost.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               title={claudePost.data.title}
               excerpt="Claude is Anthropic's AI assistant, built with a strong emphasis on being helpful, harmless, and honest. It excels at long-form reasoning, nuanced writing, and following complex multi-step instructions — but like any tool, it rewards users who understand how it thinks."
               link={`/${claudePost.id}`}
@@ -143,7 +143,7 @@ Astro.response.headers.set(
           )
         }
         <PostCard
-          date={randomPost.data.date.toLocaleDateString()}
+          date={randomPost.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
           title={randomPost.data.title}
           excerpt={randomPost.data.description || "Check out this post!"}
           link={`/${randomPost.id}`}
@@ -151,7 +151,7 @@ Astro.response.headers.set(
         {
           otherPosts.map((post) => (
             <PostCard
-              date={post.data.date.toLocaleDateString()}
+              date={post.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               title={post.data.title}
               excerpt={post.data.description || "Check out this post!"}
               link={`/${post.id}`}
