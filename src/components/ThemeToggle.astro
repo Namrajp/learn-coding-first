@@ -5,7 +5,7 @@ const { showSignOut = false } = Astro.props;
 <span class="inline-flex items-center gap-2">
   <button
     id="theme-toggle"
-    class="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
+    class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white shadow-sm transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
     aria-label="Toggle dark mode"
   >
     <svg
@@ -41,9 +41,22 @@ const { showSignOut = false } = Astro.props;
     showSignOut && (
       <button
         id="logout-btn"
-        class="flex h-10 items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+        class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white shadow-sm transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
+        aria-label="Sign out"
       >
-        Sign Out
+        <svg
+          class="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+          ></path>
+        </svg>
       </button>
     )
   }
