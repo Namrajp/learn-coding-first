@@ -123,7 +123,7 @@
     @apply mt-2 list-inside;
   }
   ul {
-    list-style-type: "-";
+    list-style-type: "- ";
   }
   ol {
     @apply list-decimal;
