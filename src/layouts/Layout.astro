@@ -74,11 +74,12 @@ const jsonLd = {
     <meta property="og:type" content={metaPageType} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={metaDescription} />
-    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:url" content={canonical || Astro.url.href} />
     <meta property="og:site_name" content="Learn Coding First" />
     <meta property="og:image" content={metaOgImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Card -->
@@ -86,6 +87,7 @@ const jsonLd = {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={metaOgImage} />
+    <meta name="twitter:site" content="@wouraj" />
     <meta name="twitter:creator" content="@wouraj" />
 
     <link

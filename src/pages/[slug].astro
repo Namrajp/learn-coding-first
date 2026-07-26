@@ -167,7 +167,7 @@ const { html: htmlContent, toc } = renderMarkdown(post.content);
 const postDate = new Date(post.date);
 const postUrl = new URL(`/${slug}`, Astro.url).href;
 
-const ogImageUrl = `${SITE_URL}/og/${slug}.svg`;
+const ogImageUrl = `${SITE_URL}/og/${slug}.png`;
 
 const postJsonLd = {
   "@context": "https://schema.org",

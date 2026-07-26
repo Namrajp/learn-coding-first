@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "prebuild": "node scripts/generate-og-pngs.mjs",
     "build": "astro build",
     "postbuild": "node scripts/inject-cron.mjs",
     "preview": "astro preview",
@@ -15,6 +16,7 @@
     "@astrojs/cloudflare": "^14.1.2",
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.7.3",
+    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.3.2",
     "astro": "^7.0.7",
     "better-auth": "^1.6.23",

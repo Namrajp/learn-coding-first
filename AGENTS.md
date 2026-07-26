@@ -13,6 +13,7 @@ Astro 7 blog on Cloudflare Workers. Posts stored as markdown in GitHub repo (`Na
 - Resend (magic link emails)
 - GitHub Contents API (post CRUD)
 - `marked` + `sanitize-html` via `src/lib/markdown.ts` (markdown rendering with XSS protection + TOC extraction)
+- `@resvg/resvg-js` (build-time OG image PNG generation from SVG strings)
 - `@astrojs/sitemap` (auto-generated sitemap index)
 - `@astrojs/rss` (RSS feed with content:encoded)
 - Google Search Console verified (meta tag), sitemaps submitted
@@ -30,8 +31,9 @@ npx prettier --write . # Format
 
 ```
 astro.config.mjs        # Cloudflare adapter, output: "server", @astrojs/sitemap, redirects, optimizeDeps.exclude
-wrangler.toml           # Worker name, D1 + KV bindings, cron_triggers (top-level source of truth for deploy)
+wrangler.toml           # Worker name, D1 + KV bindings, [triggers] crons (top-level source of truth for deploy)
 scripts/inject-cron.mjs # Postbuild: injects cron_triggers + scheduled() auto-publish shim into dist/server/wrangler.json (see "Cron / Auto-Publish Drafts")
+scripts/generate-og-pngs.mjs # Prebuild: generates 1200×630 OG PNG images for each published post into public/og/ (see "OG Image Generation")
 env.d.ts                # CloudflareBindings, App.Locals types
 src/middleware.ts        # Auth guard + env injection (queries user table for role, protected: /admin, /api/posts, /api/admin)
 src/lib/auth.ts         # better-auth instance (CSRF/origin enabled, additionalFields for role)
@@ -221,6 +223,17 @@ draft→published transition specifically (not on every edit of an already-publi
 - `src/lib/tag-meta.ts` — `formatTagTitle()`, `getTagDescription()` for SEO-friendly tag pages
 - `src/lib/site.ts` — centralized `AUTHOR`, `SITE_URL`, `SOCIAL_LINKS` constants
 
+### OG Image Generation
+
+Each blog post gets a unique 1200×630 PNG OG image for social sharing (LinkedIn, Facebook, Twitter/X).
+
+- **Build-time**: `scripts/generate-og-pngs.mjs` (runs as `prebuild`) reads all `src/posts/*.md`, generates SVG via the same visual logic as the old `[slug].svg.ts` endpoint, converts to PNG using `@resvg/resvg-js`, and writes to `public/og/{slug}.png`. Drafts are skipped. Inter font is fetched from Google Fonts at build time (no committed font files).
+- **Serving**: Static PNGs in `public/og/` are served directly by Astro/Cloudflare — no dynamic endpoint needed.
+- **Fallback**: Posts created via admin after the last build have no pre-generated PNG. The `og:image` meta tag falls back to `og-default.png` (the `metaOgImage` default in `Layout.astro`).
+- **Why PNG, not SVG**: LinkedIn, Facebook, and Twitter do not support SVG for `og:image`. They require raster formats (PNG, JPEG, GIF, WebP). The old `src/pages/og/[slug].svg.ts` endpoint was removed.
+- **Dependencies**: `@resvg/resvg-js` (SVG→PNG at build time, no runtime cost).
+- **Meta tags**: `og:url` uses the canonical URL (not `Astro.url.href`). `og:image:alt` and `twitter:site` are set.
+
 ## Frontmatter
 
 Use shared helpers from `src/lib/frontmatter.ts`:
@@ -284,7 +297,7 @@ Set secrets with `npx wrangler secret put <NAME>` (reads value from stdin). Loca
 
 - **Worker name**: `learn-coding-first` (must match `name` in `wrangler.toml` — this is the single source of truth for which Worker is "the project").
 - **Custom domain**: `learncodingfirst.com` is bound to the `learn-coding-first` Worker via a Cloudflare Custom Domain (zone `learncodingfirst.com`), not a Route pattern.
-- **CI/CD**: `.github/workflows/deploy.yml` triggers on push to `main` — `npm ci` → `npm run build` (runs `postbuild` → `scripts/inject-cron.mjs`) → `wrangler deploy` via `cloudflare/wrangler-action@v3` using the `CLOUDFLARE_API_TOKEN` repo secret.
+- **CI/CD**: `.github/workflows/deploy.yml` triggers on push to `main` — `npm ci` → `npm run build` (runs `prebuild` → `scripts/generate-og-pngs.mjs`, then `postbuild` → `scripts/inject-cron.mjs`) → `wrangler deploy` via `cloudflare/wrangler-action@v3` using the `CLOUDFLARE_API_TOKEN` repo secret.
 - **Verifying prod is in sync**: If prod behaves differently from local dev (e.g. stale data, missing features) with no code-level explanation, check whether the custom domain is actually bound to the `learn-coding-first` Worker and not an old/orphaned Worker name. Query via:
   ```bash
   curl -s -H "Authorization: Bearer $CF_TOKEN" \
@@ -333,4 +346,5 @@ Draft posts scheduled for the future are auto-published by a daily Cloudflare Cr
 - Use `renderMarkdown()` from `src/lib/markdown.ts` — returns `{ html, toc }`. Do not import `marked`/`sanitizeHtml` directly in page components.
 - `src/lib/site.ts` centralizes `AUTHOR`, `SITE_URL`, `SOCIAL_LINKS`. Use these instead of hardcoding URLs/names.
 - `@astrojs/cloudflare`'s `cloudflare()` adapter has no `entrypoint` option (as of v14) — do not try to pass a custom Worker entry file there to add `scheduled()`/other exports; it's silently ignored. Use `scripts/inject-cron.mjs` (postbuild) to wrap the generated entry instead. See "Cron / Auto-Publish Drafts" above.
+- OG images must be raster (PNG/JPEG), not SVG. LinkedIn, Facebook, and Twitter reject `og:image` with `Content-Type: image/svg+xml`. The old `src/pages/og/[slug].svg.ts` was replaced by build-time PNG generation in `scripts/generate-og-pngs.mjs`. Posts created after the last build have no PNG and fall back to `og-default.png` — redeploy to generate their OG image.
 - If `/admin` (or any GitHub-API-backed page) shows fewer/older posts on production than in local dev with no code explanation, don't assume it's a caching or code bug first — check that `learncodingfirst.com`'s custom domain actually points at the `learn-coding-first` Worker (see "Deployment & Worker Identity" above). A second, orphaned Worker holding the domain + secrets is a real failure mode that happened here.
