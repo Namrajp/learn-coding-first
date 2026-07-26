@@ -33,7 +33,10 @@ npx prettier --write . # Format
 astro.config.mjs        # Cloudflare adapter, output: "server", @astrojs/sitemap, redirects, optimizeDeps.exclude
 wrangler.toml           # Worker name, D1 + KV bindings, [triggers] crons (top-level source of truth for deploy)
 scripts/inject-cron.mjs # Postbuild: injects cron_triggers + scheduled() auto-publish shim into dist/server/wrangler.json (see "Cron / Auto-Publish Drafts")
-scripts/generate-og-pngs.mjs # Prebuild: generates 1200×630 OG PNG images for each published post into public/og/ (see "OG Image Generation")
+scripts/generate-og-pngs.mjs # Prebuild/predev: generates OG PNGs + manifest (see "OG Image Generation")
+scripts/fonts/            # Vendored Inter OTF files for OG PNG rendering
+src/lib/og-image.ts     # getOgImageUrl() — manifest lookup with og-default.png fallback
+src/generated/og-manifest.json # Slug list written by prebuild (bundled into Worker at build time)
 env.d.ts                # CloudflareBindings, App.Locals types
 src/middleware.ts        # Auth guard + env injection (queries user table for role, protected: /admin, /api/posts, /api/admin)
 src/lib/auth.ts         # better-auth instance (CSRF/origin enabled, additionalFields for role)
@@ -227,9 +230,10 @@ draft→published transition specifically (not on every edit of an already-publi
 
 Each blog post gets a unique 1200×630 PNG OG image for social sharing (LinkedIn, Facebook, Twitter/X).
 
-- **Build-time**: `scripts/generate-og-pngs.mjs` (runs as `prebuild`) reads all `src/posts/*.md`, generates SVG via the same visual logic as the old `[slug].svg.ts` endpoint, converts to PNG using `@resvg/resvg-js`, and writes to `public/og/{slug}.png`. Drafts are skipped. Inter font is fetched from Google Fonts at build time (no committed font files).
+- **Build-time**: `scripts/generate-og-pngs.mjs` (runs as `prebuild` and `predev`) reads all `src/posts/*.md`, generates SVG via the same visual logic as the old `[slug].svg.ts` endpoint, converts to PNG using `@resvg/resvg-js`, and writes to `public/og/{slug}.png`. Drafts are skipped. Inter fonts are vendored in `scripts/fonts/` (no network fetch).
+- **Manifest**: Prebuild writes `public/og/manifest.json` and `src/generated/og-manifest.json` (slug list). `src/lib/og-image.ts` → `getOgImageUrl()` returns per-post PNG URL when listed, else `og-default.png`.
 - **Serving**: Static PNGs in `public/og/` are served directly by Astro/Cloudflare — no dynamic endpoint needed.
-- **Fallback**: Posts created via admin after the last build have no pre-generated PNG. The `og:image` meta tag falls back to `og-default.png` (the `metaOgImage` default in `Layout.astro`).
+- **Fallback**: Posts created via admin after the last build have no pre-generated PNG. `getOgImageUrl()` falls back to `og-default.png` until the next deploy regenerates the manifest and PNG.
 - **Why PNG, not SVG**: LinkedIn, Facebook, and Twitter do not support SVG for `og:image`. They require raster formats (PNG, JPEG, GIF, WebP). The old `src/pages/og/[slug].svg.ts` endpoint was removed.
 - **Dependencies**: `@resvg/resvg-js` (SVG→PNG at build time, no runtime cost).
 - **Meta tags**: `og:url` uses the canonical URL (not `Astro.url.href`). `og:image:alt` and `twitter:site` are set.

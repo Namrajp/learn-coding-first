@@ -9,6 +9,7 @@ import TableOfContents from "../components/TableOfContents.astro";
 import { parsePostFile } from "../lib/frontmatter";
 import { getDirectorySha } from "../lib/github";
 import { renderMarkdown } from "../lib/markdown";
+import { getOgImageUrl } from "../lib/og-image";
 import { AUTHOR, SITE_URL } from "../lib/site";
 
 const slug = Astro.params.slug;
@@ -167,7 +168,7 @@ const { html: htmlContent, toc } = renderMarkdown(post.content);
 const postDate = new Date(post.date);
 const postUrl = new URL(`/${slug}`, Astro.url).href;
 
-const ogImageUrl = `${SITE_URL}/og/${slug}.png`;
+const ogImageUrl = getOgImageUrl(slug);
 
 const postJsonLd = {
   "@context": "https://schema.org",

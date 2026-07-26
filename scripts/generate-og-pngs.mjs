@@ -1,12 +1,20 @@
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
+import {
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  readdirSync,
+} from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const postsDir = resolve(__dirname, "../src/posts");
 const outDir = resolve(__dirname, "../public/og");
+const fontsDir = resolve(__dirname, "fonts");
+const generatedDir = resolve(__dirname, "../src/generated");
 
 mkdirSync(outDir, { recursive: true });
+mkdirSync(generatedDir, { recursive: true });
 
 function escapeXml(s) {
   return s
@@ -42,7 +50,9 @@ function parseFrontmatter(content) {
   const tagsMatch = fm.match(/^tags:\s*\[([^\]]*)\]/m);
   let tags = [];
   if (tagsMatch) {
-    tags = tagsMatch[1].split(",").map((t) => t.trim().replace(/^["']|["']$/g, ""));
+    tags = tagsMatch[1]
+      .split(",")
+      .map((t) => t.trim().replace(/^["']|["']$/g, ""));
   } else {
     const listMatch = fm.match(/^tags:\s*\n((?:\s*-\s*.+\n?)+)/m);
     if (listMatch) {
@@ -59,23 +69,10 @@ function parseFrontmatter(content) {
   };
 }
 
-async function fetchFont() {
-  const cssUrl =
-    "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap";
-  const cssRes = await fetch(cssUrl, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    },
-  });
-  const css = await cssRes.text();
-  const fontUrls = [...css.matchAll(/url\(([^)]+)\)/g)].map((m) => m[1]);
-  if (fontUrls.length === 0) {
-    throw new Error("No font URLs found in Google Fonts CSS response");
-  }
-  const fontRes = await fetch(fontUrls[0]);
-  const arrayBuffer = await fontRes.arrayBuffer();
-  return Buffer.from(arrayBuffer);
+function loadFonts() {
+  const medium = readFileSync(resolve(fontsDir, "Inter-Medium.otf"));
+  const bold = readFileSync(resolve(fontsDir, "Inter-Bold.otf"));
+  return { medium, bold };
 }
 
 function buildSvg(title, tags) {
@@ -123,15 +120,24 @@ function buildSvg(title, tags) {
 </svg>`;
 }
 
+function writeManifest(slugs) {
+  const manifest = { slugs: [...slugs].sort() };
+  const json = JSON.stringify(manifest, null, 2) + "\n";
+  writeFileSync(resolve(outDir, "manifest.json"), json);
+  writeFileSync(resolve(generatedDir, "og-manifest.json"), json);
+}
+
 async function main() {
-  console.log("[og-png] Fetching Inter font from Google Fonts...");
-  const fontBuffer = await fetchFont();
-  console.log(`[og-png] Font loaded (${fontBuffer.length} bytes)`);
+  console.log("[og-png] Loading vendored Inter fonts...");
+  const { medium, bold } = loadFonts();
+  console.log(
+    `[og-png] Fonts loaded (medium: ${medium.length} bytes, bold: ${bold.length} bytes)`,
+  );
 
   const { Resvg } = await import("@resvg/resvg-js");
 
   const files = readdirSync(postsDir).filter((f) => f.endsWith(".md"));
-  let generated = 0;
+  const generatedSlugs = [];
   let skipped = 0;
 
   for (const file of files) {
@@ -153,18 +159,23 @@ async function main() {
       font: {
         loadSystemFonts: false,
         defaultFontFamily: "Inter, sans-serif",
-        fontFiles: [{ path: "Inter", data: fontBuffer }],
+        fontFiles: [
+          { path: "Inter-Medium", data: medium },
+          { path: "Inter-Bold", data: bold },
+        ],
       },
     });
     const pngData = resvg.render();
     const pngBuffer = pngData.asPng();
 
-    const outPath = resolve(outDir, `${slug}.png`);
-    writeFileSync(outPath, pngBuffer);
-    generated++;
+    writeFileSync(resolve(outDir, `${slug}.png`), pngBuffer);
+    generatedSlugs.push(slug);
   }
 
-  console.log(`[og-png] Done. Generated ${generated} PNGs, skipped ${skipped} drafts.`);
+  writeManifest(generatedSlugs);
+  console.log(
+    `[og-png] Done. Generated ${generatedSlugs.length} PNGs, skipped ${skipped} drafts.`,
+  );
 }
 
 main().catch((err) => {

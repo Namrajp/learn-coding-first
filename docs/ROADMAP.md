@@ -14,7 +14,7 @@ and accessibility. Update this file as items ship or priorities change.
 | Newsletter | ✅ Fully automated: signup → welcome email → new-post blast (create, update, **and cron auto-publish** all trigger it now), admin UI at `/admin/newsletter`. |
 | Search | ⚠️ Title/tag substring match only, no full-text body search. Fine at ~28 published posts, won't scale. |
 | Caching | ✅ Homepage, `/blog` archive, and `[slug].astro` all set `Cache-Control: public, max-age=60, stale-while-revalidate=300`. |
-| SEO | ✅ Strong: structured data (WebSite/Article/BreadcrumbList/Person), sitemaps, OG/Twitter meta, canonical tags, RSS. ❌ One static OG image shared by every post/page. Naive tag-overlap-only related posts. |
+| SEO | ✅ Strong: structured data (WebSite/Article/BreadcrumbList/Person), sitemaps, OG/Twitter meta, canonical tags, RSS. ✅ Per-post OG PNGs at build time (`scripts/generate-og-pngs.mjs`), with `og-default.png` fallback via manifest when no PNG exists yet. ⚠️ Naive tag-overlap-only related posts. |
 | Social distribution | ⚠️ Manual share buttons (X, LinkedIn) only. No auto cross-posting, no comments/webmentions. |
 | Testing | ❌ Zero test files or test runner configured. |
 | Accessibility | ⚠️ No skip-link, no `<main>` landmark, no systemic focus-visible styles. |
@@ -55,11 +55,11 @@ infrastructure model (KV caching, cron auto-publish, GitHub-API-backed CRUD).
 
 ## Tier 2 — Medium effort, meaningful SEO/growth levers
 
-- [ ] **Per-post OG images.** Every post currently shares `public/og-default.png`, so social
-      shares look identical regardless of content — hurts CTR from X/LinkedIn/Slack previews.
-      Options: generate at publish time (Satori-style, run alongside the create/cron pipeline,
-      commit the PNG back via GitHub Contents API or push to Cloudflare Images) vs. an on-demand
-      OG-image Worker route rendered per-slug.
+- [x] **Per-post OG images.** *(Shipped 2026-07-26)* `scripts/generate-og-pngs.mjs` runs at prebuild,
+      generates 1200×630 PNGs via `@resvg/resvg-js` + vendored Inter fonts into `public/og/{slug}.png`
+      (drafts skipped). Writes `public/og/manifest.json` + `src/generated/og-manifest.json`; `[slug].astro`
+      uses `getOgImageUrl()` to fall back to `og-default.png` when a slug has no prebuilt PNG (e.g. admin
+      publish between deploys). Replaced the old dynamic SVG endpoint (unsupported by social crawlers).
 - [ ] **Full-text search via Pagefind.** Current search (`src/pages/blog/index.astro`) is
       title/tag substring matching only, no body content search, no ranking. Pagefind builds a
       static search index at build time — fits the existing SSG/SSR-hybrid model with no new

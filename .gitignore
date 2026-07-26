@@ -1,6 +1,6 @@
 # build output
 dist/
-public/og/
+public/og/*.png
 
 # generated types
 .astro/

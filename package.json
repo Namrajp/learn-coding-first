@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "predev": "node scripts/generate-og-pngs.mjs",
     "prebuild": "node scripts/generate-og-pngs.mjs",
     "build": "astro build",
     "postbuild": "node scripts/inject-cron.mjs",
