@@ -12,8 +12,8 @@ migrations_dir = "drizzle"
 binding = "SESSION"
 id = "b3bf4da7a0784275b628780e8354875c"
 
-[[cron_triggers]]
-cron = "0 0 * * *"
+[triggers]
+crons = ["0 0 * * *"]
 
 [vars]
 # BETTER_AUTH_URL is set via .dev.vars (local) and wrangler secret (production)
