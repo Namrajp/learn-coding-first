@@ -54,6 +54,7 @@ const otherCategories = CATEGORIES.filter((c) => c.slug !== category);
   title={`${categoryTitle} Articles`}
   description={categoryDescription}
   canonical={categoryUrl}
+  robots={posts.length === 0 ? "noindex, follow" : undefined}
 >
   <div class="mx-auto w-full max-w-4xl text-left">
     <div class="mt-8 grid gap-4 md:grid-cols-[250px_1fr] md:gap-8">

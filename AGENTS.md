@@ -175,6 +175,13 @@ an empty state rather than a 404, so the URL already exists the moment a post is
 Zero-count categories _are_ hidden from the `/blog` category hub and from the `?category=` dropdowns
 (deliberate: don't surface a dead end you can still reach directly).
 
+An empty category page is thin content, so it renders with `robots="noindex, follow"` and is
+excluded from the sitemap. The exclusion happens in `astro.config.mjs`: `categoriesWithPosts()`
+scans `src/posts` frontmatter at config load and the `sitemap({ filter })` drops any
+`/category/<slug>` that has no published posts. Without that filter Search Console reports
+"Submitted URL marked noindex" for each one. Both behaviours switch off automatically once a
+category gets its first published post.
+
 ### Renamed posts (Jul 2026)
 
 Three files were renamed so the filename is a clean slug. Old URLs 301-redirect via
