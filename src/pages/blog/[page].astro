@@ -51,8 +51,6 @@ const filters = { q, tag, category };
           List of all the blog posts
         </p>
 
-        <CategoryGrid counts={categoryCounts} active={category} />
-
         <form
           method="get"
           class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center"
@@ -123,6 +121,8 @@ const filters = { q, tag, category };
             )
           }
         </form>
+
+        <CategoryGrid counts={categoryCounts} active={category} />
 
         {
           hasFilters && (
