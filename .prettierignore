@@ -1,0 +1,21 @@
+# Authored post markdown. Prettier restyles the code samples inside posts
+# (e.g. collapsing hand-aligned trailing comments), so posts are formatted by
+# hand and left exactly as written.
+src/posts/
+
+# Build output
+dist/
+.astro/
+.wrangler/
+
+# Generated
+src/generated/
+public/og/
+drizzle/
+package-lock.json
+
+# Dependencies
+node_modules/
+
+# Local agent/tool state
+.local/

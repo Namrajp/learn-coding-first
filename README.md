@@ -16,15 +16,15 @@ Drizzle ORM · Resend · GitHub Contents API · `marked` + `sanitize-html`
 
 ## Commands
 
-| Command                       | Action                                                          |
-| :----------------------------- | :--------------------------------------------------------------- |
-| `npm install`                  | Install dependencies                                              |
-| `npm run dev`                  | Start local dev server at `localhost:4321`                       |
-| `npm run build`                | Build for production to `./dist/` (runs `postbuild` cron shim)   |
-| `npx wrangler deploy`          | Deploy the built Worker to Cloudflare                             |
+| Command                                               | Action                                                           |
+| :---------------------------------------------------- | :--------------------------------------------------------------- |
+| `npm install`                                         | Install dependencies                                             |
+| `npm run dev`                                         | Start local dev server at `localhost:4321`                       |
+| `npm run build`                                       | Build for production to `./dist/` (runs `postbuild` cron shim)   |
+| `npx wrangler deploy`                                 | Deploy the built Worker to Cloudflare                            |
 | `npx wrangler dev --config dist/server/wrangler.json` | Run the real built Worker locally (needed to test `scheduled()`) |
-| `npx eslint src/`              | Lint                                                              |
-| `npx prettier --write .`       | Format                                                            |
+| `npx eslint src/`                                     | Lint                                                             |
+| `npx prettier --write .`                              | Format                                                           |
 
 Deploys normally happen automatically via `.github/workflows/deploy.yml` on every push to `main`.
 

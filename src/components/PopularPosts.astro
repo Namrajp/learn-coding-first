@@ -15,7 +15,7 @@ const posts = (await getCollection("posts"))
       <h3 class="mb-3 text-center text-sm font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
         Popular Posts
       </h3>
-      <ul class="mx-auto w-fit list-none flex flex-col items-start gap-y-2 text-left">
+      <ul class="mx-auto flex w-fit list-none flex-col items-start gap-y-2 text-left">
         {posts.map((post) => (
           <li class="text-sm font-medium text-gray-600 dark:text-gray-400">
             <span class="mr-2 text-gray-400 dark:text-gray-500">-</span>

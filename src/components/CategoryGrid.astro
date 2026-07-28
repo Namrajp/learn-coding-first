@@ -1,0 +1,52 @@
+---
+import { CATEGORIES, type CategorySlug } from "../lib/categories";
+
+interface Props {
+  counts: Record<CategorySlug, number>;
+  active?: string;
+}
+
+const { counts, active } = Astro.props;
+
+// Categories with no published posts are hidden until they get their first post.
+const visible = CATEGORIES.filter(
+  (category) => (counts[category.slug] || 0) > 0,
+);
+---
+
+{
+  visible.length > 0 && (
+    <section class="mb-8">
+      <h2 class="mb-3 text-lg font-bold text-slate-900 dark:text-slate-100">
+        Browse by category
+      </h2>
+      <div class="grid gap-3 sm:grid-cols-2">
+        {visible.map((category) => (
+          <a
+            href={`/category/${category.slug}`}
+            aria-current={active === category.slug ? "page" : undefined}
+            class:list={[
+              "block rounded-xl border p-4 no-underline transition-colors",
+              active === category.slug
+                ? "border-[hsl(21,62%,45%)] bg-[hsl(21,62%,45%)]/5 dark:bg-[hsl(21,62%,45%)]/10"
+                : "border-gray-200 hover:border-[hsl(21,62%,45%)] dark:border-gray-700",
+            ]}
+          >
+            <div class="flex items-baseline justify-between gap-2">
+              <span class="font-semibold text-slate-900 dark:text-slate-100">
+                {category.label}
+              </span>
+              <span class="text-xs text-gray-500 dark:text-gray-400">
+                {counts[category.slug]} post
+                {counts[category.slug] === 1 ? "" : "s"}
+              </span>
+            </div>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              {category.description}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}

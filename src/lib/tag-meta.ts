@@ -22,7 +22,8 @@ const TAG_DESCRIPTIONS: Record<string, string> = {
     "Long-form articles on learning to code, career growth, and the future of software development.",
   web: "HTML, CSS, and front-end development tutorials for building modern websites.",
   git: "Git workflows, commands, and version control practices for solo and team projects.",
-  mongodb: "MongoDB setup, connection guides, and database integration for Node.js apps.",
+  mongodb:
+    "MongoDB setup, connection guides, and database integration for Node.js apps.",
   vue: "Vue.js concepts including lifecycle hooks, template refs, and component patterns.",
 };
 

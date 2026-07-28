@@ -1,34 +1,25 @@
 ---
-import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
+import CategoryGrid from "../../components/CategoryGrid.astro";
 import TagSidebar from "../../components/TagSidebar.astro";
-import { PAGE_SIZE } from "../../lib/blog-helpers";
+import { CATEGORIES, getCategory } from "../../lib/categories";
+import {
+  PAGE_SIZE,
+  blogPath,
+  filterPosts,
+  getCategoryCounts,
+  getPublishedPosts,
+  getTagCounts,
+  pageUrl,
+} from "../../lib/blog-helpers";
 
 const q = Astro.url.searchParams.get("q") || "";
 const tag = Astro.url.searchParams.get("tag") || "";
+const category = Astro.url.searchParams.get("category") || "";
 const pageNum = Number(Astro.params.page) || 1;
 
-let posts = (await getCollection("posts")).filter(
-  (post) => post.data.status !== "draft",
-);
-
-if (q) {
-  const query = q.toLowerCase();
-  posts = posts.filter(
-    (p) =>
-      p.data.title.toLowerCase().includes(query) ||
-      p.data.description.toLowerCase().includes(query) ||
-      p.data.tags.some((t) => t.toLowerCase().includes(query)),
-  );
-}
-
-if (tag) {
-  posts = posts.filter((p) => p.data.tags.includes(tag));
-}
-
-posts = posts.sort(
-  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
-);
+const allPosts = await getPublishedPosts();
+const posts = filterPosts(allPosts, { q, tag, category });
 
 const totalPosts = posts.length;
 const lastPage = Math.max(1, Math.ceil(totalPosts / PAGE_SIZE));
@@ -36,35 +27,15 @@ const safePage = Math.min(Math.max(1, pageNum), lastPage);
 const start = (safePage - 1) * PAGE_SIZE;
 const pagePosts = posts.slice(start, start + PAGE_SIZE);
 
-const tags: string[] = [];
-const tagCounts: Record<string, number> = {};
-const allPosts = (await getCollection("posts")).filter(
-  (post) => post.data.status !== "draft",
-);
-allPosts.forEach((post) => {
-  post.data.tags.forEach((tagItem: string) => {
-    if (!tags.includes(tagItem)) tags.push(tagItem);
-    tagCounts[tagItem] = (tagCounts[tagItem] || 0) + 1;
-  });
-});
-
-function blogPath(): string {
-  const base = import.meta.env.BASE_URL || "/";
-  return base.endsWith("/") ? `${base}blog` : `${base}/blog`;
-}
-
-function pageUrl(p: number): string {
-  const params = new URLSearchParams();
-  if (q) params.set("q", q);
-  if (tag) params.set("tag", tag);
-  const qs = params.toString();
-  if (p === 1) return `${blogPath()}/`;
-  return `${blogPath()}/${p}/${qs ? `?${qs}` : ""}`;
-}
+const { tags, tagCounts } = getTagCounts(allPosts);
+const categoryCounts = getCategoryCounts(allPosts);
+const activeCategory = getCategory(category);
+const hasFilters = Boolean(q || tag || category);
+const filters = { q, tag, category };
 ---
 
 <Layout
-  title={`Blog Archive${q ? ` — "${q}"` : ""}${tag ? ` — #${tag}` : ""} — Page ${safePage} of ${lastPage}`}
+  title={`Blog Archive${q ? ` — "${q}"` : ""}${tag ? ` — #${tag}` : ""}${activeCategory ? ` — ${activeCategory.label}` : ""} — Page ${safePage} of ${lastPage}`}
 >
   <div class="mx-auto w-full max-w-4xl text-left">
     <div class="grid gap-4 md:grid-cols-[250px_1fr] md:gap-8">
@@ -79,6 +50,8 @@ function pageUrl(p: number): string {
         <p class="my-4 text-xl font-semibold dark:text-gray-200">
           List of all the blog posts
         </p>
+
+        <CategoryGrid counts={categoryCounts} active={category} />
 
         <form
           method="get"
@@ -106,12 +79,27 @@ function pageUrl(p: number): string {
             />
           </div>
           <select
+            name="category"
+            class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+          >
+            <option value="">All Categories</option>
+            {
+              CATEGORIES.filter((c) => (categoryCounts[c.slug] || 0) > 0).map(
+                (c) => (
+                  <option value={c.slug} selected={c.slug === category}>
+                    {c.label}
+                  </option>
+                ),
+              )
+            }
+          </select>
+          <select
             name="tag"
             class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-900 dark:text-white"
           >
             <option value="">All Tags</option>
             {
-              tags.sort().map((t) => (
+              tags.map((t) => (
                 <option value={t} selected={t === tag}>
                   {t}
                 </option>
@@ -125,7 +113,7 @@ function pageUrl(p: number): string {
             Search
           </button>
           {
-            (q || tag) && (
+            hasFilters && (
               <a
                 href={blogPath() + "/"}
                 class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -137,12 +125,17 @@ function pageUrl(p: number): string {
         </form>
 
         {
-          (q || tag) && (
+          hasFilters && (
             <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
               {totalPosts} result{totalPosts !== 1 ? "s" : ""} found
               {q && (
                 <span>
                   for "<strong>{q}</strong>"
+                </span>
+              )}
+              {activeCategory && (
+                <span>
+                  in <strong>{activeCategory.label}</strong>
                 </span>
               )}
               {tag && (
@@ -165,7 +158,13 @@ function pageUrl(p: number): string {
                   {post.data.title}
                 </a>
                 <span class="text-gray-500 dark:text-gray-400">
-                  ({post.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })})
+                  (
+                  {post.data.date.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                  )
                 </span>
                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                   {post.data.description}
@@ -192,7 +191,7 @@ function pageUrl(p: number): string {
               <div class="flex gap-4">
                 {safePage > 1 && (
                   <a
-                    href={pageUrl(safePage - 1)}
+                    href={pageUrl(safePage - 1, filters)}
                     class="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                   >
                     Previous
@@ -200,7 +199,7 @@ function pageUrl(p: number): string {
                 )}
                 {safePage < lastPage && (
                   <a
-                    href={pageUrl(safePage + 1)}
+                    href={pageUrl(safePage + 1, filters)}
                     class="rounded-lg bg-[hsl(21,62%,45%)] px-4 py-2 font-medium text-white hover:bg-[hsl(21,62%,35%)]"
                   >
                     Next

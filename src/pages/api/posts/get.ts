@@ -86,6 +86,7 @@ export const GET: APIRoute = async (ctx) => {
         title: fm.title,
         description: fm.description,
         tags: fm.tags.join(", "),
+        category: fm.category,
         status: fm.status,
         content: body.trim(),
       }),

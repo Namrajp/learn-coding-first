@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "predev": "node scripts/generate-og-pngs.mjs",
-    "prebuild": "node scripts/generate-og-pngs.mjs",
+    "prebuild": "node scripts/check-taxonomy.mjs && node scripts/generate-og-pngs.mjs",
     "build": "astro build",
     "postbuild": "node scripts/inject-cron.mjs",
     "preview": "astro preview",
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.1.2",
-    "@astrojs/rss": "^4.0.12",
+    "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.3.2",

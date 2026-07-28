@@ -9,6 +9,7 @@ const {
   frontmatter,
   title,
   tags,
+  category,
   showSignOut,
   canonical,
   robots,
@@ -57,12 +58,11 @@ const jsonLd = {
       rel="stylesheet"
     />
     <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml" />
-    {
-      SOCIAL_LINKS.map((link) => (
-        <link rel="me" href={link.href} />
-      ))
-    }
-    <meta name="google-site-verification" content="XGluNkoesK7Q1TLP07cdzPkFPe9w-_pj_VyTHJsjz2A" />
+    {SOCIAL_LINKS.map((link) => <link rel="me" href={link.href} />)}
+    <meta
+      name="google-site-verification"
+      content="XGluNkoesK7Q1TLP07cdzPkFPe9w-_pj_VyTHJsjz2A"
+    />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical || Astro.url.href} />
@@ -100,12 +100,15 @@ const jsonLd = {
     <title>{title} | Learn Coding First</title>
 
     <!-- Cloudflare Web Analytics (production only) -->
-    {import.meta.env.PROD && (
-      <script
-        type="module"
-        src="https://static.cloudflareinsights.com/beacon.min.js"
-        data-cf-beacon='{"token": "1ec7db8a5033408d80f39f0f42289faa"}'></script>
-    )}
+    {
+      import.meta.env.PROD && (
+        <script
+          type="module"
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon='{"token": "1ec7db8a5033408d80f39f0f42289faa"}'
+        />
+      )
+    }
     <!-- End Cloudflare Web Analytics -->
 
     <style is:global>
@@ -135,7 +138,7 @@ const jsonLd = {
   >
     <div class="py-2">
       <div class="mx-auto max-w-[1200px] px-6">
-        <Breadcrumb {tags} />
+        <Breadcrumb {tags} {category} />
         <slot />
       </div>
       <Footer {user} {showSignOut} />

@@ -82,7 +82,15 @@ const tagUrl = `https://learncodingfirst.com/tag/${tag}`;
                 >
                   {post.data.title}
                 </a>
-                <span>({post.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })})</span>
+                <span>
+                  (
+                  {post.data.date.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                  )
+                </span>
               </li>
             ))
           }

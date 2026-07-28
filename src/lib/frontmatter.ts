@@ -1,7 +1,16 @@
+import {
+  DEFAULT_CATEGORY,
+  RESERVED_TAG_NAMES,
+  isCategory,
+  type CategorySlug,
+} from "./categories";
+
 export interface ParsedFrontmatter {
   title: string;
+  slug: string;
   date: string;
   tags: string[];
+  category: CategorySlug;
   status: string;
   description: string;
 }
@@ -17,7 +26,9 @@ export function parseFrontmatter(content: string): ParsedFrontmatter | null {
 
   const fm = match[1];
   const titleMatch = fm.match(/^title:\s*"?(.+?)"?\s*$/m);
+  const slugMatch = fm.match(/^slug:\s*"?(.+?)"?\s*$/m);
   const dateMatch = fm.match(/^date:\s*(\S+)$/m);
+  const categoryMatch = fm.match(/^category:\s*"?(.+?)"?\s*$/m);
   const statusMatch = fm.match(/^status:\s*(\w+)/m);
   const descMatch = fm.match(/^description:\s*"?(.*?)"?\s*$/m);
 
@@ -35,10 +46,14 @@ export function parseFrontmatter(content: string): ParsedFrontmatter | null {
     }
   }
 
+  const category = categoryMatch ? categoryMatch[1].trim().toLowerCase() : "";
+
   return {
     title: titleMatch ? titleMatch[1].trim() : "",
+    slug: slugMatch ? slugMatch[1].trim() : "",
     date: dateMatch ? dateMatch[1].trim() : "2024-01-01",
     tags,
+    category: isCategory(category) ? category : DEFAULT_CATEGORY,
     status: statusMatch ? statusMatch[1] : "published",
     description: descMatch ? descMatch[1].trim() : "",
   };
@@ -60,16 +75,19 @@ export function parsePostFile(content: string): ParsedPostFile | null {
  * Normalize tags to a consistent, deduplicated casing (lowercase, trimmed).
  * Prevents tag fragmentation like "Python" vs "python" creating separate
  * /tag/[tag] pages and splitting search/related-posts matching.
+ *
+ * Tags that collide with a category name are dropped: categories and tags are
+ * separate taxonomies and a name must belong to exactly one of them.
  */
 export function normalizeTags(tags: string[]): string[] {
   const seen = new Set<string>();
   const result: string[] = [];
   for (const tag of tags) {
     const normalized = tag.trim().toLowerCase();
-    if (normalized && !seen.has(normalized)) {
-      seen.add(normalized);
-      result.push(normalized);
-    }
+    if (!normalized || seen.has(normalized)) continue;
+    if (RESERVED_TAG_NAMES.includes(normalized)) continue;
+    seen.add(normalized);
+    result.push(normalized);
   }
   return result;
 }
@@ -85,14 +103,17 @@ export function yamlString(s: string): string {
 
 export function buildFrontmatter(opts: {
   title: string;
+  slug: string;
   date: string;
   tags: string[];
+  category?: string;
   status: string;
   description?: string;
 }): string {
   const lines = [
     "---",
     `title: "${yamlString(opts.title)}"`,
+    `slug: "${yamlString(opts.slug)}"`,
     `date: ${opts.date}`,
   ];
 
@@ -100,8 +121,10 @@ export function buildFrontmatter(opts: {
     lines.push(`description: "${yamlString(opts.description)}"`);
   }
 
+  const category = isCategory(opts.category) ? opts.category : DEFAULT_CATEGORY;
   const tags = normalizeTags(opts.tags);
   lines.push(
+    `category: "${category}"`,
     `tags: [${tags.map((t) => `"${yamlString(t)}"`).join(", ")}]`,
     `status: ${opts.status}`,
     "---",

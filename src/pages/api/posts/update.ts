@@ -1,6 +1,11 @@
 import type { APIRoute } from "astro";
 import { createOrUpdateFile } from "../../../lib/github";
 import { parseFrontmatter, buildFrontmatter } from "../../../lib/frontmatter";
+import {
+  CATEGORY_SLUGS,
+  DEFAULT_CATEGORY,
+  isCategory,
+} from "../../../lib/categories";
 import { checkRateLimit } from "../../../lib/rate-limit";
 import { sendPostNotification } from "../../../lib/newsletter";
 
@@ -51,7 +56,7 @@ export const POST: APIRoute = async (ctx) => {
 
   try {
     const env = ctx.locals.env;
-    const { slug, title, content, description, tags, status } =
+    const { slug, title, content, description, tags, category, status } =
       await ctx.request.json();
 
     if (!slug || !SLUG_RE.test(slug)) {
@@ -92,6 +97,19 @@ export const POST: APIRoute = async (ctx) => {
       });
     }
 
+    const postCategory = category ?? DEFAULT_CATEGORY;
+    if (!isCategory(postCategory)) {
+      return new Response(
+        JSON.stringify({
+          error: `Category must be one of: ${CATEGORY_SLUGS.join(", ")}`,
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
     const filePath = `src/posts/${slug}.md`;
     const apiUrl = `https://api.github.com/repos/Namrajp/learn-coding-first/contents/${filePath}`;
     const existingRes = await fetch(apiUrl, {
@@ -105,6 +123,9 @@ export const POST: APIRoute = async (ctx) => {
 
     let date = new Date().toISOString().split("T")[0];
     let previousStatus = "draft";
+    // Never derive the slug from the (editable) title — read it back from the
+    // stored file, falling back to the route slug, which is the filename.
+    let postSlug = slug;
     if (existingRes.ok) {
       const existingData = (await existingRes.json()) as {
         content: string;
@@ -115,6 +136,7 @@ export const POST: APIRoute = async (ctx) => {
       if (fm) {
         date = fm.date;
         previousStatus = fm.status;
+        if (fm.slug === slug) postSlug = fm.slug;
       }
     }
 
@@ -125,9 +147,11 @@ export const POST: APIRoute = async (ctx) => {
 
     const frontmatter = buildFrontmatter({
       title,
+      slug: postSlug,
       date,
       description: description || undefined,
       tags: tagsArray,
+      category: postCategory,
       status: status || "draft",
     });
 

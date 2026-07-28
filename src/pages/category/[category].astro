@@ -1,0 +1,136 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@layouts/Layout.astro";
+import TagSidebar from "../../components/TagSidebar.astro";
+import { CATEGORIES, getCategory } from "../../lib/categories";
+import { SITE_URL } from "../../lib/site";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  let posts = (await getCollection("posts")).filter(
+    (post) => post.data.status !== "draft",
+  );
+
+  posts = posts.sort(
+    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
+  );
+
+  const tags: string[] = [];
+  const tagCounts: Record<string, number> = {};
+  posts.forEach((post) => {
+    post.data.tags.forEach((tag) => {
+      if (!tags.includes(tag)) tags.push(tag);
+      tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+    });
+  });
+
+  // Every category gets a page, including empty ones, so the URL already
+  // exists the moment a post is assigned to it.
+  return CATEGORIES.map((category) => ({
+    params: { category: category.slug },
+    props: {
+      posts: posts.filter((post) => post.data.category === category.slug),
+      allTags: tags.sort(),
+      tagCounts,
+    },
+  }));
+}
+
+const { category } = Astro.params;
+const { posts, allTags, tagCounts } = Astro.props;
+
+const meta = getCategory(category!);
+const categoryTitle = meta?.label ?? category!;
+const categoryDescription =
+  meta?.description ??
+  `Browse ${posts.length} ${categoryTitle} articles on Learn Coding First.`;
+const categoryUrl = `${SITE_URL}/category/${category}`;
+
+const otherCategories = CATEGORIES.filter((c) => c.slug !== category);
+---
+
+<Layout
+  title={`${categoryTitle} Articles`}
+  description={categoryDescription}
+  canonical={categoryUrl}
+>
+  <div class="mx-auto w-full max-w-4xl text-left">
+    <div class="mt-8 grid gap-4 md:grid-cols-[250px_1fr] md:gap-8">
+      <TagSidebar tags={allTags} {tagCounts} />
+
+      <section>
+        <h1
+          class="mb-4 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl dark:text-slate-100"
+        >
+          {categoryTitle} articles
+        </h1>
+        <p class="my-4 text-xl font-semibold dark:text-gray-200">
+          {categoryDescription}
+        </p>
+
+        {
+          posts.length === 0 ? (
+            <div class="rounded-xl border border-dashed border-gray-300 p-8 text-center dark:border-gray-700">
+              <p class="font-medium text-gray-700 dark:text-gray-300">
+                No posts in this category yet.
+              </p>
+              <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                Nothing has landed here so far — try another category below, or
+                browse everything in the archive.
+              </p>
+            </div>
+          ) : (
+            <ul class="space-y-2">
+              {posts.map((post) => (
+                <li>
+                  <a
+                    href={`/${post.id}`}
+                    class="no-underline hover:text-[hsl(21,62%,45%)] hover:underline-offset-4"
+                  >
+                    {post.data.title}
+                  </a>
+                  <span>
+                    (
+                    {post.data.date.toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                    )
+                  </span>
+                  <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    {post.data.description}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+
+        <div class="mt-12">
+          <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Other categories
+          </h2>
+          <div class="flex flex-wrap gap-2">
+            {
+              otherCategories.map((other) => (
+                <a
+                  href={`/category/${other.slug}`}
+                  class="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-700 no-underline hover:border-[hsl(21,62%,45%)] hover:text-[hsl(21,62%,45%)] dark:border-gray-700 dark:text-gray-300"
+                >
+                  {other.label}
+                </a>
+              ))
+            }
+          </div>
+          <p class="mt-4 text-sm">
+            <a href="/blog" class="text-[hsl(21,62%,45%)]">
+              Browse the full blog archive →
+            </a>
+          </p>
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>

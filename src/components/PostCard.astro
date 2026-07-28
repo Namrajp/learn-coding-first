@@ -1,19 +1,35 @@
 ---
+import { getCategory } from "../lib/categories";
+
 interface Props {
   date: string;
   title: string;
   excerpt: string;
   link: string;
+  category?: string;
 }
 
-const { date, title, excerpt, link } = Astro.props;
+const { date, title, excerpt, link, category } = Astro.props;
+const categoryMeta = category ? getCategory(category) : undefined;
 ---
 
 <div
   class="mb-10 flex flex-col rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-800"
 >
-  <p class="mb-6 text-sm text-gray-400 uppercase">{date}</p>
-  <h3 class="mt-6 text-3xl font-semibold text-gray-900 dark:text-gray-100">
+  <div class="mb-6 flex flex-wrap items-center gap-3">
+    <p class="text-sm text-gray-400 uppercase">{date}</p>
+    {
+      categoryMeta && (
+        <a
+          href={`/category/${categoryMeta.slug}`}
+          class="rounded-full bg-[hsl(21,62%,45%)]/10 px-3 py-1 text-xs font-semibold tracking-wide text-[hsl(21,62%,35%)] uppercase no-underline hover:bg-[hsl(21,62%,45%)]/20 dark:bg-[hsl(21,62%,45%)]/20 dark:text-[hsl(21,62%,70%)]"
+        >
+          {categoryMeta.label}
+        </a>
+      )
+    }
+  </div>
+  <h3 class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
     {title}
   </h3>
   <p class="mt-6 text-gray-500 dark:text-gray-400">{excerpt}</p>

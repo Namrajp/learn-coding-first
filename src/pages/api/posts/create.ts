@@ -1,6 +1,11 @@
 import type { APIRoute } from "astro";
 import { createOrUpdateFile, generateSlug } from "../../../lib/github";
 import { buildFrontmatter } from "../../../lib/frontmatter";
+import {
+  CATEGORY_SLUGS,
+  DEFAULT_CATEGORY,
+  isCategory,
+} from "../../../lib/categories";
 import { checkRateLimit } from "../../../lib/rate-limit";
 import { sendPostNotification } from "../../../lib/newsletter";
 
@@ -42,7 +47,7 @@ export const POST: APIRoute = async (ctx) => {
 
   try {
     const env = ctx.locals.env;
-    const { title, content, description, tags, status } =
+    const { title, content, description, tags, category, status } =
       await ctx.request.json();
 
     if (!env.GITHUB_TOKEN) {
@@ -86,6 +91,19 @@ export const POST: APIRoute = async (ctx) => {
       });
     }
 
+    const postCategory = category ?? DEFAULT_CATEGORY;
+    if (!isCategory(postCategory)) {
+      return new Response(
+        JSON.stringify({
+          error: `Category must be one of: ${CATEGORY_SLUGS.join(", ")}`,
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
     const slug = generateSlug(title);
 
     if (!SLUG_RE.test(slug)) {
@@ -103,9 +121,11 @@ export const POST: APIRoute = async (ctx) => {
 
     const frontmatter = buildFrontmatter({
       title,
+      slug,
       date,
       description: description || undefined,
       tags: tagsArray,
+      category: postCategory,
       status: status || "draft",
     });
 

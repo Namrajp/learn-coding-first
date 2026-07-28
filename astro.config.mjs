@@ -24,5 +24,8 @@ export default defineConfig({
   integrations: [sitemap()],
   redirects: {
     "/blog/page/1": "/blog",
+    "/24-11-2025-create-minimal-api": "/create-minimal-api-asp-net-core",
+    "/24-11-2025-dependency-injection": "/dependency-injection-in-asp-net",
+    "/python_environments": "/virtual-environments-in-python",
   },
 });

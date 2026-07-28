@@ -6,6 +6,7 @@ import PrevNext from "../components/PrevNext.astro";
 import RelatedPosts from "../components/RelatedPosts.astro";
 import ShareButtons from "../components/ShareButtons.astro";
 import TableOfContents from "../components/TableOfContents.astro";
+import { DEFAULT_CATEGORY, getCategory } from "../lib/categories";
 import { parsePostFile } from "../lib/frontmatter";
 import { getDirectorySha } from "../lib/github";
 import { renderMarkdown } from "../lib/markdown";
@@ -22,6 +23,7 @@ let post: {
   title: string;
   date: string;
   tags: string[];
+  category?: string;
   description: string;
   status: string;
   content: string;
@@ -35,6 +37,7 @@ if (import.meta.env.DEV) {
         title: string;
         date: string;
         tags: string[];
+        category?: string;
         description?: string;
         status: string;
       };
@@ -44,6 +47,7 @@ if (import.meta.env.DEV) {
       title: fm.title || slug,
       date: fm.date,
       tags: fm.tags,
+      category: fm.category,
       description: fm.description || "",
       status: fm.status,
       content: body,
@@ -83,12 +87,15 @@ if (import.meta.env.DEV) {
       }
     }
 
+    // `category` is optional here: entries written to KV before the taxonomy
+    // shipped have no such field and must keep rendering.
     const cached = (await env.SESSION.get(cacheKey, { type: "json" })) as {
       dirSha: string;
       post: {
         title: string;
         date: string;
         tags: string[];
+        category?: string;
         description: string;
         status: string;
         content: string;
@@ -143,6 +150,7 @@ if (import.meta.env.DEV) {
         title: fm.title || slug,
         date: fm.date,
         tags: fm.tags,
+        category: fm.category,
         description: fm.description,
         status: fm.status,
         content: body,
@@ -167,6 +175,9 @@ if (!post) {
 const { html: htmlContent, toc } = renderMarkdown(post.content);
 const postDate = new Date(post.date);
 const postUrl = new URL(`/${slug}`, Astro.url).href;
+
+const categorySlug = post.category ?? DEFAULT_CATEGORY;
+const category = getCategory(categorySlug);
 
 const ogImageUrl = getOgImageUrl(slug);
 
@@ -196,6 +207,7 @@ const postJsonLd = {
     "@type": "WebPage",
     "@id": `${SITE_URL}/${slug}`,
   },
+  articleSection: category?.label ?? categorySlug,
   keywords: post.tags.join(", "),
 };
 
@@ -226,6 +238,7 @@ Astro.response.headers.set(
   }}
   title={post.title}
   tags={post.tags}
+  category={categorySlug}
   pageType="article"
   description={post.description}
   canonical={postUrl}
@@ -233,8 +246,21 @@ Astro.response.headers.set(
 >
   <script type="application/ld+json" set:html={JSON.stringify(postJsonLd)} />
   <div class="mx-auto max-w-[65ch]">
+    {
+      category && (
+        <a
+          href={`/category/${category.slug}`}
+          class="mt-8 inline-block rounded-full bg-[hsl(21,62%,45%)]/10 px-3 py-1 text-xs font-semibold tracking-wide text-[hsl(21,62%,35%)] uppercase no-underline hover:bg-[hsl(21,62%,45%)]/20 dark:bg-[hsl(21,62%,45%)]/20 dark:text-[hsl(21,62%,70%)]"
+        >
+          {category.label}
+        </a>
+      )
+    }
     <h1
-      class="mt-8 mb-2 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100"
+      class:list={[
+        "mb-2 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100",
+        category ? "mt-3" : "mt-8",
+      ]}
     >
       {post.title}
     </h1>

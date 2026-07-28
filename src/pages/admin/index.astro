@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import { listFiles } from "../../lib/github";
 import { parseFrontmatter } from "../../lib/frontmatter";
 import { getAuthorizedUsers } from "../../lib/auth-config";
+import { getCategory } from "../../lib/categories";
 
 const user = Astro.locals.user;
 const env = Astro.locals.env;
@@ -20,14 +21,40 @@ function decodeGitHubContent(encoded: string): string {
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return dateStr;
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 }
 
 function getMonthYear(dateStr: string): string {
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return "";
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   return `${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
@@ -36,6 +63,7 @@ let posts: {
   title: string;
   date: string;
   tags: string[];
+  category: string;
   status: string;
 }[] = [];
 try {
@@ -93,12 +121,17 @@ try {
           title: fm.title || entry.name,
           date: fm.date,
           tags: fm.tags,
+          category: fm.category,
           status: fm.status,
         });
       }
     } else {
       const files = await listFiles(
-        { token: env.GITHUB_TOKEN, owner: "Namrajp", repo: "learn-coding-first" },
+        {
+          token: env.GITHUB_TOKEN,
+          owner: "Namrajp",
+          repo: "learn-coding-first",
+        },
         "src/posts",
       );
       const BATCH_SIZE = 5;
@@ -116,7 +149,10 @@ try {
               },
             });
             if (!res.ok) return null;
-            const json = (await res.json()) as { content: string; encoding: string };
+            const json = (await res.json()) as {
+              content: string;
+              encoding: string;
+            };
             const content = decodeGitHubContent(json.content);
             const fm = parseFrontmatter(content);
             if (!fm) return null;
@@ -125,6 +161,7 @@ try {
               title: fm.title || file.name,
               date: fm.date,
               tags: fm.tags,
+              category: fm.category,
               status: fm.status,
             };
           }),
@@ -146,7 +183,11 @@ try {
 }
 
 const allTags = [...new Set(posts.flatMap((p) => p.tags))].sort();
-const allMonths = [...new Set(posts.map((p) => getMonthYear(p.date)).filter(Boolean))].sort((a, b) => {
+const allCategories = [...new Set(posts.map((p) => p.category))].sort();
+const categoryLabel = (slug: string) => getCategory(slug)?.label ?? slug;
+const allMonths = [
+  ...new Set(posts.map((p) => getMonthYear(p.date)).filter(Boolean)),
+].sort((a, b) => {
   const da = new Date(a);
   const db = new Date(b);
   return db.valueOf() - da.valueOf();
@@ -164,12 +205,18 @@ if (isAdmin) {
 
 <Layout title="Admin Dashboard" showSignOut={true}>
   <div class="mx-auto mt-6 max-w-4xl px-4 sm:mt-10 sm:px-6">
-    <div class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
+    <div
+      class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between"
+    >
       <div>
-        <h1 class="text-2xl font-bold dark:text-white sm:text-3xl">Admin Dashboard</h1>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 sm:text-base">
+        <h1 class="text-2xl font-bold sm:text-3xl dark:text-white">
+          Admin Dashboard
+        </h1>
+        <p class="mt-1 text-sm text-gray-500 sm:text-base dark:text-gray-400">
           Welcome back, {user?.email}
-          <span class={`ml-2 rounded px-2 py-1 text-xs font-medium ${isAdmin ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300" : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"}`}>
+          <span
+            class={`ml-2 rounded px-2 py-1 text-xs font-medium ${isAdmin ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300" : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"}`}
+          >
             {isAdmin ? "Admin" : "Editor"}
           </span>
         </p>
@@ -177,7 +224,7 @@ if (isAdmin) {
       <div class="flex gap-3">
         <a
           href="/admin/newsletter"
-          class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 sm:text-base"
+          class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 sm:text-base dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           Newsletter
         </a>
@@ -191,20 +238,32 @@ if (isAdmin) {
     </div>
 
     <div
-      class="rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 sm:p-6"
+      class="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 dark:border-gray-700 dark:bg-gray-800"
     >
-      <h2 class="mb-4 text-lg font-semibold dark:text-white sm:text-xl">
-        All Posts (<span id="visible-count">{posts.length}</span>/{posts.length})
+      <h2 class="mb-4 text-lg font-semibold sm:text-xl dark:text-white">
+        All Posts (<span id="visible-count">{posts.length}</span>/{
+          posts.length
+        })
       </h2>
 
       <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div class="relative flex-1">
-          <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <svg
+            class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg
+          >
           <input
             type="text"
             id="filter-search"
             placeholder="Search by title or tag..."
-            class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-4 text-sm focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:focus:ring-[hsl(21,62%,45%)]"
+            class="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-9 text-sm focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:focus:ring-[hsl(21,62%,45%)]"
           />
         </div>
         <select
@@ -223,6 +282,17 @@ if (isAdmin) {
           {allMonths.map((m) => <option value={m}>{m}</option>)}
         </select>
         <select
+          id="filter-category"
+          class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+        >
+          <option value="">All Categories</option>
+          {
+            allCategories.map((c) => (
+              <option value={c}>{categoryLabel(c)}</option>
+            ))
+          }
+        </select>
+        <select
           id="filter-tag"
           class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-900 dark:text-white"
         >
@@ -235,19 +305,28 @@ if (isAdmin) {
         <table class="w-full text-left">
           <thead>
             <tr class="border-b border-gray-200 dark:border-gray-700">
-              <th class="hidden px-4 py-3 font-medium text-gray-700 dark:text-gray-300 sm:table-cell"
+              <th
+                class="hidden px-4 py-3 font-medium text-gray-700 sm:table-cell dark:text-gray-300"
                 >Title</th
               >
-              <th class="hidden px-4 py-3 font-medium text-gray-700 dark:text-gray-300 sm:table-cell"
+              <th
+                class="hidden px-4 py-3 font-medium text-gray-700 sm:table-cell dark:text-gray-300"
                 >Date</th
               >
-              <th class="hidden px-4 py-3 font-medium text-gray-700 dark:text-gray-300 md:table-cell"
+              <th
+                class="hidden px-4 py-3 font-medium text-gray-700 md:table-cell dark:text-gray-300"
+                >Category</th
+              >
+              <th
+                class="hidden px-4 py-3 font-medium text-gray-700 md:table-cell dark:text-gray-300"
                 >Tags</th
               >
-              <th class="hidden px-4 py-3 font-medium text-gray-700 dark:text-gray-300 sm:table-cell"
+              <th
+                class="hidden px-4 py-3 font-medium text-gray-700 sm:table-cell dark:text-gray-300"
                 >Status</th
               >
-              <th class="hidden px-4 py-3 font-medium text-gray-700 dark:text-gray-300 sm:table-cell"
+              <th
+                class="hidden px-4 py-3 font-medium text-gray-700 sm:table-cell dark:text-gray-300"
                 >Actions</th
               >
             </tr>
@@ -259,6 +338,7 @@ if (isAdmin) {
                   class="post-row border-b border-gray-100 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700"
                   data-title={post.title.toLowerCase()}
                   data-tags={post.tags.join(" ").toLowerCase()}
+                  data-category={post.category}
                   data-status={post.status}
                   data-month={getMonthYear(post.date)}
                   data-date={post.date}
@@ -277,7 +357,9 @@ if (isAdmin) {
                         {post.title}
                       </a>
                       <div class="flex items-center gap-2 sm:hidden">
-                        <span class="text-xs text-gray-500 dark:text-gray-400">{formatDate(post.date)}</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                          {formatDate(post.date)}
+                        </span>
                         <span
                           class={`rounded px-1.5 py-0.5 text-[10px] font-medium ${post.status === "published" ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300" : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"}`}
                         >
@@ -285,8 +367,11 @@ if (isAdmin) {
                         </span>
                       </div>
                       <div class="flex flex-wrap gap-1 sm:hidden">
+                        <span class="rounded bg-[hsl(21,62%,45%)]/10 px-1.5 py-0.5 text-[10px] font-medium text-[hsl(21,62%,35%)] dark:bg-[hsl(21,62%,45%)]/20 dark:text-[hsl(21,62%,70%)]">
+                          {categoryLabel(post.category)}
+                        </span>
                         {post.tags.slice(0, 2).map((tag) => (
-                          <span class="capitalize rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                          <span class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-600 capitalize dark:bg-gray-700 dark:text-gray-300">
                             {tag}
                           </span>
                         ))}
@@ -298,13 +383,18 @@ if (isAdmin) {
                       </div>
                     </div>
                   </td>
-                  <td class="hidden px-4 py-3 text-sm text-gray-500 dark:text-gray-400 sm:table-cell">
+                  <td class="hidden px-4 py-3 text-sm text-gray-500 sm:table-cell dark:text-gray-400">
                     {formatDate(post.date)}
+                  </td>
+                  <td class="hidden px-4 py-3 md:table-cell">
+                    <span class="rounded bg-[hsl(21,62%,45%)]/10 px-2 py-1 text-xs font-medium whitespace-nowrap text-[hsl(21,62%,35%)] dark:bg-[hsl(21,62%,45%)]/20 dark:text-[hsl(21,62%,70%)]">
+                      {categoryLabel(post.category)}
+                    </span>
                   </td>
                   <td class="hidden px-4 py-3 md:table-cell">
                     <div class="flex flex-wrap gap-1">
                       {post.tags.slice(0, 3).map((tag) => (
-                        <span class="capitalize rounded bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                        <span class="rounded bg-gray-100 px-2 py-1 text-xs text-gray-600 capitalize dark:bg-gray-700 dark:text-gray-300">
                           {tag}
                         </span>
                       ))}
@@ -346,90 +436,118 @@ if (isAdmin) {
             }
           </tbody>
         </table>
-        <p id="no-results" class="hidden py-8 text-center text-gray-500 dark:text-gray-400">No posts match the current filters.</p>
+        <p
+          id="no-results"
+          class="hidden py-8 text-center text-gray-500 dark:text-gray-400"
+        >
+          No posts match the current filters.
+        </p>
       </div>
     </div>
 
-    {isAdmin && (
-      <div class="mt-8 rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 sm:p-6">
-        <h2 class="mb-4 text-lg font-semibold dark:text-white sm:text-xl">
-          Manage Users ({authorizedUsers.length})
-        </h2>
+    {
+      isAdmin && (
+        <div class="mt-8 rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 dark:border-gray-700 dark:bg-gray-800">
+          <h2 class="mb-4 text-lg font-semibold sm:text-xl dark:text-white">
+            Manage Users ({authorizedUsers.length})
+          </h2>
 
-        <div class="mb-6">
-          <form id="add-user-form" class="flex flex-col gap-3 sm:flex-row">
-            <input
-              type="email"
-              id="new-email"
-              placeholder="user@example.com"
-              required
-              class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-800 dark:text-white sm:text-base"
-            />
-            <select
-              id="new-role"
-              class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-800 dark:text-white sm:text-base"
-            >
-              <option value="editor">Editor</option>
-              <option value="admin">Admin</option>
-            </select>
-            <button
-              type="submit"
-              class="rounded-lg bg-[hsl(21,62%,45%)] px-6 py-2 text-sm font-medium text-white hover:bg-[hsl(21,62%,35%)] sm:text-base"
-            >
-              Add User
-            </button>
-          </form>
-          <div id="add-message" class="mt-2 hidden"></div>
-        </div>
+          <div class="mb-6">
+            <form id="add-user-form" class="flex flex-col gap-3 sm:flex-row">
+              <input
+                type="email"
+                id="new-email"
+                placeholder="user@example.com"
+                required
+                class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] sm:text-base dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+              />
+              <select
+                id="new-role"
+                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] sm:text-base dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+              >
+                <option value="editor">Editor</option>
+                <option value="admin">Admin</option>
+              </select>
+              <button
+                type="submit"
+                class="rounded-lg bg-[hsl(21,62%,45%)] px-6 py-2 text-sm font-medium text-white hover:bg-[hsl(21,62%,35%)] sm:text-base"
+              >
+                Add User
+              </button>
+            </form>
+            <div id="add-message" class="mt-2 hidden" />
+          </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead>
-              <tr class="border-b border-gray-200 dark:border-gray-700">
-                <th class="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Email</th>
-                <th class="hidden px-4 py-3 font-medium text-gray-700 dark:text-gray-300 sm:table-cell">Role</th>
-                <th class="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {authorizedUsers.map((u) => (
-                <tr class="border-b border-gray-100 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700">
-                  <td class="px-4 py-3 text-sm">
-                    {u.email}
-                    <span class="ml-1 inline-block sm:hidden">
-                      <span class={`rounded px-1.5 py-0.5 text-[10px] font-medium ${u.role === "admin" ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300" : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"}`}>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="border-b border-gray-200 dark:border-gray-700">
+                  <th class="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">
+                    Email
+                  </th>
+                  <th class="hidden px-4 py-3 font-medium text-gray-700 sm:table-cell dark:text-gray-300">
+                    Role
+                  </th>
+                  <th class="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {authorizedUsers.map((u) => (
+                  <tr class="border-b border-gray-100 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <td class="px-4 py-3 text-sm">
+                      {u.email}
+                      <span class="ml-1 inline-block sm:hidden">
+                        <span
+                          class={`rounded px-1.5 py-0.5 text-[10px] font-medium ${u.role === "admin" ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300" : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"}`}
+                        >
+                          {u.role}
+                        </span>
+                      </span>
+                    </td>
+                    <td class="hidden px-4 py-3 sm:table-cell">
+                      <span
+                        class={`rounded px-2 py-1 text-xs font-medium ${u.role === "admin" ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300" : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"}`}
+                      >
                         {u.role}
                       </span>
-                    </span>
-                  </td>
-                  <td class="hidden px-4 py-3 sm:table-cell">
-                    <span class={`rounded px-2 py-1 text-xs font-medium ${u.role === "admin" ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300" : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"}`}>
-                      {u.role}
-                    </span>
-                  </td>
-                  <td class="px-4 py-3">
-                    <button
-                      class="remove-user-btn text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                      data-email={u.email}
-                    >
-                      Remove
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td class="px-4 py-3">
+                      <button
+                        class="remove-user-btn text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                        data-email={u.email}
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-    )}
+      )
+    }
   </div>
 
   <script>
     function initFilters() {
-      const searchInput = document.getElementById("filter-search") as HTMLInputElement;
-      const statusSelect = document.getElementById("filter-status") as HTMLSelectElement;
-      const monthSelect = document.getElementById("filter-month") as HTMLSelectElement;
-      const tagSelect = document.getElementById("filter-tag") as HTMLSelectElement;
+      const searchInput = document.getElementById(
+        "filter-search",
+      ) as HTMLInputElement;
+      const statusSelect = document.getElementById(
+        "filter-status",
+      ) as HTMLSelectElement;
+      const monthSelect = document.getElementById(
+        "filter-month",
+      ) as HTMLSelectElement;
+      const tagSelect = document.getElementById(
+        "filter-tag",
+      ) as HTMLSelectElement;
+      const categorySelect = document.getElementById(
+        "filter-category",
+      ) as HTMLSelectElement;
       const rows = document.querySelectorAll<HTMLElement>(".post-row");
       const visibleCount = document.getElementById("visible-count");
       const noResults = document.getElementById("no-results");
@@ -439,6 +557,7 @@ if (isAdmin) {
         const status = statusSelect?.value || "";
         const month = monthSelect?.value || "";
         const tag = tagSelect?.value || "";
+        const category = categorySelect?.value || "";
         let visible = 0;
 
         rows.forEach((row) => {
@@ -446,13 +565,22 @@ if (isAdmin) {
           const tags = row.dataset.tags || "";
           const rowStatus = row.dataset.status || "";
           const rowMonth = row.dataset.month || "";
+          const rowCategory = row.dataset.category || "";
 
-          const matchSearch = !search || title.includes(search) || tags.includes(search);
+          const matchSearch =
+            !search || title.includes(search) || tags.includes(search);
           const matchStatus = !status || rowStatus === status;
           const matchMonth = !month || rowMonth === month;
           const matchTag = !tag || tags.includes(tag.toLowerCase());
+          const matchCategory = !category || rowCategory === category;
 
-          if (matchSearch && matchStatus && matchMonth && matchTag) {
+          if (
+            matchSearch &&
+            matchStatus &&
+            matchMonth &&
+            matchTag &&
+            matchCategory
+          ) {
             row.style.display = "";
             visible++;
           } else {
@@ -468,6 +596,7 @@ if (isAdmin) {
       statusSelect?.addEventListener("change", applyFilters);
       monthSelect?.addEventListener("change", applyFilters);
       tagSelect?.addEventListener("change", applyFilters);
+      categorySelect?.addEventListener("change", applyFilters);
     }
 
     initFilters();
@@ -477,8 +606,11 @@ if (isAdmin) {
 
     addForm?.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const email = (document.getElementById("new-email") as HTMLInputElement).value.trim();
-      const role = (document.getElementById("new-role") as HTMLSelectElement).value;
+      const email = (
+        document.getElementById("new-email") as HTMLInputElement
+      ).value.trim();
+      const role = (document.getElementById("new-role") as HTMLSelectElement)
+        .value;
 
       addMessage.className = "mt-2 hidden";
 

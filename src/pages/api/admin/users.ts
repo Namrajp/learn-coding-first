@@ -54,10 +54,10 @@ export const POST: APIRoute = async (ctx) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch {
-    return new Response(
-      JSON.stringify({ error: "Failed to add user" }),
-      { status: 500, headers: { "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ error: "Failed to add user" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };
 
@@ -87,9 +87,9 @@ export const DELETE: APIRoute = async (ctx) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch {
-    return new Response(
-      JSON.stringify({ error: "Failed to remove user" }),
-      { status: 500, headers: { "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ error: "Failed to remove user" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };

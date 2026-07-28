@@ -6,40 +6,40 @@ and accessibility. Update this file as items ship or priorities change.
 
 ## Current state
 
-| Area | Status (as of 2026-07-24, post-Tier-1) |
-|---|---|
-| Analytics | ✅ Cloudflare Web Analytics wired in — page views/referrers/Core Web Vitals now tracked. |
-| Images / Cloudflare Images | ❌ Not declared in bindings, not used. No post currently has embedded images. |
-| Content taxonomy | ✅ Tags normalized (lowercase/trimmed/deduped) going forward + backfilled. ⚠️ Still no category/series field. |
-| Newsletter | ✅ Fully automated: signup → welcome email → new-post blast (create, update, **and cron auto-publish** all trigger it now), admin UI at `/admin/newsletter`. |
-| Search | ⚠️ Title/tag substring match only, no full-text body search. Fine at ~28 published posts, won't scale. |
-| Caching | ✅ Homepage, `/blog` archive, and `[slug].astro` all set `Cache-Control: public, max-age=60, stale-while-revalidate=300`. |
-| SEO | ✅ Strong: structured data (WebSite/Article/BreadcrumbList/Person), sitemaps, OG/Twitter meta, canonical tags, RSS. ✅ Per-post OG PNGs at build time (`scripts/generate-og-pngs.mjs`), with `og-default.png` fallback via manifest when no PNG exists yet. ⚠️ Naive tag-overlap-only related posts. |
-| Social distribution | ⚠️ Manual share buttons (X, LinkedIn) only. No auto cross-posting, no comments/webmentions. |
-| Testing | ❌ Zero test files or test runner configured. |
-| Accessibility | ⚠️ No skip-link, no `<main>` landmark, no systemic focus-visible styles. |
-| CI/CD safety | ✅ Post-deploy health check added — catches domain-binding/routing regressions automatically. |
+| Area                       | Status (as of 2026-07-24, post-Tier-1)                                                                                                                                                                                                                                                               |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Analytics                  | ✅ Cloudflare Web Analytics wired in — page views/referrers/Core Web Vitals now tracked.                                                                                                                                                                                                             |
+| Images / Cloudflare Images | ❌ Not declared in bindings, not used. No post currently has embedded images.                                                                                                                                                                                                                        |
+| Content taxonomy           | ✅ Tags normalized (lowercase/trimmed/deduped) going forward + backfilled. ⚠️ Still no category/series field.                                                                                                                                                                                        |
+| Newsletter                 | ✅ Fully automated: signup → welcome email → new-post blast (create, update, **and cron auto-publish** all trigger it now), admin UI at `/admin/newsletter`.                                                                                                                                         |
+| Search                     | ⚠️ Title/tag substring match only, no full-text body search. Fine at ~28 published posts, won't scale.                                                                                                                                                                                               |
+| Caching                    | ✅ Homepage, `/blog` archive, and `[slug].astro` all set `Cache-Control: public, max-age=60, stale-while-revalidate=300`.                                                                                                                                                                            |
+| SEO                        | ✅ Strong: structured data (WebSite/Article/BreadcrumbList/Person), sitemaps, OG/Twitter meta, canonical tags, RSS. ✅ Per-post OG PNGs at build time (`scripts/generate-og-pngs.mjs`), with `og-default.png` fallback via manifest when no PNG exists yet. ⚠️ Naive tag-overlap-only related posts. |
+| Social distribution        | ⚠️ Manual share buttons (X, LinkedIn) only. No auto cross-posting, no comments/webmentions.                                                                                                                                                                                                          |
+| Testing                    | ❌ Zero test files or test runner configured.                                                                                                                                                                                                                                                        |
+| Accessibility              | ⚠️ No skip-link, no `<main>` landmark, no systemic focus-visible styles.                                                                                                                                                                                                                             |
+| CI/CD safety               | ✅ Post-deploy health check added — catches domain-binding/routing regressions automatically.                                                                                                                                                                                                        |
 
 Full audit detail: see the research notes in commit history / AGENTS.md for the current
 infrastructure model (KV caching, cron auto-publish, GitHub-API-backed CRUD).
 
 ## Tier 1 — High impact, low effort
 
-- [x] **Add Cloudflare Web Analytics.** *(Shipped 2026-07-24)* Beacon script added to
+- [x] **Add Cloudflare Web Analytics.** _(Shipped 2026-07-24)_ Beacon script added to
       `src/layouts/Layout.astro`'s `<head>` (token generated via the Cloudflare dashboard, since
       the automation API token doesn't have the RUM/Analytics scope to provision this
       programmatically). Closes the previous zero-visibility gap — page views, referrers, and
       Core Web Vitals are now tracked cookielessly.
-- [x] **Cache the homepage and `/blog` archive.** *(Shipped 2026-07-24)* Added
+- [x] **Cache the homepage and `/blog` archive.** _(Shipped 2026-07-24)_ Added
       `Cache-Control: public, max-age=60, stale-while-revalidate=300` (matching `[slug].astro`'s
       existing pattern) to `src/pages/index.astro`, `src/pages/blog/index.astro`, and
       `src/pages/blog/[page].astro`.
-- [x] **Normalize tag casing.** *(Shipped 2026-07-24)* Added `normalizeTags()` to
+- [x] **Normalize tag casing.** _(Shipped 2026-07-24)_ Added `normalizeTags()` to
       `src/lib/frontmatter.ts` (lowercase, trim, dedupe), wired into `buildFrontmatter()` so all
       future create/update writes are normalized automatically. Backfilled all 20 affected existing
       posts via the new rerunnable `scripts/normalize-tags.mjs` (`node scripts/normalize-tags.mjs
-      --dry-run` to preview, without `--dry-run` to apply).
-- [x] **Trigger newsletter blast from the cron auto-publish path.** *(Shipped 2026-07-24)*
+--dry-run` to preview, without `--dry-run` to apply).
+- [x] **Trigger newsletter blast from the cron auto-publish path.** _(Shipped 2026-07-24)_
       `scripts/inject-cron.mjs`'s generated `scheduled()` shim now inlines a `sendPostNotification()`
       equivalent (mirrors `src/lib/newsletter.ts`, duplicated rather than imported since the shim is
       a standalone post-build file with no access to Astro's hashed build chunks) and calls it after
@@ -47,7 +47,7 @@ infrastructure model (KV caching, cron auto-publish, GitHub-API-backed CRUD).
       — manually flipping a draft to published via the admin edit UI now notifies subscribers too
       (only on the draft→published transition, not on every edit of an already-published post).
       Verified end-to-end against the real repo + Resend's `delivered@resend.dev` test address.
-- [x] **Add a post-deploy health check to CI.** *(Shipped 2026-07-24)* `.github/workflows/deploy.yml`
+- [x] **Add a post-deploy health check to CI.** _(Shipped 2026-07-24)_ `.github/workflows/deploy.yml`
       now curls the live domain after `wrangler deploy` (5 retries, 10s apart) and asserts 200, then
       checks `sitemap-posts.xml` has at least 1 post — fails the CI run with a pointer to
       `skills/deployment/SKILL.md` if either check fails, to catch a repeat of the domain-binding
@@ -55,7 +55,7 @@ infrastructure model (KV caching, cron auto-publish, GitHub-API-backed CRUD).
 
 ## Tier 2 — Medium effort, meaningful SEO/growth levers
 
-- [x] **Per-post OG images.** *(Shipped 2026-07-26)* `scripts/generate-og-pngs.mjs` runs at prebuild,
+- [x] **Per-post OG images.** _(Shipped 2026-07-26)_ `scripts/generate-og-pngs.mjs` runs at prebuild,
       generates 1200×630 PNGs via `@resvg/resvg-js` + vendored Inter fonts into `public/og/{slug}.png`
       (drafts skipped). Writes `public/og/manifest.json` + `src/generated/og-manifest.json`; `[slug].astro`
       uses `getOgImageUrl()` to fall back to `og-default.png` when a slug has no prebuilt PNG (e.g. admin

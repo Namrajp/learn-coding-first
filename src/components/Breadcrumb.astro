@@ -1,5 +1,7 @@
 ---
-const { tags } = Astro.props;
+import { getCategory } from "../lib/categories";
+
+const { tags, category } = Astro.props;
 const pathname = Astro.url.pathname;
 const segments = pathname.split("/").filter(Boolean);
 
@@ -12,12 +14,20 @@ const items: { label: string; href?: string }[] = [
   { label: "Home", href: "/" },
 ];
 
-// If we have tags, this is a post page — build Home / Tag / Post
-if (tags && tags.length > 0 && segments.length === 1) {
+const postCategory = category ? getCategory(category) : undefined;
+
+// A post page — build Home / Blog / Category / Post
+if (postCategory && segments.length === 1) {
+  items.push({ label: "Blog", href: "/blog" });
+  items.push({
+    label: postCategory.label,
+    href: `/category/${postCategory.slug}`,
+  });
+  items.push({ label: formatLabel(segments[0]) });
+} else if (tags && tags.length > 0 && segments.length === 1) {
   const firstTag = tags[0];
-  const postTitle = formatLabel(segments[0]);
   items.push({ label: formatLabel(firstTag), href: `/tag/${firstTag}` });
-  items.push({ label: postTitle });
+  items.push({ label: formatLabel(segments[0]) });
 } else {
   let currentPath = "";
 
@@ -29,16 +39,18 @@ if (tags && tags.length > 0 && segments.length === 1) {
       return;
     }
 
-    if (segment === "tag" && next) {
-      items.push({
-        label: formatLabel(next),
-        href: index === segments.length - 1 ? undefined : `/tag/${next}`,
-      });
+    // "tag" and "category" are route prefixes, not pages of their own. Skip
+    // them so only the slug that follows gets a crumb.
+    if ((segment === "tag" || segment === "category") && next) {
       return;
     }
 
     const label =
-      segment === "page" && next ? `Page ${next}` : formatLabel(segment);
+      segment === "page" && next
+        ? `Page ${next}`
+        : segments[index - 1] === "category"
+          ? (getCategory(segment)?.label ?? formatLabel(segment))
+          : formatLabel(segment);
 
     if (!label) {
       return;

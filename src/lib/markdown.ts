@@ -46,7 +46,9 @@ marked.use({
       imageIndex += 1;
       const isFirst = imageIndex === 1;
       const alt = text || "";
-      const titleAttr = title ? ` title="${title.replace(/"/g, "&quot;")}"` : "";
+      const titleAttr = title
+        ? ` title="${title.replace(/"/g, "&quot;")}"`
+        : "";
       const loading = isFirst ? "eager" : "lazy";
       const fetchPriority = isFirst ? ' fetchpriority="high"' : "";
 

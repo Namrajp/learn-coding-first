@@ -54,10 +54,12 @@ import AffiliateLink from "../components/AffiliateLink.astro";
 ```
 
 **Props:**
+
 - `program` (required): One of `cloudflare | digitalocean | vercel | supabase | railway`
 - `label` (optional): Custom display text (defaults to program name)
 
 **Rendering:**
+
 - Link opens in new tab with `rel="noopener noreferrer"`
 - Disclosure asterisk (`*`) with tooltip on hover
 - Screen reader text: `(affiliate)` appended via `sr-only` span
@@ -75,6 +77,7 @@ import AdSlot from "../components/AdSlot.astro";
 ```
 
 **Props:**
+
 - `placement` (required): `"sidebar"` or `"inline"`
 
 ## Adding Affiliate Links to Posts
@@ -89,21 +92,21 @@ The `AffiliateLink` component is globally available in markdown via Astro's comp
 
 ## Revenue Projections (Realistic)
 
-| Milestone | Affiliates | Newsletter | Total/Month |
-|-----------|-----------|------------|-------------|
-| 0-6 months | $0-50 | $0 | $0-50 |
-| 6-12 months | $50-200 | $0-100 | $50-300 |
-| 12-24 months | $200-500 | $100-300 | $300-800 |
+| Milestone    | Affiliates | Newsletter | Total/Month |
+| ------------ | ---------- | ---------- | ----------- |
+| 0-6 months   | $0-50      | $0         | $0-50       |
+| 6-12 months  | $50-200    | $0-100     | $50-300     |
+| 12-24 months | $200-500   | $100-300   | $300-800    |
 
 ## Current Programs
 
-| Program | URL | Notes |
-|---------|-----|-------|
-| Cloudflare Workers | `cloudflare.com/?ref=learncodingfirst` | Blog runs on this |
-| DigitalOcean | `digitalocean.com/?ref=learncodingfirst` | $200 free credit for referrals |
-| Vercel | `vercel.com/?ref=learncodingfirst` | Frontend deployment |
-| Supabase | `supabase.com/?ref=learncodingfirst` | Open-source Firebase alternative |
-| Railway | `railway.app/?ref=learncodingfirst` | Modern full-stack deployment |
+| Program            | URL                                      | Notes                            |
+| ------------------ | ---------------------------------------- | -------------------------------- |
+| Cloudflare Workers | `cloudflare.com/?ref=learncodingfirst`   | Blog runs on this                |
+| DigitalOcean       | `digitalocean.com/?ref=learncodingfirst` | $200 free credit for referrals   |
+| Vercel             | `vercel.com/?ref=learncodingfirst`       | Frontend deployment              |
+| Supabase           | `supabase.com/?ref=learncodingfirst`     | Open-source Firebase alternative |
+| Railway            | `railway.app/?ref=learncodingfirst`      | Modern full-stack deployment     |
 
 ## Adding a New Affiliate Program
 
@@ -158,35 +161,42 @@ Google AdSense is the most accessible display ad network for new blogs. No minim
 ### Ad Placement Options
 
 **In-post ads** (after share buttons in `[slug].astro`):
+
 ```astro
 <AdSlot placement="inline" />
 ```
 
 **Sidebar ads** (in sidebar components):
+
 ```astro
 <AdSlot placement="sidebar" />
 ```
 
 **Manual AdSense unit** (for specific placements):
+
 ```html
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-     data-ad-slot="XXXXXXXXXX"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+<ins
+  class="adsbygoogle"
+  style="display:block"
+  data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+  data-ad-slot="XXXXXXXXXX"
+  data-ad-format="auto"
+  data-full-width-responsive="true"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 ```
 
 ### Auto Ads vs Manual
 
-| Feature | Auto Ads | Manual Units |
-|---------|----------|--------------|
-| Setup | Add one script tag | Create individual ad units |
-| Placement | Google decides | You decide |
-| Control | Low | High |
-| Revenue | Varies | Often higher (targeted) |
-| Recommended for | Quick start | Optimized layout |
+| Feature         | Auto Ads           | Manual Units               |
+| --------------- | ------------------ | -------------------------- |
+| Setup           | Add one script tag | Create individual ad units |
+| Placement       | Google decides     | You decide                 |
+| Control         | Low                | High                       |
+| Revenue         | Varies             | Often higher (targeted)    |
+| Recommended for | Quick start        | Optimized layout           |
 
 ### AdSense Tips
 
@@ -202,9 +212,11 @@ Google AdSense is the most accessible display ad network for new blogs. No minim
 
 1. **Open the post** in `src/posts/` (e.g., `wsl-development-tips.md`)
 2. **Add affiliate links** using plain HTML `<a>` tags (Astro components don't work in markdown posts — `sanitize-html` strips unknown tags):
+
 ```markdown
 _Tools mentioned: <a href="https://www.cloudflare.com/?ref=learncodingfirst" target="_blank" rel="noopener noreferrer">Cloudflare Workers</a> for edge deployment, <a href="https://www.digitalocean.com/?ref=learncodingfirst" target="_blank" rel="noopener noreferrer">DigitalOcean</a> for cloud servers._
 ```
+
 3. **Use these affiliate URLs:**
    - Cloudflare: `https://www.cloudflare.com/?ref=learncodingfirst`
    - DigitalOcean: `https://www.digitalocean.com/?ref=learncodingfirst`
@@ -231,6 +243,7 @@ _Tools mentioned: <a href="https://www.cloudflare.com/?ref=learncodingfirst" tar
 ### Step-by-Step
 
 1. **Enable ads** in `src/lib/monetization.ts`:
+
 ```typescript
 ads: {
   enabled: true,  // Set to true
@@ -240,6 +253,7 @@ ads: {
 
 2. **Choose ad provider** (Carbon Ads, EthicalAds, or Google AdSense)
 3. **Configure the provider** in `monetization.ts`:
+
 ```typescript
 carbon: {
   enabled: true,
@@ -257,18 +271,22 @@ If you prefer AdSense over Carbon/EthicalAds:
 1. Add the AdSense script to `Layout.astro` `<head>`
 2. Create ad units in AdSense dashboard
 3. Place the `<ins>` tag in your page:
+
 ```astro
 ---
 // In any .astro page
 ---
 
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-     data-ad-slot="XXXXXXXXXX"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+<ins
+  class="adsbygoogle"
+  style="display:block"
+  data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+  data-ad-slot="XXXXXXXXXX"
+  data-ad-format="auto"
+  data-full-width-responsive="true"></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 ```
 
 ### Ad Placement Best Practices
@@ -281,24 +299,24 @@ If you prefer AdSense over Carbon/EthicalAds:
 
 ## Revenue Projections (Realistic)
 
-| Milestone | Affiliates | Newsletter | Ads | Total/Month |
-|-----------|-----------|------------|-----|-------------|
-| 0-6 months | $0-50 | $0 | $0 | $0-50 |
-| 6-12 months | $50-200 | $0-100 | $50-150 | $100-450 |
-| 12-24 months | $200-500 | $100-300 | $200-500 | $500-1,300 |
+| Milestone    | Affiliates | Newsletter | Ads      | Total/Month |
+| ------------ | ---------- | ---------- | -------- | ----------- |
+| 0-6 months   | $0-50      | $0         | $0       | $0-50       |
+| 6-12 months  | $50-200    | $0-100     | $50-150  | $100-450    |
+| 12-24 months | $200-500   | $100-300   | $200-500 | $500-1,300  |
 
 ## Current Programs
 
-| Program | URL | Notes |
-|---------|-----|-------|
-| Cloudflare Workers | `cloudflare.com/?ref=learncodingfirst` | Blog runs on this |
-| DigitalOcean | `digitalocean.com/?ref=learncodingfirst` | $200 free credit for referrals |
-| Vercel | `vercel.com/?ref=learncodingfirst` | Frontend deployment |
-| Supabase | `supabase.com/?ref=learncodingfirst` | Open-source Firebase alternative |
-| Railway | `railway.app/?ref=learncodingfirst` | Modern full-stack deployment |
-| Google AdSense | `adsense.google.com` | Display ads (requires approval) |
-| Carbon Ads | `carbonads.net` | Developer-focused ads |
-| EthicalAds | `ethicalads.io` | Privacy-focused ads |
+| Program            | URL                                      | Notes                            |
+| ------------------ | ---------------------------------------- | -------------------------------- |
+| Cloudflare Workers | `cloudflare.com/?ref=learncodingfirst`   | Blog runs on this                |
+| DigitalOcean       | `digitalocean.com/?ref=learncodingfirst` | $200 free credit for referrals   |
+| Vercel             | `vercel.com/?ref=learncodingfirst`       | Frontend deployment              |
+| Supabase           | `supabase.com/?ref=learncodingfirst`     | Open-source Firebase alternative |
+| Railway            | `railway.app/?ref=learncodingfirst`      | Modern full-stack deployment     |
+| Google AdSense     | `adsense.google.com`                     | Display ads (requires approval)  |
+| Carbon Ads         | `carbonads.net`                          | Developer-focused ads            |
+| EthicalAds         | `ethicalads.io`                          | Privacy-focused ads              |
 
 ## File Locations
 

@@ -72,6 +72,7 @@ export const GET: APIRoute = async (ctx) => {
           title: fm.title || slug,
           date: fm.date,
           tags: fm.tags,
+          category: fm.category,
           status: fm.status,
         };
       }),
@@ -86,6 +87,7 @@ export const GET: APIRoute = async (ctx) => {
           title: string;
           date: string;
           tags: string[];
+          category: string;
           status: string;
         } | null> => r.status === "fulfilled" && r.value !== null,
       )

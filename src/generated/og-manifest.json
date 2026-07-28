@@ -1,10 +1,10 @@
 {
   "slugs": [
-    "24-11-2025-create-minimal-api",
-    "24-11-2025-dependency-injection",
     "accessing-mongo-database-in-node-app",
     "callbacks-and-promises-in-asynchronous-programming",
     "controller-based-api-asp-net",
+    "create-minimal-api-asp-net-core",
+    "dependency-injection-in-asp-net",
     "dependency-inversion",
     "dev-environment-quick-fixes",
     "django-tutorial-first-app",

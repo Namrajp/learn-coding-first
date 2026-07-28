@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import { CATEGORIES, DEFAULT_CATEGORY } from "../../lib/categories";
 ---
 
 <Layout title="New Post">
@@ -15,8 +16,8 @@ import Layout from "../../layouts/Layout.astro";
     </div>
 
     <form id="post-form" class="space-y-6">
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div>
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+        <div class="md:col-span-2">
           <label
             for="title"
             class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -43,9 +44,37 @@ import Layout from "../../layouts/Layout.astro";
             type="text"
             id="tags"
             name="tags"
-            placeholder="tutorial, python, ai"
+            placeholder="python, django, api"
             class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-800 dark:text-white"
           />
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Category names are not allowed as tags and will be dropped.
+          </p>
+        </div>
+        <div>
+          <label
+            for="category"
+            class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            Category *
+          </label>
+          <select
+            id="category"
+            name="category"
+            required
+            class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-[hsl(21,62%,45%)] dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+          >
+            {
+              CATEGORIES.map((category) => (
+                <option
+                  value={category.slug}
+                  selected={category.slug === DEFAULT_CATEGORY}
+                >
+                  {category.label}
+                </option>
+              ))
+            }
+          </select>
         </div>
       </div>
 
@@ -176,6 +205,9 @@ print('Hello, World!')
       const tags = (
         document.getElementById("tags") as HTMLInputElement
       ).value.trim();
+      const category = (
+        document.getElementById("category") as HTMLSelectElement
+      ).value;
       const description = (
         document.getElementById("description") as HTMLInputElement
       ).value.trim();
@@ -203,6 +235,7 @@ print('Hello, World!')
             content: markdownContent,
             description,
             tags,
+            category,
             status,
           }),
         });
