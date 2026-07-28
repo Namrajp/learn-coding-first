@@ -122,8 +122,6 @@ const filters = { q, tag, category };
           }
         </form>
 
-        <CategoryGrid counts={categoryCounts} active={category} />
-
         {
           hasFilters && (
             <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
@@ -209,6 +207,10 @@ const filters = { q, tag, category };
             </>
           )
         }
+
+        <div class="mt-10">
+          <CategoryGrid counts={categoryCounts} active={category} />
+        </div>
       </section>
     </div>
   </div>
