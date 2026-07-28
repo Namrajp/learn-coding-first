@@ -1,12 +1,33 @@
 ---
 title: "GitHub Personal Access Tokens: Setup and Security"
+slug: "personal-access-tokens-in-github"
 date: 2026-07-21
-tags: ["git", "tutorial"]
-status: published
 description: "Create and use GitHub Personal Access Tokens (PAT) for secure Git authentication: step-by-step setup and security best practices."
+category: "tools"
+tags: ["git", "github", "authentication", "security"]
+status: published
 ---
 
 A Personal Access Token (PAT) replaces your password when Git authenticates with GitHub from the terminal. GitHub no longer accepts password authentication for Git operations — tokens are the standard.
+
+## The Error That Sends You Here
+
+Most people meet tokens through this message:
+
+```
+remote: Support for password authentication was removed on August 13, 2021.
+fatal: Authentication failed for 'https://github.com/your-username/your-repo.git/'
+```
+
+Your account password is not wrong. GitHub simply will not accept it over HTTPS anymore, and a token is the replacement.
+
+## Fine-Grained or Classic?
+
+GitHub offers two kinds of token. Classic tokens use broad scopes that apply to every repository your account can reach. Fine-grained tokens are limited to repositories you pick, with individual read/write permissions, so a token that only needs to read code cannot also delete a repo.
+
+Prefer fine-grained tokens for anything long-lived. Classic tokens are simpler for one-off terminal use, and a few older integrations still only accept them.
+
+Either way, grant the minimum you need. To push and pull private repositories with a classic token, the `repo` scope is enough — `git push` does not need `admin:org` or `delete_repo`.
 
 ## Creating a Token
 
@@ -31,7 +52,21 @@ Or set it in your remote URL:
 git remote set-url origin https://<YOUR_TOKEN>@github.com/your-username/your-repo.git
 ```
 
-The second approach stores the token in your Git config, so you do not need to paste it each time. Be aware this puts the token in plain text on disk.
+The second approach stores the token in your Git config, so you do not need to paste it each time. Be aware this puts the token in plain text on disk, and it leaks into any command or log that prints the remote URL.
+
+## Storing It Properly
+
+A credential helper is the better option. Git asks for the token once, then remembers it:
+
+```bash
+git config --global credential.helper store
+```
+
+On Linux and WSL that writes to `~/.git-credentials` — still plain text, but at least outside the repository. On macOS use `osxkeychain` instead. On Windows, the Git for Windows installer configures `manager`, which keeps the token in Windows Credential Manager.
+
+## Expiry and Rotation
+
+Tokens expiring is the point, not an inconvenience. When one lapses, git starts failing with an authentication error again — generate a replacement and update wherever you stored it. GitHub emails you before a token expires, so this should not catch you out mid-push.
 
 ## Security Tips
 

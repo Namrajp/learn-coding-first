@@ -1,11 +1,10 @@
 ---
 title: "Dev Environment Quick Fixes: VSCode, PostgreSQL, FAT32, and Disk Space"
+slug: "dev-environment-quick-fixes"
 date: 2026-06-26
 description: "A collection of quick fixes for common developer environment issues — from VSCode shortcuts to PostgreSQL config and filesystem limitations."
-tags:
-  - miscellaneous
-  - tools
-  - cli
+category: "tools"
+tags: ["vs code", "postgresql", "cli", "troubleshooting"]
 status: published
 ---
 
@@ -74,6 +73,17 @@ npm update --save drizzle-orm
 ```
 
 Also remember: database names should use underscores, not hyphens. `astro_tasks_app` works, `astro-tasks-app` does not.
+
+## Port Already in Use
+
+Starting a dev server and getting `EADDRINUSE: address already in use :::3000` almost always means a previous run never shut down. Find what is holding the port and stop it:
+
+```bash
+lsof -i :3000
+kill -9 <pid>
+```
+
+On Windows, use `netstat -ano | findstr :3000` to get the PID, then `taskkill /PID <pid> /F`.
 
 ## Quick Shell Tip: Finding Your Shell
 

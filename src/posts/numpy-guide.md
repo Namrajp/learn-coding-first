@@ -1,13 +1,11 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "Getting Started with NumPy"
+slug: "numpy-guide"
 date: 2026-08-03
-status: draft
-tags:
-  - python
-  - numpy
-  - tutorial
 description: "Complete NumPy guide: arrays, vectorized operations, broadcasting, linear algebra, and performance tips for Python developers."
+category: "tutorial"
+tags: ["python", "numpy", "data analysis"]
+status: draft
 ---
 
 # Getting Started with NumPy

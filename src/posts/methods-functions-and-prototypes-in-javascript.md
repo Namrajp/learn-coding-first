@@ -1,8 +1,10 @@
 ---
 title: "Methods, Functions and Prototypes in JavaScript"
+slug: "methods-functions-and-prototypes-in-javascript"
 date: 2026-07-04
 description: "Understand how methods, constructors, and prototypes work together to create objects in JavaScript."
-tags: ["javascript", "programming"]
+category: "web-development"
+tags: ["javascript", "prototypes", "objects"]
 status: published
 ---
 

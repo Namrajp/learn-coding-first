@@ -1,8 +1,10 @@
 ---
 title: "VS Code Shortcuts and Extensions I Use Daily"
+slug: "vscode-shortcuts-and-extensions-commonly-used"
 date: 2026-07-20
 description: "A practical reference of essential VS Code keyboard shortcuts and must-have extensions for faster development."
-tags: ["vs code", "productivity"]
+category: "productivity"
+tags: ["vs code", "shortcuts", "extensions"]
 status: published
 ---
 
@@ -12,44 +14,44 @@ VS Code is the editor most web developers spend their days in. Learning a handfu
 
 ### Navigation
 
-| Shortcut | Action |
-|---|---|
+| Shortcut       | Action                                                         |
+| -------------- | -------------------------------------------------------------- |
 | `Ctrl+Shift+P` | Open the Command Palette — access every command from one place |
-| `Ctrl+P` | Quick file search — type a filename to jump to it |
-| `Ctrl+R` | Switch between recent projects and folders |
-| `Ctrl+B` | Toggle the sidebar on and off |
-| `Ctrl+`` ` | Toggle the integrated terminal |
-| `Ctrl+Shift+E` | Open the Explorer sidebar |
+| `Ctrl+P`       | Quick file search — type a filename to jump to it              |
+| `Ctrl+R`       | Switch between recent projects and folders                     |
+| `Ctrl+B`       | Toggle the sidebar on and off                                  |
+| `Ctrl+`` `     | Toggle the integrated terminal                                 |
+| `Ctrl+Shift+E` | Open the Explorer sidebar                                      |
 
 ### Editing
 
-| Shortcut | Action |
-|---|---|
-| `Alt+Up` / `Alt+Down` | Move the current line up or down |
-| `Shift+Alt+Up` / `Shift+Alt+Down` | Copy the current line above or below |
-| `Ctrl+D` | Select the next occurrence of the current selection |
-| `Ctrl+Shift+K` | Delete the entire current line |
-| `Ctrl+/` | Toggle line comment |
-| `Ctrl+Shift+/` | Toggle block comment |
-| `Alt+Click` | Add a second cursor at the click position |
-| `Ctrl+Alt+Up` / `Down` | Add cursor above or below |
+| Shortcut                          | Action                                              |
+| --------------------------------- | --------------------------------------------------- |
+| `Alt+Up` / `Alt+Down`             | Move the current line up or down                    |
+| `Shift+Alt+Up` / `Shift+Alt+Down` | Copy the current line above or below                |
+| `Ctrl+D`                          | Select the next occurrence of the current selection |
+| `Ctrl+Shift+K`                    | Delete the entire current line                      |
+| `Ctrl+/`                          | Toggle line comment                                 |
+| `Ctrl+Shift+/`                    | Toggle block comment                                |
+| `Alt+Click`                       | Add a second cursor at the click position           |
+| `Ctrl+Alt+Up` / `Down`            | Add cursor above or below                           |
 
 ### Selection and Search
 
-| Shortcut | Action |
-|---|---|
+| Shortcut       | Action                                          |
+| -------------- | ----------------------------------------------- |
 | `Ctrl+Shift+L` | Select all occurrences of the current selection |
-| `Ctrl+F` | Find in the current file |
-| `Ctrl+H` | Find and replace |
-| `Ctrl+Shift+F` | Find across all files in the workspace |
+| `Ctrl+F`       | Find in the current file                        |
+| `Ctrl+H`       | Find and replace                                |
+| `Ctrl+Shift+F` | Find across all files in the workspace          |
 
 ### Tabs and Windows
 
-| Shortcut | Action |
-|---|---|
-| `Ctrl+Tab` | Switch between open tabs |
-| `Ctrl+W` | Close the current tab |
-| `Ctrl+\` | Split the editor into two panes |
+| Shortcut   | Action                          |
+| ---------- | ------------------------------- |
+| `Ctrl+Tab` | Switch between open tabs        |
+| `Ctrl+W`   | Close the current tab           |
+| `Ctrl+\`   | Split the editor into two panes |
 
 ## Extensions
 

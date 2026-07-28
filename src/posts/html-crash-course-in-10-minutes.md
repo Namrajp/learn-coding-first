@@ -1,8 +1,10 @@
 ---
 title: "HTML Crash Course in 10 Minutes"
+slug: "html-crash-course-in-10-minutes"
 date: 2026-06-14
 description: "A quick introduction to HTML fundamentals including elements, tags, block vs inline elements, and boilerplate."
-tags: ["html"]
+category: "web-development"
+tags: ["html", "beginners"]
 status: published
 ---
 
@@ -15,14 +17,14 @@ Every HTML page starts with the same skeleton. In VS Code, type `!` and press Ta
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Page</title>
-</head>
-<body>
-  <!-- Your content goes here -->
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Page</title>
+  </head>
+  <body>
+    <!-- Your content goes here -->
+  </body>
 </html>
 ```
 
@@ -58,12 +60,12 @@ Inline elements only take up the space of their content. They flow within the su
 - **`<span>`** — a generic inline container
 - **`<a>`** — a link
 - **`<img>`** — an image (technically replaced, but behaves inline)
-- Text formatting: **`<strong>`**, *`<em>`*, ~~`<del>`~~, `<mark>`, `<sup>`, `<sub>`, `<small>`
+- Text formatting: **`<strong>`**, _`<em>`_, ~~`<del>`~~, `<mark>`, `<sup>`, `<sub>`, `<small>`
 
 ```html
 <p>
-  This is a <strong>bold</strong> word and an <em>italic</em> word
-  in the same paragraph.
+  This is a <strong>bold</strong> word and an <em>italic</em> word in the same
+  paragraph.
 </p>
 ```
 
@@ -74,15 +76,9 @@ Inline elements only take up the space of their content. They flow within the su
   Normal text with <strong>strong emphasis</strong> and
   <em>italic emphasis</em>.
 </p>
-<p>
-  H<sub>2</sub>O — subscript for chemical formulas.
-</p>
-<p>
-  E = mc<sup>2</sup> — superscript for exponents.
-</p>
-<p>
-  <del>Deleted text</del> and <mark>highlighted text</mark>.
-</p>
+<p>H<sub>2</sub>O — subscript for chemical formulas.</p>
+<p>E = mc<sup>2</sup> — superscript for exponents.</p>
+<p><del>Deleted text</del> and <mark>highlighted text</mark>.</p>
 <p>
   <small>Fine print goes here.</small>
 </p>
@@ -96,6 +92,21 @@ Inline elements only take up the space of their content. They flow within the su
 ```
 
 Always include the `alt` attribute on images. It improves accessibility and is required by the HTML specification.
+
+## Semantic Elements
+
+A `<div>` works anywhere, but it says nothing about what the content is. Semantic elements do:
+
+```html
+<header>Site title and logo</header>
+<nav>Main navigation links</nav>
+<main>
+  <article>A self-contained post or entry</article>
+</main>
+<footer>Copyright and contact details</footer>
+```
+
+They render the same as a `<div>`, but screen readers use them to let people jump between regions of the page, and search engines use them to work out which part is the actual content. Use one `<main>` per page.
 
 ## How the Browser Interprets HTML
 

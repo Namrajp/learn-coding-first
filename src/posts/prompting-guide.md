@@ -1,13 +1,11 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "The Prompting Guide: Get Better Results from AI"
+slug: "prompting-guide"
 date: 2026-08-01
-status: draft
-tags:
-  - tutorial
-  - ai
-  - productivity
 description: "Master AI prompting: be specific, use role prompting, provide context, step-by-step instructions, and few-shot examples for better results."
+category: "ai"
+tags: ["prompting", "llm", "claude"]
+status: draft
 ---
 
 Prompting is the art of giving an AI clear, well-structured instructions to get the output you actually want. Most people treat it like a search engine — short, keyword-heavy queries — but AI models respond much better to natural language with context and intent.
@@ -69,6 +67,15 @@ Task: [name] | Priority: [High/Med/Low] | Due: [date]
 
 Here's one example:
 Task: Write report | Priority: High | Due: Friday"
+```
+
+## 7. Ask for the Assumptions
+
+On anything underspecified, ask the model to state its assumptions before it answers. You will usually spot one or two you did not intend, and correcting them upfront is cheaper than reading a long answer built on the wrong premise.
+
+```
+"Before you answer, list the assumptions you're making about my setup.
+If any of them are unclear, ask me instead of guessing."
 ```
 
 ---

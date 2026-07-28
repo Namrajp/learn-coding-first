@@ -1,8 +1,10 @@
 ---
 title: "Responsive Grid Layout with CSS"
+slug: "responsive-grid-layout"
 date: 2026-07-12
 description: "Build responsive grid layouts using CSS Grid and media queries for different screen sizes."
-tags: ["css", "responsive design"]
+category: "web-development"
+tags: ["css", "responsive design", "grid"]
 status: published
 ---
 
@@ -54,6 +56,8 @@ Grid's `auto-fill` and `minmax()` let columns adapt automatically:
 
 The browser calculates how many columns fit. On a wide screen you get four or five columns; on a narrow screen they stack to one or two — no media query needed.
 
+`auto-fit` behaves almost identically, with one difference that matters when you have fewer items than fitting tracks. `auto-fill` leaves the empty columns in place, so three cards sit at the left of a wide container. `auto-fit` collapses the empty tracks, so those three cards stretch to fill the row instead. Reach for `auto-fit` when you want the items to spread out, and `auto-fill` when you want them to keep a consistent column width.
+
 ### Named Grid Areas
 
 For page-level layouts, `grid-template-areas` lets you name regions and assign elements to them:
@@ -69,10 +73,18 @@ For page-level layouts, `grid-template-areas` lets you name regions and assign e
   min-height: 100vh;
 }
 
-.header  { grid-area: header; }
-.sidebar { grid-area: sidebar; }
-.main    { grid-area: main; }
-.footer  { grid-area: footer; }
+.header {
+  grid-area: header;
+}
+.sidebar {
+  grid-area: sidebar;
+}
+.main {
+  grid-area: main;
+}
+.footer {
+  grid-area: footer;
+}
 ```
 
 On smaller screens, override the template to stack everything:

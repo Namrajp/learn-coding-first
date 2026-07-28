@@ -1,8 +1,10 @@
 ---
 title: "Django Tutorial: Building Your First Polls App"
+slug: "django-tutorial-first-app"
 date: 2026-05-13
 description: "A step-by-step guide to creating your first Django application with views, URL routing, database models, and the admin interface."
-tags: ["tutorial", "python", "django"]
+category: "web-development"
+tags: ["django", "python"]
 status: published
 ---
 
@@ -38,6 +40,15 @@ python3 manage.py runserver
 ```
 
 Visit `http://127.0.0.1:8000/` in your browser to see the default Django welcome page.
+
+You will probably also see a warning in the console:
+
+```text
+You have N unapplied migration(s). Your project may not work properly until you
+apply the migrations for app(s): admin, auth, contenttypes, sessions.
+```
+
+That is expected on a fresh project. Django ships with built-in apps that need database tables, and you have not created them yet. The `migrate` command further down takes care of it, so you can ignore the warning until then.
 
 ## Creating the Polls App
 

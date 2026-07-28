@@ -1,12 +1,24 @@
 ---
 title: "Install Web Development Tools on Ubuntu"
+slug: "install-web-development-tools-on-ubuntu-16-04"
 date: 2026-06-18
 description: "Set up Git, Node.js, npm, Composer, and other essential web development tools on Ubuntu."
-tags: ["ubuntu", "git", "node.js", "web development"]
+category: "tools"
+tags: ["ubuntu", "git", "node.js", "linux"]
 status: published
 ---
 
 Setting up a web development environment on Ubuntu from scratch can feel tedious. This guide walks through installing the most common tools you will need, along with basic configuration for Git and SSH.
+
+## Before You Start
+
+Refresh the package lists first. `apt` installs from a cached index, and on a fresh or long-idle machine that index is stale enough that installs fail with `Unable to locate package`:
+
+```bash
+sudo apt-get update
+```
+
+Run this once per session before installing anything. It does not upgrade any software — it only updates the list of what is available.
 
 ## Git
 
@@ -44,6 +56,8 @@ Verify the installation:
 node --version
 npm --version
 ```
+
+Ubuntu's own `nodejs` package tends to lag behind the current LTS release, and it stays pinned to whatever the distro shipped with. If you need a specific version, or need to switch versions between projects, install nvm and skip the apt package entirely. That also means global npm installs no longer need `sudo`.
 
 ## Composer (for PHP)
 
@@ -101,6 +115,17 @@ Copy the public key to your clipboard and add it to GitHub or your server:
 ```bash
 cat ~/.ssh/id_rsa.pub
 ```
+
+## Verifying Everything Installed
+
+Almost all of these tools report their version with `--version`, the quickest way to confirm an install worked before moving on:
+
+```bash
+git --version
+composer --version
+```
+
+If a command comes back as "not found" despite installing cleanly, the binary is probably just not on your PATH.
 
 ## Wrapping Up
 

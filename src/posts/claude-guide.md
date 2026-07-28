@@ -1,13 +1,11 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "The Claude Guide: How to Get the Most Out of Anthropic's AI"
+slug: "claude-guide"
 date: 2026-07-31
-status: draft
-tags:
-  - tutorial
-  - ai
-  - claude
 description: "Master Claude AI with proven techniques: leverage long contexts, request step-by-step reasoning, specify output formats, and iterate for better results."
+category: "ai"
+tags: ["claude", "prompting", "llm"]
+status: draft
 ---
 
 Claude is Anthropic's AI assistant, built with a strong emphasis on being helpful, harmless, and honest. It excels at long-form reasoning, nuanced writing, and following complex multi-step instructions — but like any tool, it rewards users who understand how it thinks.
@@ -58,6 +56,15 @@ Claude shines at unblocking creative or analytical work. Use it to generate a ro
 "I need to write a proposal for migrating our app to a microservices architecture.
 Give me an outline with 5 sections, and for each section write one sentence
 describing what it should cover."
+```
+
+## 6. Ask It to Push Back
+
+Claude will generally work within the framing you give it, which is a problem when the framing is the thing that is wrong. Ask for disagreement explicitly and you get a more useful kind of answer — and pairing that with a request to name its uncertainty is worth doing on anything consequential.
+
+```
+"Before you write the migration plan, tell me what's wrong with this approach
+and what you'd do instead. Flag anything you're uncertain about."
 ```
 
 ---

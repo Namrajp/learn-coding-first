@@ -1,11 +1,10 @@
 ---
 title: "MongoDB Connection Guide for Windows"
+slug: "mongodb-connection-guide-windows"
 date: 2026-07-18
 description: "How to start MongoDB on Windows, connect with mongosh, and use Mongoose in Node.js applications."
-tags:
-  - tutorial
-  - tools
-  - mongodb and postgresql
+category: "web-development"
+tags: ["mongodb", "windows", "mongoose", "database"]
 status: published
 ---
 
@@ -28,6 +27,26 @@ cmd.exe
 mongod.exe --dbpath "C:\data\db"
 ```
 
+## Checking the MongoDB Service
+
+If you installed MongoDB with the Windows installer and left the service option enabled, you do not need to start `mongod` by hand — it starts with Windows. To check, open `services.msc` and look for the MongoDB Server entry. Its status should read Running.
+
+You can do the same from an Administrator Command Prompt:
+
+```bash
+net start MongoDB
+```
+
+If the service is already running you get a message saying so, which is harmless.
+
+When nothing is listening on the port, every client fails the same way:
+
+```
+MongoServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+```
+
+That error means the server is down, not that your connection string is wrong. Start the service or run `mongod` manually before debugging anything else.
+
 ## Connecting with mongosh
 
 Once the server is running, connect using the MongoDB shell:
@@ -36,7 +55,19 @@ Once the server is running, connect using the MongoDB shell:
 mongosh mongodb://localhost:27017
 ```
 
-This opens an interactive shell where you can run queries, create databases, and manage collections.
+This opens an interactive shell where you can run queries, create databases, and manage collections. `mongosh` is distributed separately from the server, so if Windows reports that the command is not recognised, install the MongoDB Shell package and confirm its folder is on your `PATH`.
+
+A handful of commands cover most day-to-day use:
+
+```bash
+show dbs
+use myapp
+show collections
+db.users.find()
+db.users.find({ name: "Alice" })
+```
+
+`use myapp` switches to that database and creates it lazily — it will not show up in `show dbs` until you write the first document into it. `db.users.find()` returns the documents in the `users` collection.
 
 ## Connecting from Node.js with Mongoose
 
@@ -77,6 +108,10 @@ db.once("open", () => console.log("Connected to Database"));
 ```
 
 > **Rule:** never hardcode connection strings in source code. Use `.env` files and add `.env` to `.gitignore`.
+
+## Local Instance or Atlas
+
+Your application code does not change when you move to MongoDB Atlas — only the connection string does. A local instance uses `mongodb://127.0.0.1:27017/myapp`. Atlas gives you an SRV string shaped like `mongodb+srv://user:password@cluster.mongodb.net/myapp`, and you have to add your current IP address to the cluster's network access list before it will accept the connection. Keeping the URL in `.env` is what makes swapping between the two a one-line change.
 
 ---
 

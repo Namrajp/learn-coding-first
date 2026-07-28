@@ -1,8 +1,10 @@
 ---
 title: "A Simple Web Development Workflow"
+slug: "simple-web-development-workflow"
 date: 2026-05-29
 description: "Organize your web development projects with a clean folder structure, VS Code setup, and Sass workflow."
-tags: ["web development", "vs code", "sass"]
+category: "web-development"
+tags: ["workflow", "vs code", "sass"]
 status: published
 ---
 
@@ -52,15 +54,15 @@ Install these from the Extensions Marketplace (`Ctrl+Shift+X`):
 
 These shortcuts speed up everyday editing:
 
-| Shortcut | Action |
-|---|---|
-| `Shift+Alt+Down` | Copy the current line down |
-| `Ctrl+D` | Select the next occurrence of the current selection |
-| `Ctrl+B` | Toggle the sidebar |
-| `Ctrl+P` | Quick file search |
-| `Ctrl+R` | Switch between recent folders |
-| `Ctrl+Shift+P` | Open the Command Palette |
-| `Alt+Click` | Add a second cursor |
+| Shortcut         | Action                                              |
+| ---------------- | --------------------------------------------------- |
+| `Shift+Alt+Down` | Copy the current line down                          |
+| `Ctrl+D`         | Select the next occurrence of the current selection |
+| `Ctrl+B`         | Toggle the sidebar                                  |
+| `Ctrl+P`         | Quick file search                                   |
+| `Ctrl+R`         | Switch between recent folders                       |
+| `Ctrl+Shift+P`   | Open the Command Palette                            |
+| `Alt+Click`      | Add a second cursor                                 |
 
 ## The Sass Build Process
 
@@ -87,6 +89,18 @@ The main file imports the partials:
 The **Live Sass Compiler** extension watches these files and outputs a single `style.css` into the `dist/` folder every time you save. Your HTML links to `dist/style.css`, and the browser updates automatically during development.
 
 To debug, open Chrome DevTools (`F12`) and inspect the elements to confirm your compiled styles are applied correctly.
+
+## Add Git Early
+
+Initialise the repository before you have written much code, and write a `.gitignore` first:
+
+```
+node_modules/
+.env
+dist/
+```
+
+Ignoring `dist/` follows the same rule as the folder structure above — compiled output is generated from source, so tracking it only produces noisy diffs. The exception is a static host that does not run a build step for you — then `dist/style.css` has to be committed, since it is what the live site serves.
 
 ## Pulling It All Together
 

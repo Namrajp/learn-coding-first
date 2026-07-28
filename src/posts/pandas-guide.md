@@ -1,13 +1,11 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "Getting Started with Pandas"
+slug: "pandas-guide"
 date: 2026-08-04
-status: draft
-tags:
-  - python
-  - pandas
-  - tutorial
 description: "Complete Pandas guide: DataFrames, data manipulation, filtering, grouping, and file I/O for Python data analysis."
+category: "tutorial"
+tags: ["python", "pandas", "data analysis"]
+status: draft
 ---
 
 # Getting Started with Pandas
@@ -115,6 +113,24 @@ df.isnull().sum()   # count NaNs per column
 df.dropna()         # drop rows containing any NaN
 df.fillna(0)        # replace NaN with a default value
 ```
+
+---
+
+## Gotcha: Chained Assignment
+
+```python
+df[df['age'] > 28]['score'] = 100   # may not do what you expect
+```
+
+This selects a subset first, then assigns into it. Pandas cannot always tell whether that subset is a view or a copy, so the write may land on a temporary object and never reach `df`. You will usually see a `SettingWithCopyWarning` when this happens.
+
+Do it in one step with `.loc` instead:
+
+```python
+df.loc[df['age'] > 28, 'score'] = 100
+```
+
+The same rule applies when you slice a DataFrame and keep working on the result — call `.copy()` if you want the slice to be independent of its parent.
 
 ---
 

@@ -1,11 +1,10 @@
 ---
 title: "WSL Development Tips: Paths, Node, and Fixing Vite"
+slug: "wsl-development-tips"
 date: 2026-07-23
 description: "Practical tips for developing with Node.js inside WSL — fixing paths, setting up nvm, and solving the Vite file-watching problem."
-tags:
-  - tutorial
-  - cli
-  - tools
+category: "tools"
+tags: ["wsl", "node.js", "vite", "linux"]
 status: published
 ---
 
@@ -78,6 +77,35 @@ echo $SHELL
 ```
 
 `echo $0` is more accurate — it reflects the current running shell, even if you temporarily switched with `bash` or `zsh`.
+
+## Where to Keep Your Project Files
+
+Reading `/mnt/c` from WSL crosses a bridge between the Linux and Windows filesystems, and every file operation pays that cost. Tools that touch thousands of small files — `npm install`, `git status`, a bundler's initial scan — feel noticeably slower there than they do on Windows or on native Linux. This is the same root cause as the file-watching problem above.
+
+Keep projects on the Linux side instead:
+
+```bash
+mkdir -p ~/projects
+cd ~/projects
+```
+
+You do not lose access from Windows. WSL exposes the Linux filesystem under `\\wsl$\`, and you can open the current directory in Windows Explorer straight from your shell:
+
+```bash
+explorer.exe .
+```
+
+VS Code handles this well too — with the WSL extension installed, `code .` from inside WSL opens the folder with the editor's backend running on the Linux side.
+
+## Restarting WSL
+
+When WSL gets into a bad state — DNS not resolving, a stuck process, or config changes that need to take effect — shut the whole VM down from PowerShell:
+
+```powershell
+wsl --shutdown
+```
+
+The next command you run in a WSL terminal boots it again. It is much faster than rebooting Windows and fixes more than you would expect.
 
 > **Rule:** keep your project files inside WSL (`~/`), not on a Windows drive (`/mnt/c/`). This avoids file-watching issues, path problems, and slow I/O.
 

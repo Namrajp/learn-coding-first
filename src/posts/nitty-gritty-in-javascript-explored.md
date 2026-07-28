@@ -1,8 +1,10 @@
 ---
 title: "Nitty Gritty in Javascript Explored"
+slug: "nitty-gritty-in-javascript-explored"
 date: 2026-06-30
 description: "Understand how JavaScript values, prototypes, constructors, and methods connect — and why the distinctions matter in everyday code."
-tags: ["javascript", "programming"]
+category: "web-development"
+tags: ["javascript", "prototypes", "primitives"]
 status: published
 ---
 
@@ -18,8 +20,8 @@ The critical difference is mutability. Primitives are **immutable**. When you ca
 // Primitives — immutable
 let name = "alice";
 let upper = name.toUpperCase();
-console.log(name);   // "alice" — unchanged
-console.log(upper);  // "ALICE" — new value
+console.log(name); // "alice" — unchanged
+console.log(upper); // "ALICE" — new value
 
 // Objects — mutable
 let colors = ["red", "green"];
@@ -34,14 +36,14 @@ You declare variables with `var`, `let`, or `const`. These keywords control scop
 JavaScript is loosely typed. You do not declare a variable's type upfront, so the `typeof` operator lets you check at runtime:
 
 ```js
-typeof 42;          // "number"
-typeof "hello";     // "string"
-typeof true;        // "boolean"
-typeof undefined;   // "undefined"
-typeof null;        // "object" — a known bug in JavaScript
-typeof {};          // "object"
-typeof [];          // "object" — arrays are objects too
-typeof function(){} // "function"
+typeof 42; // "number"
+typeof "hello"; // "string"
+typeof true; // "boolean"
+typeof undefined; // "undefined"
+typeof null; // "object" — a known bug in JavaScript
+typeof {}; // "object"
+typeof []; // "object" — arrays are objects too
+typeof function () {}; // "function"
 ```
 
 Two surprises here. `typeof null` returns `"object"` because of a legacy bug in the language — not because null is actually an object. `typeof []` returns `"object"` because arrays are objects. Use `Array.isArray()` when you need to distinguish arrays from plain objects.
@@ -53,15 +55,15 @@ A string primitive like `"hello"` has no methods of its own. When you call `.toU
 ```js
 let msg = "  Hello, World!  ";
 
-msg.indexOf("World");    // 9
-msg.lastIndexOf("l");    // 10
-msg.charAt(1);           // " "
-msg.slice(1, 5);         // "Hell"
-msg.toUpperCase();       // "  HELLO, WORLD!  "
+msg.indexOf("World"); // 9
+msg.lastIndexOf("l"); // 10
+msg.charAt(1); // " "
+msg.slice(1, 5); // "Hell"
+msg.toUpperCase(); // "  HELLO, WORLD!  "
 msg.replace(/o/gi, "0"); // "  Hell0, W0rld!  "
-msg.trim();              // "Hello, World!"
-msg.split(", ");         // ["  Hello", "World!  "]
-msg.length;              // 16
+msg.trim(); // "Hello, World!"
+msg.split(", "); // ["  Hello", "World!  "]
+msg.length; // 16
 ```
 
 Every one of these returns a new string. The original `msg` never changes. This behavior is the same whether you use a string literal or create a String object with `new String("hello")`.
@@ -73,16 +75,16 @@ Object methods operate differently from string methods. You call them directly o
 ```js
 let person = { name: "Alice", age: 30 };
 
-Object.keys(person);     // ["name", "age"]
-Object.values(person);   // ["Alice", 30]
-Object.entries(person);  // [["name", "Alice"], ["age", 30]]
+Object.keys(person); // ["name", "age"]
+Object.values(person); // ["Alice", 30]
+Object.entries(person); // [["name", "Alice"], ["age", 30]]
 
 let frozen = Object.freeze({ x: 1 });
-frozen.x = 2;            // silently fails — object is frozen
+frozen.x = 2; // silently fails — object is frozen
 
 let sealed = Object.seal({ y: 1 });
-sealed.y = 2;            // works — modifying existing property
-sealed.z = 3;            // silently fails — cannot add new properties
+sealed.y = 2; // works — modifying existing property
+sealed.z = 3; // silently fails — cannot add new properties
 ```
 
 `Object.create()` builds an object with a specific prototype. `Object.getPrototypeOf()` retrieves it. Together, these two methods form the foundation of how inheritance works in JavaScript.
@@ -93,17 +95,17 @@ Arrays are objects, and they inherit from `Array.prototype`. Methods like `push(
 
 ```js
 let stack = [1, 2, 3];
-stack.push(4);       // [1, 2, 3, 4]
-stack.pop();         // removes 4, returns it
+stack.push(4); // [1, 2, 3, 4]
+stack.pop(); // removes 4, returns it
 
 let queue = [1, 2, 3];
-queue.unshift(0);    // [0, 1, 2, 3]
-queue.shift();       // removes 0, returns it
+queue.unshift(0); // [0, 1, 2, 3]
+queue.shift(); // removes 0, returns it
 
 let sorted = [3, 1, 2];
-sorted.sort();       // [1, 2, 3] — sorts in place
-sorted.reverse();    // [3, 2, 1] — reverses in place
-sorted.join(", ");   // "3, 2, 1"
+sorted.sort(); // [1, 2, 3] — sorts in place
+sorted.reverse(); // [3, 2, 1] — reverses in place
+sorted.join(", "); // "3, 2, 1"
 ```
 
 Some array methods mutate the original (`push`, `pop`, `sort`, `reverse`), while others return new arrays (`map`, `filter`, `slice`). Knowing which is which prevents accidental side effects.
@@ -120,14 +122,14 @@ function greet(greeting) {
 let user = { name: "Alice" };
 
 // call — invokes immediately, passes arguments individually
-greet.call(user, "Hello");       // "Hello, Alice"
+greet.call(user, "Hello"); // "Hello, Alice"
 
 // apply — invokes immediately, passes arguments as an array
-greet.apply(user, ["Hi"]);       // "Hi, Alice"
+greet.apply(user, ["Hi"]); // "Hi, Alice"
 
 // bind — returns a new function with `this` permanently set
 let bound = greet.bind(user, "Hey");
-bound();                         // "Hey, Alice"
+bound(); // "Hey, Alice"
 ```
 
 The difference between `call` and `apply` is only how arguments are passed. `call` takes individual arguments, `apply` takes an array. The difference between both and `bind` is that `bind` does not invoke the function — it returns a new one you can call later.
@@ -137,10 +139,14 @@ The difference between `call` and `apply` is only how arguments are passed. `cal
 Every JavaScript object has an internal link to another object called its **prototype**. When you access a property that does not exist on an object, JavaScript walks up the prototype chain until it finds the property — or returns `undefined`.
 
 ```js
-let animal = { speak() { return "..."; } };
+let animal = {
+  speak() {
+    return "...";
+  },
+};
 let dog = Object.create(animal);
 
-console.log(dog.speak());  // "..." — found on the prototype
+console.log(dog.speak()); // "..." — found on the prototype
 console.log(dog.hasOwnProperty("speak")); // false — not on dog itself
 ```
 
@@ -164,7 +170,7 @@ function Car(make, model) {
   this.model = model;
 }
 
-Car.prototype.drive = function() {
+Car.prototype.drive = function () {
   return `${this.make} ${this.model} is moving`;
 };
 
@@ -205,12 +211,16 @@ console.log(this); // window (browser)
 // Method
 let user = {
   name: "Alice",
-  greet() { console.log(`Hi, ${this.name}`); }
+  greet() {
+    console.log(`Hi, ${this.name}`);
+  },
 };
 user.greet(); // "Hi, Alice"
 
 // Constructor
-function Person(name) { this.name = name; }
+function Person(name) {
+  this.name = name;
+}
 let bob = new Person("Bob");
 
 // Arrow — inherits `this`

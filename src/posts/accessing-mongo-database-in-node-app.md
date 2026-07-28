@@ -1,8 +1,10 @@
 ---
 title: "Accessing a Mongo Database in a Node.js App"
+slug: "accessing-mongo-database-in-node-app"
 date: 2026-06-02
 description: "Learn how to connect to MongoDB from a Node.js application using both the native driver and Mongoose ODM."
-tags: ["mongodb", "node.js"]
+category: "web-development"
+tags: ["mongodb", "node.js", "mongoose", "database"]
 status: published
 ---
 
@@ -39,12 +41,12 @@ A collection is the MongoDB equivalent of a table in a relational database.
 Insert a single document with `insertOne`, or multiple documents with `insertMany`:
 
 ```js
-db.cars.insertOne({ make: "Toyota", model: "Camry", year: 2024 })
+db.cars.insertOne({ make: "Toyota", model: "Camry", year: 2024 });
 
 db.cars.insertMany([
   { make: "Honda", model: "Civic", year: 2023 },
-  { make: "Ford", model: "Mustang", year: 2024 }
-])
+  { make: "Ford", model: "Mustang", year: 2024 },
+]);
 ```
 
 ### Reading Data
@@ -52,9 +54,9 @@ db.cars.insertMany([
 Use `find` to retrieve documents and `findOne` to get a single match:
 
 ```js
-db.cars.find()                          // all documents
-db.cars.find({ make: "Toyota" })        // filtered
-db.cars.findOne({ make: "Toyota" })     // single document
+db.cars.find(); // all documents
+db.cars.find({ make: "Toyota" }); // filtered
+db.cars.findOne({ make: "Toyota" }); // single document
 ```
 
 ### Updating Data
@@ -62,17 +64,14 @@ db.cars.findOne({ make: "Toyota" })     // single document
 `updateOne` modifies the first matching document. `updateMany` modifies all matches:
 
 ```js
-db.cars.updateOne(
-  { make: "Toyota" },
-  { $set: { year: 2025 } }
-)
+db.cars.updateOne({ make: "Toyota" }, { $set: { year: 2025 } });
 ```
 
 ### Deleting Data
 
 ```js
-db.cars.deleteOne({ make: "Ford" })     // remove one
-db.cars.deleteMany({})                   // remove all documents
+db.cars.deleteOne({ make: "Ford" }); // remove one
+db.cars.deleteMany({}); // remove all documents
 ```
 
 ## Connecting from Node.js with the Native Driver

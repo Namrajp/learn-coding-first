@@ -1,13 +1,11 @@
 ---
-layout: "@layouts/Layout.astro"
 title: "The Gemini Guide: How to Get the Most Out of Google's AI"
+slug: "gemini-guide"
 date: 2026-07-30
-status: draft
-tags:
-  - tutorial
-  - ai
-  - gemini
 description: "Unlock Gemini AI's full potential: multimodal prompts, real-time data access, structured outputs, and code generation techniques."
+category: "ai"
+tags: ["gemini", "prompting", "llm"]
+status: draft
 ---
 
 Gemini is Google's family of AI models, tightly integrated with Google's ecosystem — Search, Docs, Gmail, and more. It's multimodal by design, meaning it can reason over text, images, audio, video, and code within the same conversation. Knowing its strengths helps you prompt it effectively.
@@ -57,6 +55,17 @@ Gemini handles multi-part instructions well. You can ask it to perform several r
 "Read the following article, identify the main argument, list three supporting
 points, and then rewrite the conclusion in two sentences for a non-technical audience."
 ```
+
+## 6. Fix a Weak Answer Instead of Rerunning It
+
+When a response comes back generic, resist the urge to retype the same prompt and hope for better. A generic answer usually means the prompt did not give it enough to work with. Say what was wrong — too broad, wrong audience, missing the constraint you actually cared about — and let it revise in place.
+
+```
+"That answer is too general. Rewrite it for someone who already knows SQL,
+skip the introduction, and focus only on the indexing trade-offs."
+```
+
+The same applies when it gets a fact wrong. Point at the specific claim rather than dismissing the whole response, and ask it to check that claim against current sources.
 
 ---
 
