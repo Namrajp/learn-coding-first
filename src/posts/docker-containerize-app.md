@@ -5,7 +5,7 @@ date: 2026-07-29
 description: "Learn how to containerize applications with Docker: Dockerfile creation, image building, container management, and deployment best practices."
 category: "tools"
 tags: ["docker", "containers", "deployment"]
-status: draft
+status: published
 ---
 
 For the rest of this guide, you'll be working with a simple todo list manager that runs on Node.js.
