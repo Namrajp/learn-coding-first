@@ -5,7 +5,7 @@ date: 2026-08-03
 description: "Complete NumPy guide: arrays, vectorized operations, broadcasting, linear algebra, and performance tips for Python developers."
 category: "tutorial"
 tags: ["python", "numpy", "data analysis"]
-status: draft
+status: published
 ---
 
 # Getting Started with NumPy
