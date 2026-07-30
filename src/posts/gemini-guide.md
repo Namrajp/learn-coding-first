@@ -5,7 +5,7 @@ date: 2026-07-30
 description: "Unlock Gemini AI's full potential: multimodal prompts, real-time data access, structured outputs, and code generation techniques."
 category: "ai"
 tags: ["gemini", "prompting", "llm"]
-status: draft
+status: published
 ---
 
 Gemini is Google's family of AI models, tightly integrated with Google's ecosystem — Search, Docs, Gmail, and more. It's multimodal by design, meaning it can reason over text, images, audio, video, and code within the same conversation. Knowing its strengths helps you prompt it effectively.
