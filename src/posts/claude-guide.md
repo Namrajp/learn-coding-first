@@ -5,7 +5,7 @@ date: 2026-07-31
 description: "Master Claude AI with proven techniques: leverage long contexts, request step-by-step reasoning, specify output formats, and iterate for better results."
 category: "ai"
 tags: ["claude", "prompting", "llm"]
-status: draft
+status: published
 ---
 
 Claude is Anthropic's AI assistant, built with a strong emphasis on being helpful, harmless, and honest. It excels at long-form reasoning, nuanced writing, and following complex multi-step instructions — but like any tool, it rewards users who understand how it thinks.
