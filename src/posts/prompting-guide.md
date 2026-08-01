@@ -5,7 +5,7 @@ date: 2026-08-01
 description: "Master AI prompting: be specific, use role prompting, provide context, step-by-step instructions, and few-shot examples for better results."
 category: "ai"
 tags: ["prompting", "llm", "claude"]
-status: draft
+status: published
 ---
 
 Prompting is the art of giving an AI clear, well-structured instructions to get the output you actually want. Most people treat it like a search engine — short, keyword-heavy queries — but AI models respond much better to natural language with context and intent.
