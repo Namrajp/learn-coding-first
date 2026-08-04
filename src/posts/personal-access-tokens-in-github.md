@@ -78,15 +78,20 @@ Tokens expiring is the point, not an inconvenience. When one lapses, git starts 
 > **Rule:** treat tokens like passwords. If a token leaks, revoke it immediately from GitHub settings.
 
 ---
-## SSH public key
-When you try to clone a github repo using git clone git@github.com/repo.git.
-  `git clone git@github.com:username/toy-app-flask-crud.git
+## SSH public key and host Authenticity. 
+When you try to clone a github repo using git clone `https://git@github.com:octocat/Hello-World.git'
+
+### Error messsage in terminal with git installed.    
+`git clone git@github.com:username/toy-app-flask-crud.git
 Cloning into 'toy-app-flask-crud'...
 Error: The authenticity of host 'github.com (`xx.xx.xx.xx`)' can't be established.`
+
 Three steps are:
-- You need to generate an SSH key pair in Terminal, open a terminal and use the `ssh-keygen` command.  For modern security, it is recommended to use the `Ed25519` algorithm:
+
+- You need to generate an SSH key pair in Terminal, open a terminal and use the `ssh-keygen` command.  For modern security, it is recommended to use the `Ed25519` algorithm: Private key stays in your local device. Public key needs to be shared.
+
 - copy the public key to github. Navigate to profile photo -> Settings -> SSH and GPG keys -> New SSH key -> Title-Authentication key, Paste the copied key -> Add SSH key.
-- Clone the repo or push the loal repo. `git clone git@github.com:Namrajp/toyApp.git`
+- Clone the repo or push the loal repo. `git clone git@github.com:username/toy-app-flask-crud.git`
 
 `ssh-keygen -t ed25519 -C "your_email@example.com" `  
 
