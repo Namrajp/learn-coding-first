@@ -1,8 +1,8 @@
 ---
-title: "GitHub Personal Access Tokens: Setup and Security"
+title: "GitHub Personal Access Tokens and SSH host Authenticity: Setup and Security"
 slug: "personal-access-tokens-in-github"
 date: 2026-07-21
-description: "Create and use GitHub Personal Access Tokens (PAT) for secure Git authentication: step-by-step setup and security best practices and ssh"
+description: "Create and use GitHub Personal Access Tokens (PAT) for secure Git authentication: step-by-step setup and security best practices and SSH public key and private keys"
 category: "tools"
 tags: ["git", "github", "authentication", "security"]
 status: published
@@ -80,18 +80,22 @@ Tokens expiring is the point, not an inconvenience. When one lapses, git starts 
 ---
 ## SSH public key
 When you try to clone a github repo using git clone git@github.com/repo.git.
-  ```git clone git@github.com:username/toy-app-flask-crud.git
+  `git clone git@github.com:username/toy-app-flask-crud.git
 Cloning into 'toy-app-flask-crud'...
-Error: The authenticity of host 'github.com (`xx.xx.xx.xx`)' can't be established.```
+Error: The authenticity of host 'github.com (`xx.xx.xx.xx`)' can't be established.`
+Three steps are:
+- You need to generate an SSH key pair in Terminal, open a terminal and use the `ssh-keygen` command.  For modern security, it is recommended to use the `Ed25519` algorithm:
+- copy the public key to github. Navigate to profile photo -> Settings -> SSH and GPG keys -> New SSH key -> Title-Authentication key, Paste the copied key -> Add SSH key.
+- Clone the repo or push the loal repo. `git clone git@github.com:Namrajp/toyApp.git`
 
-You need to generate an SSH key pair in Terminal, open a terminal and use the `ssh-keygen` command.  For modern security, it is recommended to use the `Ed25519` algorithm:
+`ssh-keygen -t ed25519 -C "your_email@example.com" `  
 
-`ssh-keygen -t ed25519 -C "your_email@example.com" `
 During the process, you will be prompted to specify the file location (default is `~/.ssh/id_ed25519 or ~/.ssh/id_rsa`) and optionally set a passphrase to encrypt the private key.  The public key will be saved in the same directory with a .pub extension (e.g.,` ~/.ssh/id_ed25519.pub`). 
 
 To retrieve the public key content for sharing or adding to remote servers, use:
 
-`cat ~/.ssh/id_ed25519.pub`
+`cat ~/.ssh/id_ed25519.pub | xclip -sel clip   ` - On Linux
+`cat ~/.ssh/id_ed25519.pub | clip   ` - On Windows
 
 Or copy it directly to a remote host using `ssh-copy-id`:
 
