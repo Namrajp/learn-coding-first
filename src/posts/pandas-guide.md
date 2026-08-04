@@ -5,7 +5,7 @@ date: 2026-08-04
 description: "Complete Pandas guide: DataFrames, data manipulation, filtering, grouping, and file I/O for Python data analysis."
 category: "tutorial"
 tags: ["python", "pandas", "data analysis"]
-status: draft
+status: published
 ---
 
 # Getting Started with Pandas
