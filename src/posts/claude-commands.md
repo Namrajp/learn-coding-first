@@ -5,7 +5,7 @@ date: 2026-08-05
 description: "A practical reference for Claude Code slash commands, keyboard shortcuts, IDE integration, and how skills work."
 category: "ai"
 tags: ["claude", "cli", "coding agents"]
-status: draft
+status: published
 ---
 
 ## Installation
