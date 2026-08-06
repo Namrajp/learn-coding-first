@@ -5,7 +5,7 @@ date: 2026-08-06
 description: "Learn git diff commands: compare branches, commits, and files. Master formatting flags and understand diff output markers."
 category: "tools"
 tags: ["git", "cli", "version control"]
-status: draft
+status: published
 ---
 
 The git diff command compares different states of your code to show exactly what lines have been added, modified, or deleted. It serves as a safety check before you stage or commit code.
