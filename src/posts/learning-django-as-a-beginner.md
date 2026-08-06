@@ -5,7 +5,7 @@ date: 2026-08-05
 description: "A python framework for rapid prototyping"
 category: "miscellaneous"
 tags: []
-status: draft
+status: published
 ---
 
 # Introducing the Weirdness 
