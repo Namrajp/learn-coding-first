@@ -4,7 +4,7 @@ slug: "flask-is-another-great-concept"
 date: 2026-08-05
 category: "miscellaneous"
 tags: ["python", "flask"]
-status: draft
+status: published
 ---
 
 # Introducing flask
