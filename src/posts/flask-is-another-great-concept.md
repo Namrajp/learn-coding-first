@@ -2,6 +2,7 @@
 title: "Flask is another great concept"
 slug: "flask-is-another-great-concept"
 date: 2026-08-05
+description: "Learn how Flask handles routes, requests, responses, and database-backed application development in Python."
 category: "miscellaneous"
 tags: ["python", "flask"]
 status: published
