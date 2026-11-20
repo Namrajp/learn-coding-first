@@ -32,26 +32,16 @@ let post: {
 if (import.meta.env.DEV) {
   const entry = await getEntry("posts", slug);
   if (entry) {
-    const { data: fm, body } = entry as {
-      data: {
-        title: string;
-        date: string;
-        tags: string[];
-        category?: string;
-        description?: string;
-        status: string;
-      };
-      body: string;
-    };
-    post = {
-      title: fm.title || slug,
-      date: fm.date,
-      tags: fm.tags,
-      category: fm.category,
-      description: fm.description || "",
-      status: fm.status,
-      content: body,
-    };
+const { data: fm, body } = entry;
+post = {
+  title: fm.title || slug,
+  date: new Date(fm.date).toISOString(),
+  tags: fm.tags,
+  category: fm.category,
+  description: fm.description || "",
+  status: fm.status,
+  content: body ?? "",
+};
 
     if (fm.status === "draft") {
       console.error(`[slug.${slug}] Post is draft`);

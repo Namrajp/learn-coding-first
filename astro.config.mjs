@@ -31,6 +31,34 @@ function categoriesWithPosts() {
 
 const populatedCategories = categoriesWithPosts();
 
+function publishedPostUrls() {
+  const postsDirectory = new URL("./src/posts/", import.meta.url);
+
+  return readdirSync(postsDirectory)
+    .filter((file) => file.endsWith(".md"))
+    .filter((file) => {
+      const content = readFileSync(
+        new URL(file, postsDirectory),
+        "utf-8",
+      );
+
+      const frontmatter = content.match(
+        /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/,
+      )?.[1];
+
+      // Skip files without frontmatter and posts marked as draft.
+      if (!frontmatter) return false;
+
+      return !/^status:\s*["']?draft["']?\s*(?:#.*)?$/m.test(
+        frontmatter,
+      );
+    })
+    .map((file) => {
+      const slug = file.slice(0, -3);
+      return `https://learncodingfirst.com/${encodeURIComponent(slug)}`;
+    });
+}
+
 // https://astro.build/config
 export default defineConfig({
   adapter: cloudflare(),
@@ -47,6 +75,9 @@ export default defineConfig({
   site: "https://learncodingfirst.com",
   integrations: [
     sitemap({
+      customPages: [
+      "https://learncodingfirst.com/redux-in-simple-terms",
+    ],
       filter: (page) => {
         const category = page.match(/\/category\/([a-z-]+)\/?$/)?.[1];
         return !category || populatedCategories.has(category);
